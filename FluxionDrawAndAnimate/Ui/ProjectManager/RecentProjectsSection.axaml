@@ -1,0 +1,49 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:pm="using:FluxionDrawAndAnimate.Ui.ProjectManager"
+             xmlns:presentation="using:FluxionDrawAndAnimate.Presentation"
+             xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
+             x:Class="FluxionDrawAndAnimate.Ui.ProjectManager.RecentProjectsSection"
+             x:DataType="vm:MainViewModel">
+    <StackPanel Spacing="14">
+        <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="Recent"
+                       Foreground="{DynamicResource FluxText}"
+                       FontSize="22"
+                       FontWeight="SemiBold" />
+            <Button Grid.Column="1"
+                    Classes="action"
+                    Command="{Binding OpenSelectedRecentProjectCommand}"
+                    Content="Open"
+                    MinWidth="82"
+                    MinHeight="40"
+                    IsVisible="{Binding HasRecentProjects}" />
+        </Grid>
+
+        <ListBox Classes="cardList"
+                 ItemsSource="{Binding RecentProjects}"
+                 SelectedItem="{Binding SelectedRecentProject}"
+                 IsVisible="{Binding HasRecentProjects}"
+                 MaxHeight="220">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="presentation:ProjectCard">
+                    <pm:ProjectRecentCard Margin="0,0,0,10" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <Border Classes="card"
+                Padding="18"
+                IsVisible="{Binding IsRecentProjectsEmpty}">
+            <StackPanel Spacing="4">
+                <TextBlock Text="No saved projects yet"
+                           Foreground="{DynamicResource FluxText}"
+                           FontSize="16"
+                           FontWeight="SemiBold" />
+                <TextBlock Text="Create a project or open an existing .fluxion file."
+                           Foreground="{DynamicResource FluxTextMuted}"
+                           TextWrapping="Wrap" />
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

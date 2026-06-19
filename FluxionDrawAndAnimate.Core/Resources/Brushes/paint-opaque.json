@@ -1,0 +1,37 @@
+{
+  "id": "paint-opaque",
+  "name": "Opaque Paint",
+  "category": "Paint",
+  "description": "Opaque paint brush for blocking in color. Responsive size, full coverage at moderate pressure.",
+  "icon": "B",
+  "toolKind": "Paint",
+  "defaultSize": 32.0,
+  "sortOrder": 31,
+  "settings": {
+    "shape": "Round",
+    "hardness": 0.6,
+    "stabilizerSamples": 2,
+    "dynamics": {
+      "sizeBinding": {
+        "sensor": "Pressure",
+        "curve": {
+          "points": [
+            { "x": 0, "y": 0.2 },
+            { "x": 0.4, "y": 0.7 },
+            { "x": 1, "y": 1 }
+          ]
+        }
+      },
+      "opacityBinding": {
+        "sensor": "Pressure",
+        "curve": {
+          "points": [
+            { "x": 0, "y": 0.3 },
+            { "x": 0.5, "y": 0.9 },
+            { "x": 1, "y": 1 }
+          ]
+        }
+      }
+    }
+  }
+}

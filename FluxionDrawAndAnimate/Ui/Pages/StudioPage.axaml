@@ -1,0 +1,182 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:animation="using:FluxionDrawAndAnimate.Core.Animation"
+             xmlns:controls="using:FluxionDrawAndAnimate.Controls"
+             xmlns:panels="using:FluxionDrawAndAnimate.Ui.Panels"
+             xmlns:presentation="using:FluxionDrawAndAnimate.Presentation"
+             xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
+             x:Class="FluxionDrawAndAnimate.Ui.Pages.StudioPage"
+             x:DataType="vm:MainViewModel"
+             Background="{DynamicResource FluxBgPage}">
+    <Grid RowDefinitions="*,Auto" ColumnDefinitions="Auto,*,Auto">
+
+        <!-- Tool rail -->
+        <Border Grid.Row="0" Grid.Column="0"
+                Background="{DynamicResource FluxBgPanel}"
+                BorderBrush="{DynamicResource FluxBorder}"
+                BorderThickness="0,0,1,0"
+                Padding="8">
+            <ListBox Classes="toolRail"
+                     ItemsSource="{Binding Tools}"
+                     SelectedItem="{Binding ActiveTool}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="presentation:ToolPreset">
+                        <Border Width="56" MinHeight="58" CornerRadius="7" Padding="6">
+                            <StackPanel HorizontalAlignment="Center" Spacing="3">
+                                <TextBlock Text="{Binding Icon}"
+                                           Foreground="{DynamicResource FluxText}"
+                                           FontSize="20"
+                                           FontWeight="SemiBold"
+                                           HorizontalAlignment="Center" />
+                                <TextBlock Text="{Binding Name}"
+                                           Foreground="{DynamicResource FluxTextMuted}"
+                                           FontSize="10"
+                                           HorizontalAlignment="Center"
+                                           TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
+
+        <!-- Canvas -->
+        <Grid Grid.Row="0" Grid.Column="1">
+            <controls:DrawingCanvasControl Project="{Binding Project}"
+                                           ActiveFrameIndex="{Binding SelectedFrameIndex}"
+                                           ActiveLayerIndex="{Binding SelectedLayerIndex}"
+                                           BrushColor="{Binding BrushColor}"
+                                           BrushSize="{Binding BrushSize}"
+                                           ActiveToolKind="{Binding ActiveToolKind}"
+                                           BrushSettings="{Binding ActiveBrushSettings}"
+                                           ShowOnionSkin="{Binding ShowOnionSkin}"
+                                           UndoStack="{Binding UndoStack}"
+                                           CursorInfoCallback="{Binding CursorInfoCallback}" />
+        </Grid>
+
+        <!-- Right properties panel -->
+        <Border Grid.Row="0" Grid.Column="2"
+                Classes="panel"
+                IsVisible="{Binding ShowSidePanel}"
+                Width="{Binding PropertiesPanelWidth}"
+                Margin="8"
+                Padding="14">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Spacing="14">
+                    <TextBlock Text="Properties"
+                               Foreground="{DynamicResource FluxText}"
+                               FontWeight="SemiBold"
+                               FontSize="16" />
+
+                    <StackPanel Spacing="6">
+                        <TextBlock Classes="muted small" Text="Project" />
+                        <TextBlock Text="{Binding Project.Width, StringFormat='Canvas width: {0}px'}" Foreground="{DynamicResource FluxText}" />
+                        <TextBlock Text="{Binding Project.Height, StringFormat='Canvas height: {0}px'}" Foreground="{DynamicResource FluxText}" />
+                        <TextBlock Text="{Binding Project.ColorProfile.Kind, StringFormat='Color: {0}'}" Foreground="{DynamicResource FluxText}" />
+                        <TextBlock Text="{Binding Project.TileSettings.TileSize, StringFormat='Tile size: {0}px'}" Foreground="{DynamicResource FluxText}" />
+                        <TextBlock Text="{Binding Project.TileSettings.MemoryBudgetMegabytes, StringFormat='Tile memory: {0} MB'}" Foreground="{DynamicResource FluxText}" />
+                        <ComboBox ItemsSource="{Binding AvailableFrameRates}"
+                                  SelectedItem="{Binding Project.FramesPerSecond}"
+                                  MinWidth="128"
+                                  Background="{DynamicResource FluxBgInput}"
+                                  Foreground="{DynamicResource FluxText}"
+                                  BorderBrush="{DynamicResource FluxBorder}" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="8">
+                        <TextBlock Classes="muted small" Text="Layer stack" />
+                        <ItemsControl ItemsSource="{Binding Project.Layers}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="animation:AnimationLayer">
+                                    <Border Background="{DynamicResource FluxBgElevated}"
+                                            BorderBrush="{DynamicResource FluxBorder}"
+                                            BorderThickness="1" CornerRadius="6"
+                                            Margin="0,0,0,6" Padding="10">
+                                        <StackPanel Spacing="8">
+                                            <Grid ColumnDefinitions="*,Auto,Auto">
+                                                <TextBlock Text="{Binding Name}" Foreground="{DynamicResource FluxText}" />
+                                                <CheckBox Grid.Column="1" Content="Lock" IsChecked="{Binding IsLocked}" Foreground="{DynamicResource FluxTextMuted}" Margin="8,0" />
+                                                <CheckBox Grid.Column="2" Content="Visible" IsChecked="{Binding IsVisible}" Foreground="{DynamicResource FluxTextMuted}" />
+                                            </Grid>
+                                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                                                <TextBlock Text="{Binding Type}" Foreground="{DynamicResource FluxTextMuted}" FontSize="11" VerticalAlignment="Center" />
+                                                <Slider Grid.Column="1" Minimum="0" Maximum="1" Value="{Binding Opacity}" />
+                                                <TextBlock Grid.Column="2" Text="{Binding BlendMode}" Foreground="{DynamicResource FluxTextMuted}" FontSize="11" VerticalAlignment="Center" />
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                    <panels:SettingsPanel />
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Timeline -->
+        <Border Grid.Row="1" Grid.ColumnSpan="3"
+                Height="{Binding TimelineHeight}"
+                Background="{DynamicResource FluxBgInput}"
+                BorderBrush="{DynamicResource FluxBorder}"
+                BorderThickness="0,1,0,0"
+                Padding="12">
+            <Grid RowDefinitions="Auto,*" ColumnDefinitions="Auto,*">
+                <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Spacing="8" Margin="0,0,14,8">
+                    <Button Classes="icon" Command="{Binding PreviousFrameCommand}" Content="|&lt;" />
+                    <Button Classes="icon" Command="{Binding NextFrameCommand}" Content=">|" />
+                </StackPanel>
+                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Margin="0,0,0,8">
+                    <Button Classes="icon" Command="{Binding AddFrameCommand}" Content="Add drawing" />
+                    <Button Classes="icon" Command="{Binding DuplicateFrameCommand}" Content="Duplicate" />
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Grid.Column="0" Width="152" Spacing="8">
+                    <TextBlock Text="Video" Foreground="{DynamicResource FluxText}" FontWeight="SemiBold" />
+                    <ItemsControl ItemsSource="{Binding Project.Layers}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="animation:AnimationLayer">
+                                <Border Background="{DynamicResource FluxBgElevated}"
+                                        BorderBrush="{DynamicResource FluxBorder}"
+                                        BorderThickness="1" CornerRadius="6"
+                                        Padding="10" Margin="0,0,0,6">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Text="{Binding Name}" Foreground="{DynamicResource FluxText}" />
+                                        <CheckBox Grid.Column="1" IsChecked="{Binding IsVisible}" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+                <ScrollViewer Grid.Row="1" Grid.Column="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                    <StackPanel Spacing="8">
+                        <ListBox Classes="frameStrip"
+                                 ItemsSource="{Binding Project.Layers[0].Frames}"
+                                 SelectedIndex="{Binding SelectedFrameIndex}"
+                                 MinHeight="78">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate x:DataType="animation:AnimationFrame">
+                                    <Border Width="72" Height="58"
+                                            Background="{DynamicResource FluxFrameCell}"
+                                            BorderBrush="{DynamicResource FluxBorder}"
+                                            BorderThickness="1" CornerRadius="6">
+                                        <TextBlock Text="{Binding Number}" Foreground="#111318" FontSize="12"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

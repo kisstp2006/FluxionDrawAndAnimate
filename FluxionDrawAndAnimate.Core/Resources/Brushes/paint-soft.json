@@ -1,0 +1,39 @@
+{
+  "id": "paint-soft",
+  "name": "Soft Paint",
+  "category": "Paint",
+  "description": "Soft paint brush. Wide and watery at light pressure, builds up to opaque with pressure.",
+  "icon": "B",
+  "toolKind": "Paint",
+  "defaultSize": 28.0,
+  "sortOrder": 30,
+  "settings": {
+    "shape": "Round",
+    "hardness": 0.35,
+    "stabilizerSamples": 3,
+    "dynamics": {
+      "sizeBinding": {
+        "sensor": "Pressure",
+        "curve": {
+          "points": [
+            { "x": 0, "y": 0 },
+            { "x": 0.15, "y": 0.6 },
+            { "x": 0.5, "y": 0.88 },
+            { "x": 1, "y": 1 }
+          ]
+        }
+      },
+      "opacityBinding": {
+        "sensor": "Pressure",
+        "curve": {
+          "points": [
+            { "x": 0, "y": 0 },
+            { "x": 0.5, "y": 0.15 },
+            { "x": 0.85, "y": 0.6 },
+            { "x": 1, "y": 1 }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,49 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:presentation="using:FluxionDrawAndAnimate.Presentation"
+             x:Class="FluxionDrawAndAnimate.Ui.ProjectManager.ProjectRecentCard"
+             x:DataType="presentation:ProjectCard">
+    <Border Classes="card" Padding="14">
+        <Grid ColumnDefinitions="116,*" ColumnSpacing="16">
+            <Border Width="106"
+                    Height="96"
+                    Background="{DynamicResource FluxBgElevated}"
+                    CornerRadius="8"
+                    ClipToBounds="True">
+                <Grid>
+                    <Image Source="{Binding Thumbnail}"
+                           Stretch="UniformToFill"
+                           IsVisible="{Binding HasThumbnail}" />
+                    <TextBlock Text="{Binding ThumbnailLabel}"
+                               IsVisible="{Binding HasNoThumbnail}"
+                               Foreground="{DynamicResource FluxText}"
+                               FontSize="26"
+                               FontWeight="SemiBold"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+
+            <StackPanel Grid.Column="1"
+                        Spacing="7"
+                        VerticalAlignment="Center">
+                <TextBlock Text="{Binding Title}"
+                           Foreground="{DynamicResource FluxText}"
+                           FontSize="20"
+                           FontWeight="SemiBold"
+                           TextTrimming="CharacterEllipsis" />
+                <TextBlock Foreground="{DynamicResource FluxTextMuted}"
+                           TextWrapping="NoWrap"
+                           TextTrimming="CharacterEllipsis">
+                    <Run Text="{Binding SizeLabel}" />
+                    <Run Text="  .  " />
+                    <Run Text="{Binding TimingLabel}" />
+                </TextBlock>
+                <TextBlock Text="{Binding UpdatedLabel}"
+                           IsVisible="{Binding HasUpdatedLabel}"
+                           Foreground="{DynamicResource FluxTextMuted}"
+                           FontSize="13" />
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>

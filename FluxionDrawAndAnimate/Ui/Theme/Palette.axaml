@@ -1,0 +1,39 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--
+        Single source of truth for Fluxion's colour tokens.
+        Semantic names only - views never hardcode hex values.
+        Light/Dark resolve automatically from the app ThemeVariant.
+    -->
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Dark">
+            <SolidColorBrush x:Key="FluxBgPage" Color="#111419" />
+            <SolidColorBrush x:Key="FluxBgPanel" Color="#171B22" />
+            <SolidColorBrush x:Key="FluxBgCard" Color="#1E2530" />
+            <SolidColorBrush x:Key="FluxBgElevated" Color="#252B35" />
+            <SolidColorBrush x:Key="FluxBgControl" Color="#232A34" />
+            <SolidColorBrush x:Key="FluxBgInput" Color="#141A21" />
+            <SolidColorBrush x:Key="FluxBorder" Color="#333C49" />
+            <SolidColorBrush x:Key="FluxText" Color="#F5F7FB" />
+            <SolidColorBrush x:Key="FluxTextMuted" Color="#A2ADBC" />
+            <SolidColorBrush x:Key="FluxAccent" Color="#F43F7F" />
+            <SolidColorBrush x:Key="FluxAccentText" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="FluxFrameCell" Color="#F7F7F7" />
+        </ResourceDictionary>
+
+        <ResourceDictionary x:Key="Light">
+            <SolidColorBrush x:Key="FluxBgPage" Color="#F3F6FA" />
+            <SolidColorBrush x:Key="FluxBgPanel" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="FluxBgCard" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="FluxBgElevated" Color="#EDF2F7" />
+            <SolidColorBrush x:Key="FluxBgControl" Color="#EEF2F7" />
+            <SolidColorBrush x:Key="FluxBgInput" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="FluxBorder" Color="#DCE3ED" />
+            <SolidColorBrush x:Key="FluxText" Color="#1F2733" />
+            <SolidColorBrush x:Key="FluxTextMuted" Color="#5C6878" />
+            <SolidColorBrush x:Key="FluxAccent" Color="#F43F7F" />
+            <SolidColorBrush x:Key="FluxAccentText" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="FluxFrameCell" Color="#FFFFFF" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+</ResourceDictionary>

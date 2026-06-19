@@ -1,0 +1,27 @@
+{
+  "id": "eraser-soft",
+  "name": "Eraser",
+  "category": "Eraser",
+  "description": "Pressure-responsive eraser. Light touch fades, hard press removes cleanly.",
+  "icon": "E",
+  "toolKind": "Eraser",
+  "defaultSize": 34.0,
+  "sortOrder": 50,
+  "settings": {
+    "shape": "Round",
+    "hardness": 0.85,
+    "stabilizerSamples": 0,
+    "dynamics": {
+      "sizeBinding": {
+        "sensor": "Pressure",
+        "curve": {
+          "points": [
+            { "x": 0, "y": 0 },
+            { "x": 1, "y": 1 }
+          ]
+        }
+      },
+      "opacityBinding": null
+    }
+  }
+}

@@ -1,0 +1,87 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:pm="using:FluxionDrawAndAnimate.Ui.ProjectManager"
+             xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
+             x:Class="FluxionDrawAndAnimate.Ui.ProjectManager.ProjectManagerWideLayout"
+             x:DataType="vm:MainViewModel">
+    <!--
+        Tablet + Studio share this layout. The dedicated "New Project" right
+        column only appears on Studio; on Tablet the same form flows inline
+        below the templates so nothing is clipped on narrower screens.
+    -->
+    <Grid ColumnDefinitions="240,*">
+        <!-- Left rail -->
+        <Border Background="{DynamicResource FluxBgPanel}"
+                BorderBrush="{DynamicResource FluxBorder}"
+                BorderThickness="0,0,1,0"
+                Padding="20">
+            <Grid RowDefinitions="Auto,*,Auto">
+                <StackPanel Spacing="22">
+                    <pm:ProjectBrandHeader />
+                    <StackPanel Spacing="10">
+                        <Button Classes="action"
+                                Command="{Binding OpenProjectCommand}"
+                                Content="Open"
+                                HorizontalAlignment="Stretch" />
+                        <Button Classes="action"
+                                Command="{Binding OpenSelectedRecentProjectCommand}"
+                                Content="Open Recent"
+                                HorizontalAlignment="Stretch" />
+                        <Button Classes="primary"
+                                Command="{Binding CreateProjectCommand}"
+                                Content="Create New"
+                                HorizontalAlignment="Stretch" />
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Grid.Row="2" Spacing="12">
+                    <Button Classes="action"
+                            Command="{Binding ShowSettingsCommand}"
+                            Content="Settings"
+                            HorizontalAlignment="Stretch" />
+                    <Border Classes="card" Padding="14">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Ready to create"
+                                       Foreground="{DynamicResource FluxText}"
+                                       FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding StatusMessage}"
+                                       Foreground="{DynamicResource FluxTextMuted}"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Content + optional Studio form column -->
+        <Grid Grid.Column="1" ColumnDefinitions="*,Auto">
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Margin="28,26" Spacing="28">
+                    <pm:RecentProjectsSection />
+                    <pm:TemplatesSection />
+                    <!-- Tablet: form flows inline (no room for a side column) -->
+                    <Border Classes="card"
+                            Padding="20"
+                            IsVisible="{Binding IsHomeTabletLayout}">
+                        <pm:NewProjectForm />
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Studio: dedicated New Project panel -->
+            <Border Grid.Column="1"
+                    Width="348"
+                    Background="{DynamicResource FluxBgPanel}"
+                    BorderBrush="{DynamicResource FluxBorder}"
+                    BorderThickness="1,0,0,0"
+                    Padding="26"
+                    IsVisible="{Binding IsHomeStudioLayout}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <pm:NewProjectForm />
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

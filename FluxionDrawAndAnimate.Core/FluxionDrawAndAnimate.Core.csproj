@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+  </ItemGroup>
+
+  <!-- B/5: built-in brush presets shipped as embedded JSON resources.
+       Loaded by BrushPresetLibrary.LoadEmbedded(). Brushes are data, not code. -->
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Brushes\*.json">
+      <LogicalName>FluxionDrawAndAnimate.Core.Resources.Brushes.%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

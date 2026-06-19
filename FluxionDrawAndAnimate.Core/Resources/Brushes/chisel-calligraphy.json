@@ -1,0 +1,35 @@
+{
+  "id": "chisel-calligraphy",
+  "name": "Calligraphy",
+  "category": "Vector",
+  "description": "Chisel brush for calligraphy. Pressure drives both width and opacity for expressive strokes.",
+  "icon": "V",
+  "toolKind": "Vector",
+  "defaultSize": 16.0,
+  "sortOrder": 40,
+  "settings": {
+    "shape": "Chisel",
+    "hardness": 0.9,
+    "stabilizerSamples": 4,
+    "dynamics": {
+      "sizeBinding": {
+        "sensor": "Pressure",
+        "curve": {
+          "points": [
+            { "x": 0, "y": 0 },
+            { "x": 1, "y": 1 }
+          ]
+        }
+      },
+      "opacityBinding": {
+        "sensor": "Pressure",
+        "curve": {
+          "points": [
+            { "x": 0, "y": 0 },
+            { "x": 1, "y": 1 }
+          ]
+        }
+      }
+    }
+  }
+}

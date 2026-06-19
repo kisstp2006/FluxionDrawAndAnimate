@@ -1,0 +1,69 @@
+using System;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Markup.Xaml;
+using FluxionDrawAndAnimate.Core.Persistence;
+using FluxionDrawAndAnimate.Core.Editing;
+using FluxionDrawAndAnimate.Core.Projects;
+using FluxionDrawAndAnimate.Presentation;
+using FluxionDrawAndAnimate.Services;
+using FluxionDrawAndAnimate.ViewModels;
+using FluxionDrawAndAnimate.Views;
+
+namespace FluxionDrawAndAnimate;
+
+public partial class App : Application
+{
+    public override void Initialize()
+    {
+        AvaloniaXamlLoader.Load(this);
+    }
+
+    public override void OnFrameworkInitializationCompleted()
+    {
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            var window = new MainWindow();
+            window.DataContext = CreateMainViewModel(() => window);
+            desktop.MainWindow = window;
+        }
+        else if (ApplicationLifetime is IActivityApplicationLifetime singleViewFactoryApplicationLifetime)
+        {
+            singleViewFactoryApplicationLifetime.MainViewFactory = () =>
+            {
+                var view = new MainView();
+                view.DataContext = CreateMainViewModel(() => TopLevel.GetTopLevel(view));
+                return view;
+            };
+        }
+        else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
+        {
+            var view = new MainView();
+            view.DataContext = CreateMainViewModel(() => TopLevel.GetTopLevel(view));
+            singleViewPlatform.MainView = view;
+        }
+
+        base.OnFrameworkInitializationCompleted();
+    }
+
+    private static MainViewModel CreateMainViewModel(Func<TopLevel?> getTopLevel)
+    {
+        var archiveStore = new ProjectArchiveStore();
+        var fileService = new AvaloniaProjectFileService(getTopLevel, archiveStore);
+        var settingsRegistry = new AppSettingsRegistryFactory().CreateDefaultRegistry();
+
+        return new MainViewModel(
+            new DefaultProjectFactory(),
+            new TimelineEditingService(),
+            new ToolPaletteFactory(),
+            new ProjectPresetFactory(),
+            new ProjectCardFactory(),
+            fileService,
+            new JsonRecentProjectStore(),
+            new AvaloniaProjectThumbnailService(),
+            settingsRegistry,
+            new SettingEditorResolver(),
+            new JsonUserSettingsStore());
+    }
+}

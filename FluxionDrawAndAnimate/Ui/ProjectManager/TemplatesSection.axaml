@@ -1,0 +1,35 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:pm="using:FluxionDrawAndAnimate.Ui.ProjectManager"
+             xmlns:presentation="using:FluxionDrawAndAnimate.Presentation"
+             xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
+             x:Class="FluxionDrawAndAnimate.Ui.ProjectManager.TemplatesSection"
+             x:DataType="vm:MainViewModel">
+    <StackPanel Spacing="14">
+        <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="Templates"
+                       Foreground="{DynamicResource FluxText}"
+                       FontSize="22"
+                       FontWeight="SemiBold" />
+            <TextBlock Grid.Column="1"
+                       Text="{Binding SelectedProjectTemplate.Title}"
+                       Foreground="{DynamicResource FluxTextMuted}"
+                       VerticalAlignment="Center" />
+        </Grid>
+
+        <ListBox Classes="cardList"
+                 ItemsSource="{Binding ProjectTemplates}"
+                 SelectedItem="{Binding SelectedProjectTemplate}">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="presentation:ProjectCard">
+                    <pm:ProjectTemplateCard Width="210" Margin="0,0,12,12" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </StackPanel>
+</UserControl>

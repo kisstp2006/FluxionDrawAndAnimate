@@ -1,0 +1,27 @@
+{
+  "id": "ink-brush",
+  "name": "Ink Brush",
+  "category": "Ink",
+  "description": "Wet ink. Pressure drives width; always fully opaque for clean line art.",
+  "icon": "I",
+  "toolKind": "Ink",
+  "defaultSize": 14.0,
+  "sortOrder": 20,
+  "settings": {
+    "shape": "HardRound",
+    "hardness": 1.0,
+    "stabilizerSamples": 0,
+    "dynamics": {
+      "sizeBinding": {
+        "sensor": "Pressure",
+        "curve": {
+          "points": [
+            { "x": 0, "y": 0 },
+            { "x": 1, "y": 1 }
+          ]
+        }
+      },
+      "opacityBinding": null
+    }
+  }
+}

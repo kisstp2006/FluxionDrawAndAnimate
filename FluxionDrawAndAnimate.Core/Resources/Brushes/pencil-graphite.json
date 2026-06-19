@@ -1,0 +1,39 @@
+{
+  "id": "pencil-graphite",
+  "name": "Graphite Pencil",
+  "category": "Pencil",
+  "description": "Graphite-style pencil. Needs pressure for width; mid-pressure stays transparent for sketching.",
+  "icon": "P",
+  "toolKind": "Pencil",
+  "defaultSize": 10.0,
+  "sortOrder": 10,
+  "settings": {
+    "shape": "Round",
+    "hardness": 0.75,
+    "stabilizerSamples": 6,
+    "dynamics": {
+      "sizeBinding": {
+        "sensor": "Pressure",
+        "curve": {
+          "points": [
+            { "x": 0, "y": 0 },
+            { "x": 0.5, "y": 0.15 },
+            { "x": 0.85, "y": 0.6 },
+            { "x": 1, "y": 1 }
+          ]
+        }
+      },
+      "opacityBinding": {
+        "sensor": "Pressure",
+        "curve": {
+          "points": [
+            { "x": 0, "y": 0 },
+            { "x": 0.3, "y": 0.4 },
+            { "x": 0.7, "y": 0.85 },
+            { "x": 1, "y": 1 }
+          ]
+        }
+      }
+    }
+  }
+}

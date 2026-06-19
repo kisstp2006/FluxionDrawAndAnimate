@@ -1,0 +1,38 @@
+{
+  "id": "pencil-sketch",
+  "name": "Sketch Pencil",
+  "category": "Pencil",
+  "description": "Soft sketching pencil. Light pressure for faint construction lines, heavier for definition.",
+  "icon": "P",
+  "toolKind": "Pencil",
+  "defaultSize": 6.0,
+  "sortOrder": 11,
+  "settings": {
+    "shape": "Round",
+    "hardness": 0.5,
+    "stabilizerSamples": 8,
+    "dynamics": {
+      "sizeBinding": {
+        "sensor": "Pressure",
+        "curve": {
+          "points": [
+            { "x": 0, "y": 0.1 },
+            { "x": 0.4, "y": 0.3 },
+            { "x": 1, "y": 1 }
+          ]
+        }
+      },
+      "opacityBinding": {
+        "sensor": "Pressure",
+        "curve": {
+          "points": [
+            { "x": 0, "y": 0 },
+            { "x": 0.2, "y": 0.25 },
+            { "x": 0.6, "y": 0.6 },
+            { "x": 1, "y": 1 }
+          ]
+        }
+      }
+    }
+  }
+}

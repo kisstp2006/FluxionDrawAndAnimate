@@ -1,0 +1,65 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
+             x:Class="FluxionDrawAndAnimate.Ui.ProjectManager.NewProjectForm"
+             x:DataType="vm:MainViewModel">
+    <StackPanel Spacing="18">
+        <TextBlock Text="New Project"
+                   Foreground="{DynamicResource FluxText}"
+                   FontSize="22"
+                   FontWeight="SemiBold" />
+
+        <StackPanel Spacing="8">
+            <TextBlock Text="Project Name" Classes="caption" />
+            <TextBox Classes="input" Text="{Binding NewProjectName}" />
+        </StackPanel>
+
+        <StackPanel Spacing="8">
+            <TextBlock Text="Canvas Size" Classes="caption" />
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                <TextBox Classes="input"
+                         Text="{Binding NewProjectWidth}"
+                         PlaceholderText="Width" />
+                <TextBox Grid.Column="1"
+                         Classes="input"
+                         Text="{Binding NewProjectHeight}"
+                         PlaceholderText="Height" />
+            </Grid>
+        </StackPanel>
+
+        <Grid ColumnDefinitions="*,*" ColumnSpacing="14">
+            <StackPanel Spacing="8">
+                <TextBlock Text="Frames" Classes="caption" />
+                <TextBox Classes="input" Text="{Binding NewProjectFrameCount}" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Spacing="8">
+                <TextBlock Text="FPS" Classes="caption" />
+                <ComboBox Classes="input"
+                          HorizontalAlignment="Stretch"
+                          ItemsSource="{Binding AvailableFrameRates}"
+                          SelectedItem="{Binding NewProjectFramesPerSecond}" />
+            </StackPanel>
+        </Grid>
+
+        <Border Classes="card" Padding="14">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="{Binding SelectedProjectTemplate.Title}"
+                               Foreground="{DynamicResource FluxText}"
+                               FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding SelectedProjectTemplate.SizeLabel}"
+                               Foreground="{DynamicResource FluxTextMuted}" />
+                </StackPanel>
+                <TextBlock Grid.Column="1"
+                           Text="{Binding SelectedProjectTemplate.TimingLabel}"
+                           Foreground="{DynamicResource FluxTextMuted}"
+                           VerticalAlignment="Center" />
+            </Grid>
+        </Border>
+
+        <Button Classes="primary"
+                Command="{Binding CreateProjectCommand}"
+                Content="Create Project"
+                HorizontalAlignment="Stretch" />
+    </StackPanel>
+</UserControl>

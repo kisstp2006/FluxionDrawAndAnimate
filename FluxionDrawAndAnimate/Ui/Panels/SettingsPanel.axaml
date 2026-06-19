@@ -1,0 +1,135 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
+             x:Class="FluxionDrawAndAnimate.Ui.Panels.SettingsPanel"
+             x:DataType="vm:MainViewModel">
+    <StackPanel Spacing="8">
+        <TextBlock Classes="muted small" Text="Settings" />
+        <ItemsControl ItemsSource="{Binding SettingsGroups}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:SettingsGroupViewModel">
+                    <Border Background="{DynamicResource FluxBgElevated}"
+                            BorderBrush="{DynamicResource FluxBorder}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="10"
+                            Margin="0,0,0,8">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="{Binding Name}" Foreground="{DynamicResource FluxText}" FontWeight="SemiBold" />
+                            <ItemsControl ItemsSource="{Binding Settings}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:SettingItemViewModel">
+                                        <Border BorderBrush="{DynamicResource FluxBorder}"
+                                                BorderThickness="0,1,0,0"
+                                                Padding="0,8,0,0"
+                                                Margin="0,0,0,8">
+                                            <StackPanel Spacing="6">
+                                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                                    <StackPanel>
+                                                        <TextBlock Text="{Binding Title}" Foreground="{DynamicResource FluxText}" FontWeight="SemiBold" />
+                                                        <TextBlock Text="{Binding Description}"
+                                                                   IsVisible="{Binding HasDescription}"
+                                                                   Foreground="{DynamicResource FluxTextMuted}"
+                                                                   FontSize="11"
+                                                                   TextWrapping="Wrap" />
+                                                    </StackPanel>
+                                                    <CheckBox Grid.Column="1"
+                                                              IsVisible="{Binding IsToggleEditor}"
+                                                              IsChecked="{Binding BoolValue, Mode=TwoWay}" />
+                                                </Grid>
+
+                                                <Grid IsVisible="{Binding IsNumberEditor}" ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                                    <Slider Grid.Column="0"
+                                                            Minimum="{Binding NumberMinimum}"
+                                                            Maximum="{Binding NumberMaximum}"
+                                                            Value="{Binding NumberValue, Mode=TwoWay}" />
+                                                    <TextBlock Grid.Column="1"
+                                                               Text="{Binding ValuePreview}"
+                                                               Foreground="{DynamicResource FluxTextMuted}"
+                                                               MinWidth="38"
+                                                               TextAlignment="Right"
+                                                               VerticalAlignment="Center" />
+                                                </Grid>
+
+                                                <TextBox IsVisible="{Binding IsTextEditor}"
+                                                         Text="{Binding TextValue, Mode=TwoWay}"
+                                                         Background="{DynamicResource FluxBgInput}"
+                                                         Foreground="{DynamicResource FluxText}"
+                                                         BorderBrush="{DynamicResource FluxBorder}" />
+
+                                                <ComboBox IsVisible="{Binding IsChoiceEditor}"
+                                                          ItemsSource="{Binding Choices}"
+                                                          SelectedItem="{Binding SelectedChoice, Mode=TwoWay}"
+                                                          Background="{DynamicResource FluxBgInput}"
+                                                          Foreground="{DynamicResource FluxText}"
+                                                          BorderBrush="{DynamicResource FluxBorder}"
+                                                          HorizontalAlignment="Stretch">
+                                                    <ComboBox.ItemTemplate>
+                                                        <DataTemplate x:DataType="vm:SettingChoiceViewModel">
+                                                            <TextBlock Text="{Binding Label}" />
+                                                        </DataTemplate>
+                                                    </ComboBox.ItemTemplate>
+                                                </ComboBox>
+
+                                                <Border IsVisible="{Binding IsRgbaColorEditor}"
+                                                        Background="{DynamicResource FluxBgInput}"
+                                                        BorderBrush="{DynamicResource FluxBorder}"
+                                                        BorderThickness="1"
+                                                        CornerRadius="6"
+                                                        Padding="8">
+                                                    <Grid ColumnDefinitions="48,*" ColumnSpacing="10">
+                                                        <Border Width="40"
+                                                                Height="40"
+                                                                Background="{Binding RgbaPreviewBrush}"
+                                                                BorderBrush="{DynamicResource FluxBorder}"
+                                                                BorderThickness="1"
+                                                                CornerRadius="6"
+                                                                VerticalAlignment="Top" />
+                                                        <StackPanel Grid.Column="1" Spacing="5">
+                                                            <Grid ColumnDefinitions="20,*,34" ColumnSpacing="6">
+                                                                <TextBlock Text="R" Foreground="{DynamicResource FluxTextMuted}" VerticalAlignment="Center" />
+                                                                <Slider Grid.Column="1" Minimum="0" Maximum="255" Value="{Binding RgbaRed, Mode=TwoWay}" />
+                                                                <TextBlock Grid.Column="2" Text="{Binding RgbaRed, StringFormat='{}{0:0}'}" Foreground="{DynamicResource FluxTextMuted}" TextAlignment="Right" VerticalAlignment="Center" />
+                                                            </Grid>
+                                                            <Grid ColumnDefinitions="20,*,34" ColumnSpacing="6">
+                                                                <TextBlock Text="G" Foreground="{DynamicResource FluxTextMuted}" VerticalAlignment="Center" />
+                                                                <Slider Grid.Column="1" Minimum="0" Maximum="255" Value="{Binding RgbaGreen, Mode=TwoWay}" />
+                                                                <TextBlock Grid.Column="2" Text="{Binding RgbaGreen, StringFormat='{}{0:0}'}" Foreground="{DynamicResource FluxTextMuted}" TextAlignment="Right" VerticalAlignment="Center" />
+                                                            </Grid>
+                                                            <Grid ColumnDefinitions="20,*,34" ColumnSpacing="6">
+                                                                <TextBlock Text="B" Foreground="{DynamicResource FluxTextMuted}" VerticalAlignment="Center" />
+                                                                <Slider Grid.Column="1" Minimum="0" Maximum="255" Value="{Binding RgbaBlue, Mode=TwoWay}" />
+                                                                <TextBlock Grid.Column="2" Text="{Binding RgbaBlue, StringFormat='{}{0:0}'}" Foreground="{DynamicResource FluxTextMuted}" TextAlignment="Right" VerticalAlignment="Center" />
+                                                            </Grid>
+                                                            <Grid ColumnDefinitions="20,*,34" ColumnSpacing="6">
+                                                                <TextBlock Text="A" Foreground="{DynamicResource FluxTextMuted}" VerticalAlignment="Center" />
+                                                                <Slider Grid.Column="1" Minimum="0" Maximum="255" Value="{Binding RgbaAlpha, Mode=TwoWay}" />
+                                                                <TextBlock Grid.Column="2" Text="{Binding RgbaAlpha, StringFormat='{}{0:0}'}" Foreground="{DynamicResource FluxTextMuted}" TextAlignment="Right" VerticalAlignment="Center" />
+                                                            </Grid>
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </Border>
+
+                                                <Border IsVisible="{Binding IsGenericCustomEditor}"
+                                                        Background="{DynamicResource FluxBgInput}"
+                                                        BorderBrush="{DynamicResource FluxBorder}"
+                                                        BorderThickness="1"
+                                                        CornerRadius="6"
+                                                        Padding="8">
+                                                    <StackPanel Spacing="3">
+                                                        <TextBlock Text="{Binding CustomEditorKey}" Foreground="{DynamicResource FluxText}" FontWeight="SemiBold" />
+                                                        <TextBlock Text="{Binding ValuePreview}" Foreground="{DynamicResource FluxTextMuted}" FontSize="11" TextWrapping="Wrap" />
+                                                    </StackPanel>
+                                                </Border>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
+</UserControl>

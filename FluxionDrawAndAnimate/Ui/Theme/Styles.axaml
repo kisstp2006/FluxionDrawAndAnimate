@@ -1,0 +1,236 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--
+        Shared Fluxion control styles. Class names are composable:
+        e.g. Classes="action primary" = action sizing + accent colours,
+        Classes="icon primary" = compact sizing + accent colours.
+    -->
+
+    <!-- Text -->
+    <Style Selector="TextBlock.muted">
+        <Setter Property="Foreground" Value="{DynamicResource FluxTextMuted}" />
+    </Style>
+    <Style Selector="TextBlock.small">
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+    <Style Selector="TextBlock.caption">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{DynamicResource FluxTextMuted}" />
+    </Style>
+
+    <!-- Buttons: base look shared by all Fluxion button classes -->
+    <Style Selector="Button.icon, Button.action, Button.primary">
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.12" />
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <!-- Compact icon / toolbar button -->
+    <Style Selector="Button.icon">
+        <Setter Property="MinWidth" Value="42" />
+        <Setter Property="MinHeight" Value="38" />
+        <Setter Property="Padding" Value="10,7" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Background" Value="{DynamicResource FluxBgControl}" />
+        <Setter Property="Foreground" Value="{DynamicResource FluxText}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource FluxBorder}" />
+    </Style>
+
+    <!-- Standard secondary action button -->
+    <Style Selector="Button.action">
+        <Setter Property="MinHeight" Value="48" />
+        <Setter Property="Padding" Value="18,10" />
+        <Setter Property="Background" Value="{DynamicResource FluxBgControl}" />
+        <Setter Property="Foreground" Value="{DynamicResource FluxText}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource FluxBorder}" />
+    </Style>
+
+    <!-- Accent / primary colours (composable on top of icon or action) -->
+    <Style Selector="Button.primary">
+        <Setter Property="MinHeight" Value="48" />
+        <Setter Property="Padding" Value="18,10" />
+        <Setter Property="Background" Value="{DynamicResource FluxAccent}" />
+        <Setter Property="Foreground" Value="{DynamicResource FluxAccentText}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource FluxAccent}" />
+    </Style>
+    <Style Selector="Button.icon.primary">
+        <Setter Property="MinHeight" Value="38" />
+        <Setter Property="Padding" Value="10,7" />
+    </Style>
+
+    <!-- Hover / press feedback -->
+    <Style Selector="Button.icon:pointerover /template/ ContentPresenter,
+                     Button.action:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource FluxBgElevated}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource FluxAccent}" />
+    </Style>
+    <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource FluxAccent}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource FluxAccentText}" />
+        <Setter Property="Opacity" Value="0.92" />
+    </Style>
+
+    <!-- Surfaces -->
+    <Style Selector="Border.panel">
+        <Setter Property="Background" Value="{DynamicResource FluxBgPanel}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource FluxBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="10" />
+    </Style>
+    <Style Selector="Border.card">
+        <Setter Property="Background" Value="{DynamicResource FluxBgCard}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource FluxBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="10" />
+    </Style>
+
+    <!-- Inputs -->
+    <Style Selector="TextBox.input, ComboBox.input">
+        <Setter Property="Background" Value="{DynamicResource FluxBgInput}" />
+        <Setter Property="Foreground" Value="{DynamicResource FluxText}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource FluxBorder}" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="MinHeight" Value="48" />
+        <Setter Property="Padding" Value="14,8" />
+    </Style>
+
+    <!-- Status bar: compact icon/text button -->
+    <Style Selector="Button.statusBtn">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource FluxTextMuted}" />
+        <Setter Property="Padding" Value="6,2" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="MinHeight" Value="0" />
+    </Style>
+    <Style Selector="Button.statusBtn:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource FluxBgElevated}" />
+        <Setter Property="Foreground" Value="{DynamicResource FluxText}" />
+    </Style>
+
+    <!-- Title bar: menu button (File / Edit / View / Help) -->
+    <Style Selector="Button.menuBtn">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource FluxTextMuted}" />
+        <Setter Property="Padding" Value="10,6" />
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+    <Style Selector="Button.menuBtn:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource FluxBgElevated}" />
+        <Setter Property="Foreground" Value="{DynamicResource FluxText}" />
+    </Style>
+
+    <!-- Title bar: page navigation tabs -->
+    <Style Selector="ListBox.pageTabs">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+    <Style Selector="ListBox.pageTabs ListBoxItem">
+        <Setter Property="Padding" Value="14,6" />
+        <Setter Property="CornerRadius" Value="7" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource FluxTextMuted}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.1" />
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="ListBox.pageTabs ListBoxItem:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource FluxBgElevated}" />
+    </Style>
+    <Style Selector="ListBox.pageTabs ListBoxItem:selected /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource FluxAccent}" />
+    </Style>
+    <Style Selector="ListBox.pageTabs ListBoxItem:selected TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource FluxAccentText}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <!-- Tool rail (editor, vertical icon column) -->
+    <Style Selector="ListBox.toolRail">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="4" />
+    </Style>
+    <Style Selector="ListBox.toolRail ListBoxItem">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="0,0,0,6" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="ListBox.toolRail ListBoxItem:selected">
+        <Setter Property="Background" Value="{DynamicResource FluxBgElevated}" />
+    </Style>
+
+    <!-- Frame strip (editor timeline) -->
+    <Style Selector="ListBox.frameStrip">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="ListBox.frameStrip ListBoxItem">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="0,0,6,0" />
+        <Setter Property="CornerRadius" Value="6" />
+    </Style>
+    <Style Selector="ListBox.frameStrip ListBoxItem:selected">
+        <Setter Property="Background" Value="{DynamicResource FluxAccent}" />
+    </Style>
+
+    <!-- Card list (project manager - selection outlines the card) -->
+    <Style Selector="ListBox.cardList">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+    <Style Selector="ListBox.cardList ListBoxItem">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ContentPresenter Name="PART_ContentPresenter"
+                                  Content="{TemplateBinding Content}"
+                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                  Padding="{TemplateBinding Padding}"
+                                  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    <Style Selector="ListBox.cardList ListBoxItem:selected,
+                     ListBox.cardList ListBoxItem:pointerover">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+    <Style Selector="ListBox.cardList ListBoxItem:selected /template/ ContentPresenter,
+                     ListBox.cardList ListBoxItem:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+    <Style Selector="ListBox.cardList ListBoxItem:selected /template/ Border,
+                     ListBox.cardList ListBoxItem:pointerover /template/ Border">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+    <Style Selector="ListBox.cardList ListBoxItem:selected Border.card">
+        <Setter Property="BorderBrush" Value="{DynamicResource FluxAccent}" />
+        <Setter Property="BorderThickness" Value="2" />
+    </Style>
+</Styles>

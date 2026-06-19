@@ -1,0 +1,14 @@
+<Solution>
+  <Project Path="FluxionDrawAndAnimate.Core.Tests/FluxionDrawAndAnimate.Core.Tests.csproj" />
+  <Project Path="FluxionDrawAndAnimate.Core/FluxionDrawAndAnimate.Core.csproj" />
+  <Project Path="FluxionDrawAndAnimate.Android/FluxionDrawAndAnimate.Android.csproj">
+    <Deploy />
+  </Project>
+  <Project Path="FluxionDrawAndAnimate.Browser/FluxionDrawAndAnimate.Browser.csproj" />
+  <Project Path="FluxionDrawAndAnimate.Desktop/FluxionDrawAndAnimate.Desktop.csproj" />
+  <Project Path="FluxionDrawAndAnimate.iOS/FluxionDrawAndAnimate.iOS.csproj">
+    <Deploy />
+  </Project>
+  <Project Path="FluxionDrawAndAnimate/FluxionDrawAndAnimate.csproj" />
+  <Project Path="FluxionDrawAndAnimate.Core.Tests/FluxionDrawAndAnimate.Core.Tests.csproj" />
+</Solution>

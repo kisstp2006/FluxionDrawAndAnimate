@@ -1,0 +1,150 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:statusBar="using:FluxionDrawAndAnimate.Presentation.StatusBar"
+             xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
+             x:Class="FluxionDrawAndAnimate.Ui.Shell.AppBottomBar"
+             x:DataType="vm:MainViewModel"
+             Height="28">
+    <Grid ColumnDefinitions="*,Auto">
+
+        <!-- ── Left items ── -->
+        <ItemsControl Grid.Column="0"
+                      ItemsSource="{Binding StatusBarLeftLiveItems}"
+                      VerticalAlignment="Center"
+                      Margin="10,0">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" Spacing="0" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="statusBar:LiveStatusBarItem">
+                    <Panel>
+                        <!-- Separator -->
+                        <Border IsVisible="{Binding IsSeparator}"
+                                Width="1" Margin="6,4"
+                                Background="{DynamicResource FluxBorder}" />
+
+                        <!-- Interactive button (has Command) -->
+                        <Button Classes="statusBtn"
+                                Command="{Binding Command}"
+                                VerticalAlignment="Center">
+                            <Button.IsVisible>
+                                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                    <Binding Path="!IsSeparator" />
+                                    <Binding Path="Command" Converter="{x:Static ObjectConverters.IsNotNull}" />
+                                </MultiBinding>
+                            </Button.IsVisible>
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <TextBlock Text="{Binding Icon}"
+                                           IsVisible="{Binding Icon, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                           FontSize="12" />
+                                <TextBlock Text="{Binding CurrentText}"
+                                           IsVisible="{Binding CurrentText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                           FontSize="12" />
+                                <TextBlock Text="∨"
+                                           IsVisible="{Binding HasDropdown}"
+                                           Foreground="{DynamicResource FluxTextMuted}"
+                                           FontSize="10"
+                                           VerticalAlignment="Center"
+                                           Margin="2,0,0,0" />
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Non-interactive label (no Command, not separator) -->
+                        <StackPanel Orientation="Horizontal" Spacing="4"
+                                    VerticalAlignment="Center"
+                                    Margin="4,0">
+                            <StackPanel.IsVisible>
+                                <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                    <Binding Path="!IsSeparator" />
+                                    <Binding Path="Command" Converter="{x:Static ObjectConverters.IsNull}" />
+                                </MultiBinding>
+                            </StackPanel.IsVisible>
+                            <TextBlock Text="{Binding Icon}"
+                                       IsVisible="{Binding Icon, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                       Foreground="{DynamicResource FluxTextMuted}"
+                                       FontSize="13" />
+                            <TextBlock Text="{Binding CurrentText}"
+                                       IsVisible="{Binding CurrentText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                       Foreground="{DynamicResource FluxTextMuted}"
+                                       FontSize="12" />
+                        </StackPanel>
+                    </Panel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- ── Right items + always-present status ── -->
+        <StackPanel Grid.Column="1"
+                    Orientation="Horizontal"
+                    Spacing="4"
+                    VerticalAlignment="Center"
+                    Margin="0,0,10,0">
+
+            <!-- Registered right items -->
+            <ItemsControl ItemsSource="{Binding StatusBarRightLiveItems}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="6" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="statusBar:LiveStatusBarItem">
+                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center"
+                                    IsVisible="{Binding !IsSeparator}">
+                            <!-- Icon/text button (with or without command) -->
+                            <Button Classes="statusBtn"
+                                    Command="{Binding Command}"
+                                    VerticalAlignment="Center"
+                                    IsVisible="{Binding Command, Converter={x:Static ObjectConverters.IsNotNull}}">
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <TextBlock Text="{Binding Icon}"
+                                               IsVisible="{Binding Icon, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                               FontSize="12" />
+                                    <TextBlock Text="{Binding CurrentText}"
+                                               IsVisible="{Binding CurrentText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                               FontSize="12" />
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Label + optional progress bar (no command) -->
+                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center"
+                                        IsVisible="{Binding Command, Converter={x:Static ObjectConverters.IsNull}}">
+                                <TextBlock Text="{Binding Icon}"
+                                           IsVisible="{Binding Icon, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                           Foreground="{DynamicResource FluxTextMuted}"
+                                           FontSize="13" />
+                                <TextBlock Text="{Binding CurrentText}"
+                                           Foreground="{DynamicResource FluxTextMuted}"
+                                           FontSize="12" />
+                                <!-- Progress bar (memory bar) -->
+                                <ProgressBar IsVisible="{Binding HasProgress}"
+                                             Minimum="0" Maximum="1"
+                                             Value="{Binding Progress}"
+                                             Width="80" Height="6"
+                                             Foreground="{DynamicResource FluxAccent}"
+                                             Background="{DynamicResource FluxBgElevated}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Separator -->
+            <Border Width="1" Margin="4,4" Background="{DynamicResource FluxBorder}" />
+
+            <!-- Always-present status indicator (✓ StatusMessage) -->
+            <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                <TextBlock Text="✓"
+                           Foreground="#4CAF50"
+                           FontSize="12"
+                           VerticalAlignment="Center" />
+                <TextBlock Text="{Binding StatusMessage}"
+                           Foreground="{DynamicResource FluxTextMuted}"
+                           FontSize="12"
+                           VerticalAlignment="Center" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -1,0 +1,16 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:pm="using:FluxionDrawAndAnimate.Ui.ProjectManager"
+             xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
+             x:Class="FluxionDrawAndAnimate.Ui.ProjectManager.ProjectManagerView"
+             x:DataType="vm:MainViewModel">
+    <!--
+        Styles/colours come from the shared theme (App.axaml -> Ui/Theme).
+        Phone vs Wide arrangement is chosen by the shared responsive tier on
+        the view model (no separate breakpoint logic here).
+    -->
+    <Grid Background="{DynamicResource FluxBgPage}">
+        <pm:ProjectManagerWideLayout IsVisible="{Binding IsHomeWideLayout}" />
+        <pm:ProjectManagerPhoneLayout IsVisible="{Binding IsHomePhoneLayout}" />
+    </Grid>
+</UserControl>

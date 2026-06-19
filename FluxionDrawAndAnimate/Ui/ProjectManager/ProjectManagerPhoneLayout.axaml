@@ -1,0 +1,51 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:pm="using:FluxionDrawAndAnimate.Ui.ProjectManager"
+             xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
+             x:Class="FluxionDrawAndAnimate.Ui.ProjectManager.ProjectManagerPhoneLayout"
+             x:DataType="vm:MainViewModel">
+    <Grid RowDefinitions="*,Auto" Background="{DynamicResource FluxBgPage}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="20,24,20,108" Spacing="22">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                    <pm:ProjectBrandHeader />
+                    <Button Grid.Column="1"
+                            Classes="action"
+                            Command="{Binding ShowSettingsCommand}"
+                            Content="⚙ Settings"
+                            VerticalAlignment="Top" />
+                </Grid>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                    <Button Classes="action"
+                            Command="{Binding OpenProjectCommand}"
+                            Content="Open" />
+                    <Button Grid.Column="1"
+                            Classes="action"
+                            Command="{Binding OpenSelectedRecentProjectCommand}"
+                            Content="Recent" />
+                </Grid>
+
+                <pm:RecentProjectsSection />
+                <pm:TemplatesSection />
+
+                <Expander Header="New Project"
+                          IsExpanded="False"
+                          HorizontalAlignment="Stretch">
+                    <pm:NewProjectForm Margin="0,12,0,0" />
+                </Expander>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Sticky thumb-reach action bar -->
+        <Border Grid.Row="1"
+                Classes="panel"
+                Margin="16"
+                Padding="10">
+            <Button Classes="primary"
+                    Command="{Binding CreateProjectCommand}"
+                    Content="Create New"
+                    HorizontalAlignment="Stretch" />
+        </Border>
+    </Grid>
+</UserControl>

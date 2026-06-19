@@ -1,0 +1,27 @@
+{
+  "id": "ink-marker",
+  "name": "Marker",
+  "category": "Ink",
+  "description": "Flat marker. Constant width, slight pressure influence on opacity for overlaps.",
+  "icon": "M",
+  "toolKind": "Ink",
+  "defaultSize": 18.0,
+  "sortOrder": 21,
+  "settings": {
+    "shape": "HardRound",
+    "hardness": 0.95,
+    "stabilizerSamples": 2,
+    "dynamics": {
+      "sizeBinding": null,
+      "opacityBinding": {
+        "sensor": "Pressure",
+        "curve": {
+          "points": [
+            { "x": 0, "y": 0.7 },
+            { "x": 1, "y": 1 }
+          ]
+        }
+      }
+    }
+  }
+}

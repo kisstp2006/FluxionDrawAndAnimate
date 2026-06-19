@@ -1,0 +1,6 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:pm="using:FluxionDrawAndAnimate.Ui.ProjectManager"
+             x:Class="FluxionDrawAndAnimate.Ui.Pages.HomePage">
+    <pm:ProjectManagerView />
+</UserControl>
