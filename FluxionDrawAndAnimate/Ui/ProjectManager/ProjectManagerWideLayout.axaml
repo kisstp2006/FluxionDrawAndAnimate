@@ -1,75 +1,154 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:pm="using:FluxionDrawAndAnimate.Ui.ProjectManager"
+             xmlns:presentation="using:FluxionDrawAndAnimate.Presentation"
              xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
              x:Class="FluxionDrawAndAnimate.Ui.ProjectManager.ProjectManagerWideLayout"
              x:DataType="vm:MainViewModel">
-    <!--
-        Tablet + Studio share this layout. The dedicated "New Project" right
-        column only appears on Studio; on Tablet the same form flows inline
-        below the templates so nothing is clipped on narrower screens.
-    -->
-    <Grid ColumnDefinitions="240,*">
-        <!-- Left rail -->
+    <Grid ColumnDefinitions="220,*">
+
+        <!-- ── Left navigation sidebar ── -->
         <Border Background="{DynamicResource FluxBgPanel}"
                 BorderBrush="{DynamicResource FluxBorder}"
-                BorderThickness="0,0,1,0"
-                Padding="20">
-            <Grid RowDefinitions="Auto,*,Auto">
-                <StackPanel Spacing="22">
-                    <pm:ProjectBrandHeader />
-                    <StackPanel Spacing="10">
-                        <Button Classes="action"
-                                Command="{Binding OpenProjectCommand}"
-                                Content="Open"
-                                HorizontalAlignment="Stretch" />
-                        <Button Classes="action"
-                                Command="{Binding OpenSelectedRecentProjectCommand}"
-                                Content="Open Recent"
-                                HorizontalAlignment="Stretch" />
-                        <Button Classes="primary"
-                                Command="{Binding CreateProjectCommand}"
-                                Content="Create New"
-                                HorizontalAlignment="Stretch" />
-                    </StackPanel>
-                </StackPanel>
+                BorderThickness="0,0,1,0">
+            <Grid RowDefinitions="*,Auto">
 
-                <StackPanel Grid.Row="2" Spacing="12">
-                    <Button Classes="action"
-                            Command="{Binding ShowSettingsCommand}"
-                            Content="Settings"
-                            HorizontalAlignment="Stretch" />
-                    <Border Classes="card" Padding="14">
+                <!-- Scrollable nav items -->
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="10,16,10,8">
+
+                        <!-- Nav items (section headers + buttons interleaved) -->
+                        <ItemsControl ItemsSource="{Binding HomeNavItems}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="presentation:HomeNavItem">
+                                    <StackPanel>
+                                        <!-- Section header (e.g. BROWSE, LIBRARY) -->
+                                        <TextBlock Text="{Binding SectionHeader}"
+                                                   IsVisible="{Binding HasSectionHeader}"
+                                                   Foreground="{DynamicResource FluxTextMuted}"
+                                                   FontSize="11"
+                                                   FontWeight="SemiBold"
+                                                   LetterSpacing="1.5"
+                                                   Margin="10,18,0,4" />
+
+                                        <!-- Navigation button -->
+                                        <Button Classes.navActive="{Binding IsActive}"
+                                                Classes="navItem"
+                                                Command="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).SetActiveSidebarItemCommand}"
+                                                CommandParameter="{Binding Id}">
+                                            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Icon}"
+                                                           FontSize="16"
+                                                           Width="20"
+                                                           TextAlignment="Center"
+                                                           VerticalAlignment="Center" />
+                                                <TextBlock Text="{Binding Label}"
+                                                           VerticalAlignment="Center" />
+                                            </StackPanel>
+                                        </Button>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- ── Bottom: Settings + Cloud Storage ── -->
+                <StackPanel Grid.Row="1" Margin="10,0,10,16" Spacing="2">
+                    <!-- Settings -->
+                    <Button Classes="navItem"
+                            Command="{Binding ShowSettingsCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TextBlock Text="⚙"
+                                       FontSize="16"
+                                       Width="20"
+                                       TextAlignment="Center"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Text="Settings" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Cloud Storage widget -->
+                    <Border Margin="4,12,4,0">
                         <StackPanel Spacing="4">
-                            <TextBlock Text="Ready to create"
-                                       Foreground="{DynamicResource FluxText}"
-                                       FontWeight="SemiBold" />
-                            <TextBlock Text="{Binding StatusMessage}"
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="☁"
+                                           Foreground="{DynamicResource FluxTextMuted}"
+                                           FontSize="14"
+                                           VerticalAlignment="Center" />
+                                <TextBlock Text="Cloud Storage"
+                                           Foreground="{DynamicResource FluxText}"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                            <TextBlock Text="Coming soon"
                                        Foreground="{DynamicResource FluxTextMuted}"
-                                       TextWrapping="Wrap" />
+                                       FontSize="12" />
                         </StackPanel>
                     </Border>
                 </StackPanel>
             </Grid>
         </Border>
 
-        <!-- Content + optional Studio form column -->
+        <!-- ── Main content area (reacts to active sidebar item) ── -->
         <Grid Grid.Column="1" ColumnDefinitions="*,Auto">
             <ScrollViewer VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled">
                 <StackPanel Margin="28,26" Spacing="28">
+
+                    <!-- Welcome header -->
+                    <pm:HomeWelcomeHeader />
+
+                    <!-- Quick action cards -->
+                    <pm:HomeQuickActions />
+
+                    <!-- Search + filter + view toggle -->
+                    <pm:HomeSearchBar />
+
+                    <!-- Recent projects grid -->
                     <pm:RecentProjectsSection />
+
+                    <!-- Templates horizontal scroll -->
                     <pm:TemplatesSection />
-                    <!-- Tablet: form flows inline (no room for a side column) -->
-                    <Border Classes="card"
-                            Padding="20"
-                            IsVisible="{Binding IsHomeTabletLayout}">
+
+                    <!-- Tablet: inline new project form -->
+                    <Border Classes="card" Padding="20" IsVisible="{Binding IsHomeTabletLayout}">
                         <pm:NewProjectForm />
+                    </Border>
+
+                    <!-- Stub pages (Learn, Cloud, Trash shown when sidebar activates them) -->
+                    <Border Classes="card" Padding="40" HorizontalAlignment="Center"
+                            IsVisible="{Binding ActiveSidebarItemId, ConverterParameter=learn, FallbackValue=False}">
+                        <StackPanel Spacing="10" HorizontalAlignment="Center">
+                            <TextBlock Text="✦" FontSize="36" Foreground="{DynamicResource FluxAccent}" HorizontalAlignment="Center" />
+                            <TextBlock Text="Learn" Foreground="{DynamicResource FluxText}" FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                            <TextBlock Text="Tutorials and documentation coming soon." Foreground="{DynamicResource FluxTextMuted}" HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="card" Padding="40" HorizontalAlignment="Center"
+                            IsVisible="{Binding ActiveSidebarItemId, ConverterParameter=cloud, FallbackValue=False}">
+                        <StackPanel Spacing="10" HorizontalAlignment="Center">
+                            <TextBlock Text="☁" FontSize="36" Foreground="{DynamicResource FluxAccent}" HorizontalAlignment="Center" />
+                            <TextBlock Text="Cloud" Foreground="{DynamicResource FluxText}" FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                            <TextBlock Text="Cloud sync coming soon." Foreground="{DynamicResource FluxTextMuted}" HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="card" Padding="40" HorizontalAlignment="Center"
+                            IsVisible="{Binding ActiveSidebarItemId, ConverterParameter=trash, FallbackValue=False}">
+                        <StackPanel Spacing="10" HorizontalAlignment="Center">
+                            <TextBlock Text="⊘" FontSize="36" Foreground="{DynamicResource FluxAccent}" HorizontalAlignment="Center" />
+                            <TextBlock Text="Trash" Foreground="{DynamicResource FluxText}" FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                            <TextBlock Text="Deleted projects will appear here." Foreground="{DynamicResource FluxTextMuted}" HorizontalAlignment="Center" />
+                        </StackPanel>
                     </Border>
                 </StackPanel>
             </ScrollViewer>
 
-            <!-- Studio: dedicated New Project panel -->
+            <!-- Studio: dedicated New Project panel on the right -->
             <Border Grid.Column="1"
                     Width="348"
                     Background="{DynamicResource FluxBgPanel}"

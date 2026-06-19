@@ -1,0 +1,86 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:pres="using:FluxionDrawAndAnimate.Presentation"
+             xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
+             x:Class="FluxionDrawAndAnimate.Ui.ProjectManager.HomeQuickActions"
+             x:DataType="vm:MainViewModel">
+    <ItemsControl ItemsSource="{Binding HomePageRegistry.QuickActions}">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <WrapPanel Orientation="Horizontal" />
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="pres:QuickActionDefinition">
+                <Panel Margin="0,0,12,12">
+                    <!-- Primary card (accent) -->
+                    <Button Command="{Binding Command}"
+                            Width="200" MinHeight="72"
+                            Padding="16,14"
+                            CornerRadius="10"
+                            HorizontalContentAlignment="Left"
+                            IsVisible="{Binding IsPrimary}">
+                        <Button.Background>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                                <GradientStop Color="#6C47FF" Offset="0" />
+                                <GradientStop Color="#A78BFA" Offset="1" />
+                            </LinearGradientBrush>
+                        </Button.Background>
+                        <Button.BorderThickness>
+                            <Thickness>0</Thickness>
+                        </Button.BorderThickness>
+                        <StackPanel Spacing="4">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="{Binding Icon}"
+                                           Foreground="White"
+                                           FontSize="16"
+                                           FontWeight="Bold"
+                                           VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding Title}"
+                                           Foreground="White"
+                                           FontSize="14"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding Subtitle}"
+                                       Foreground="#CCFFFFFF"
+                                       FontSize="11"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Secondary card -->
+                    <Button Command="{Binding Command}"
+                            Width="186" MinHeight="72"
+                            Padding="14,12"
+                            CornerRadius="10"
+                            Background="{DynamicResource FluxBgCard}"
+                            BorderBrush="{DynamicResource FluxBorder}"
+                            BorderThickness="1"
+                            HorizontalContentAlignment="Left"
+                            IsVisible="{Binding !IsPrimary}">
+                        <StackPanel Spacing="4">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="{Binding Icon}"
+                                           Foreground="{DynamicResource FluxText}"
+                                           FontSize="15"
+                                           VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding Title}"
+                                           Foreground="{DynamicResource FluxText}"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding Subtitle}"
+                                       Foreground="{DynamicResource FluxTextMuted}"
+                                       FontSize="11"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Button>
+                </Panel>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+</UserControl>

@@ -38,11 +38,19 @@ public partial class MainViewModel : ViewModelBase
     public UndoStack UndoStack { get; }
     public AppShellRegistry ShellRegistry { get; } = new();
     public StatusBarRegistry StatusBarRegistry { get; } = new();
+    public HomePageRegistry HomePageRegistry { get; } = new();
 
     private void InitUndoStack()
     {
         UndoStack.StateChanged += NotifyUndoState;
         StatusBarRegistry.Items.CollectionChanged += (_, _) => RebuildLiveStatusBarItems();
+        HomePageRegistry.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(HomePageRegistry.ProjectSearchQuery))
+            {
+                OnPropertyChanged(nameof(FilteredRecentProjects));
+            }
+        };
     }
 
     [ObservableProperty]
@@ -104,6 +112,36 @@ public partial class MainViewModel : ViewModelBase
 
     [ObservableProperty]
     private PageDefinition? _activePage;
+
+    // ── Home page sidebar navigation ────────────────────────────────────────
+
+    [ObservableProperty]
+    private string _activeSidebarItemId = "home";
+
+    public IReadOnlyList<HomeNavItem> HomeNavItems { get; } =
+    [
+        new("home",      "⌂",  "Home"),
+        new("projects",  "⊡",  "Projects",  "BROWSE"),
+        new("recent",    "◷",  "Recent"),
+        new("templates", "⊞",  "Templates"),
+        new("learn",     "✦",  "Learn"),
+        new("cloud",     "☁",  "Cloud",     "LIBRARY"),
+        new("trash",     "⊘",  "Trash"),
+    ];
+
+    partial void OnActiveSidebarItemIdChanged(string value)
+    {
+        foreach (var item in HomeNavItems)
+        {
+            item.IsActive = item.Id == value;
+        }
+    }
+
+    [RelayCommand]
+    private void SetActiveSidebarItem(string id)
+    {
+        ActiveSidebarItemId = id;
+    }
 
     // ── Studio canvas live info (updated by DrawingCanvasControl callback) ──
     [ObservableProperty]
@@ -171,14 +209,18 @@ public partial class MainViewModel : ViewModelBase
         // are available for the registrars to wire up.
         AppShellRegistrar.RegisterDefaults(ShellRegistry, this);
         StatusBarRegistrar.RegisterDefaults(StatusBarRegistry, this);
+        HomePageRegistrar.RegisterDefaults(HomePageRegistry, this);
         ActivePage = ShellRegistry.FindPage("home");
         RebuildLiveStatusBarItems();
+        // Initialise sidebar active state
+        OnActiveSidebarItemIdChanged(_activeSidebarItemId);
 
         Project = projectFactory.CreateNewProject();
         Tools = new ObservableCollection<ToolPreset>(toolPaletteFactory.CreateDefaultTools());
         ProjectTemplates = new ObservableCollection<ProjectCard>(
             projectPresetFactory.CreateDefaultPresets().Select(projectCardFactory.CreateTemplateCard));
         RecentProjects = new ObservableCollection<ProjectCard>();
+        RecentProjects.CollectionChanged += (_, _) => OnPropertyChanged(nameof(FilteredRecentProjects));
         ActiveTool = Tools[0];
         SelectedProjectTemplate = ProjectTemplates[0];
         AvailableFrameRates = new ObservableCollection<int> { 12, 24, 30, 60 };
@@ -199,6 +241,23 @@ public partial class MainViewModel : ViewModelBase
     // Derived from ActivePage so the shell title bar and legacy bindings stay in sync.
     public bool IsProjectHomeVisible => ActivePage?.Id == "home" || ActivePage is null;
     public bool IsEditorVisible => ActivePage?.Id == "studio";
+
+    /// <summary>Recent projects filtered by the home page search query.</summary>
+    public IReadOnlyList<ProjectCard> FilteredRecentProjects
+    {
+        get
+        {
+            var q = HomePageRegistry.ProjectSearchQuery;
+            if (string.IsNullOrWhiteSpace(q))
+            {
+                return RecentProjects;
+            }
+
+            return RecentProjects
+                .Where(p => p.Title.Contains(q, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+    }
 
     // Live status bar items — Observable wrappers that hold the evaluated text/progress.
     // Rebuilt when the active page changes; refreshed when observed VM properties change.
@@ -390,6 +449,12 @@ public partial class MainViewModel : ViewModelBase
     {
         OnPropertyChanged(nameof(BrushColor));
     }
+
+    [RelayCommand]
+    private void SetGridView() => HomePageRegistry.ProjectViewMode = HomeProjectViewMode.Grid;
+
+    [RelayCommand]
+    private void SetListView() => HomePageRegistry.ProjectViewMode = HomeProjectViewMode.List;
 
     [RelayCommand]
     private void ToggleSnap() => SnapEnabled = !SnapEnabled;

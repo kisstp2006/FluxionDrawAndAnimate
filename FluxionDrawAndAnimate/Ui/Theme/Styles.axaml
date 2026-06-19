@@ -100,6 +100,35 @@
         <Setter Property="Padding" Value="14,8" />
     </Style>
 
+    <!-- Home page sidebar navigation items -->
+    <Style Selector="Button.navItem">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource FluxTextMuted}" />
+        <Setter Property="Padding" Value="10,9" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.1" />
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Button.navItem:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource FluxBgElevated}" />
+        <Setter Property="Foreground" Value="{DynamicResource FluxText}" />
+    </Style>
+    <Style Selector="Button.navItem.navActive /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource FluxAccent}" />
+        <Setter Property="Foreground" Value="{DynamicResource FluxAccentText}" />
+    </Style>
+    <Style Selector="Button.navItem.navActive TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource FluxAccentText}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
     <!-- Status bar: compact icon/text button -->
     <Style Selector="Button.statusBtn">
         <Setter Property="Background" Value="Transparent" />

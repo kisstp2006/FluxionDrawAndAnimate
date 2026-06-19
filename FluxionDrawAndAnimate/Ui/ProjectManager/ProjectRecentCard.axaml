@@ -3,47 +3,63 @@
              xmlns:presentation="using:FluxionDrawAndAnimate.Presentation"
              x:Class="FluxionDrawAndAnimate.Ui.ProjectManager.ProjectRecentCard"
              x:DataType="presentation:ProjectCard">
-    <Border Classes="card" Padding="14">
-        <Grid ColumnDefinitions="116,*" ColumnSpacing="16">
-            <Border Width="106"
-                    Height="96"
-                    Background="{DynamicResource FluxBgElevated}"
-                    CornerRadius="8"
-                    ClipToBounds="True">
-                <Grid>
-                    <Image Source="{Binding Thumbnail}"
-                           Stretch="UniformToFill"
-                           IsVisible="{Binding HasThumbnail}" />
-                    <TextBlock Text="{Binding ThumbnailLabel}"
-                               IsVisible="{Binding HasNoThumbnail}"
+    <Border Classes="card"
+            Width="210"
+            ClipToBounds="True"
+            Padding="0">
+        <Grid RowDefinitions="128,Auto">
+
+            <!-- Thumbnail area -->
+            <Grid Grid.Row="0" ClipToBounds="True">
+                <Border Background="{DynamicResource FluxBgElevated}" />
+                <Image Source="{Binding Thumbnail}"
+                       Stretch="UniformToFill"
+                       IsVisible="{Binding HasThumbnail}" />
+                <TextBlock Text="{Binding ThumbnailLabel}"
+                           IsVisible="{Binding HasNoThumbnail}"
+                           Foreground="{DynamicResource FluxTextMuted}"
+                           FontSize="32" FontWeight="SemiBold"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                <!-- Three-dot menu -->
+                <Button Content="•••"
+                        HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Margin="0,6,6,0" Padding="6,2" FontSize="12"
+                        Background="#66000000" Foreground="White"
+                        CornerRadius="5" BorderThickness="0" />
+            </Grid>
+
+            <!-- Card info -->
+            <Border Grid.Row="1" Padding="12,10,12,12">
+            <StackPanel Spacing="5">
+                <!-- Title + badge -->
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                    <TextBlock Text="{Binding Title}"
                                Foreground="{DynamicResource FluxText}"
-                               FontSize="26"
-                               FontWeight="SemiBold"
-                               HorizontalAlignment="Center"
+                               FontSize="14" FontWeight="SemiBold"
+                               TextTrimming="CharacterEllipsis" />
+                    <Border Grid.Column="1"
+                            Background="{Binding BadgeBrush}"
+                            CornerRadius="4" Padding="6,2"
+                            IsVisible="{Binding HasBadge}"
+                            VerticalAlignment="Center">
+                        <TextBlock Text="{Binding BadgeLabel}"
+                                   Foreground="White" FontSize="10" FontWeight="SemiBold" />
+                    </Border>
+                </Grid>
+                <!-- Canvas size -->
+                <TextBlock Text="{Binding SizeLabel}"
+                           Foreground="{DynamicResource FluxTextMuted}" FontSize="12" />
+                <!-- Footer -->
+                <Grid ColumnDefinitions="*,Auto" Margin="0,2,0,0">
+                    <TextBlock Text="{Binding UpdatedLabel}"
+                               Foreground="{DynamicResource FluxTextMuted}" FontSize="11"
+                               VerticalAlignment="Center" IsVisible="{Binding HasUpdatedLabel}" />
+                    <TextBlock Grid.Column="1" Text="☁"
+                               Foreground="{DynamicResource FluxTextMuted}" FontSize="13"
                                VerticalAlignment="Center" />
                 </Grid>
-            </Border>
-
-            <StackPanel Grid.Column="1"
-                        Spacing="7"
-                        VerticalAlignment="Center">
-                <TextBlock Text="{Binding Title}"
-                           Foreground="{DynamicResource FluxText}"
-                           FontSize="20"
-                           FontWeight="SemiBold"
-                           TextTrimming="CharacterEllipsis" />
-                <TextBlock Foreground="{DynamicResource FluxTextMuted}"
-                           TextWrapping="NoWrap"
-                           TextTrimming="CharacterEllipsis">
-                    <Run Text="{Binding SizeLabel}" />
-                    <Run Text="  .  " />
-                    <Run Text="{Binding TimingLabel}" />
-                </TextBlock>
-                <TextBlock Text="{Binding UpdatedLabel}"
-                           IsVisible="{Binding HasUpdatedLabel}"
-                           Foreground="{DynamicResource FluxTextMuted}"
-                           FontSize="13" />
             </StackPanel>
+            </Border>
         </Grid>
     </Border>
 </UserControl>

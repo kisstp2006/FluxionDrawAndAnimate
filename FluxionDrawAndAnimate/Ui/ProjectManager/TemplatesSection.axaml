@@ -5,31 +5,41 @@
              xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
              x:Class="FluxionDrawAndAnimate.Ui.ProjectManager.TemplatesSection"
              x:DataType="vm:MainViewModel">
-    <StackPanel Spacing="14">
+    <StackPanel Spacing="16">
+        <!-- Section header -->
         <Grid ColumnDefinitions="*,Auto">
-            <TextBlock Text="Templates"
+            <TextBlock Text="Start from a Template"
                        Foreground="{DynamicResource FluxText}"
-                       FontSize="22"
+                       FontSize="18"
                        FontWeight="SemiBold" />
-            <TextBlock Grid.Column="1"
-                       Text="{Binding SelectedProjectTemplate.Title}"
-                       Foreground="{DynamicResource FluxTextMuted}"
-                       VerticalAlignment="Center" />
+            <Button Grid.Column="1"
+                    Classes="action"
+                    Foreground="{DynamicResource FluxAccent}"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Content="View All Templates →"
+                    MinHeight="32"
+                    Padding="0"
+                    FontSize="13" />
         </Grid>
 
-        <ListBox Classes="cardList"
-                 ItemsSource="{Binding ProjectTemplates}"
-                 SelectedItem="{Binding SelectedProjectTemplate}">
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel />
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-            <ListBox.ItemTemplate>
-                <DataTemplate x:DataType="presentation:ProjectCard">
-                    <pm:ProjectTemplateCard Width="210" Margin="0,0,12,12" />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <!-- Horizontal scroll of template cards -->
+        <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Disabled">
+            <ListBox Classes="cardList"
+                     ItemsSource="{Binding ProjectTemplates}"
+                     SelectedItem="{Binding SelectedProjectTemplate}">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="12" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="presentation:ProjectCard">
+                        <pm:ProjectTemplateCard Width="148" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </ScrollViewer>
     </StackPanel>
 </UserControl>

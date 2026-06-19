@@ -5,44 +5,49 @@
              xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
              x:Class="FluxionDrawAndAnimate.Ui.ProjectManager.RecentProjectsSection"
              x:DataType="vm:MainViewModel">
-    <StackPanel Spacing="14">
+    <StackPanel Spacing="16">
+        <!-- Section header -->
         <Grid ColumnDefinitions="*,Auto">
-            <TextBlock Text="Recent"
+            <TextBlock Text="Recent Projects"
                        Foreground="{DynamicResource FluxText}"
-                       FontSize="22"
+                       FontSize="18"
                        FontWeight="SemiBold" />
             <Button Grid.Column="1"
                     Classes="action"
-                    Command="{Binding OpenSelectedRecentProjectCommand}"
-                    Content="Open"
-                    MinWidth="82"
-                    MinHeight="40"
+                    Content="View all"
+                    MinHeight="32"
+                    Padding="12,4"
+                    FontSize="13"
                     IsVisible="{Binding HasRecentProjects}" />
         </Grid>
 
-        <ListBox Classes="cardList"
-                 ItemsSource="{Binding RecentProjects}"
-                 SelectedItem="{Binding SelectedRecentProject}"
-                 IsVisible="{Binding HasRecentProjects}"
-                 MaxHeight="220">
-            <ListBox.ItemTemplate>
+        <!-- Project grid -->
+        <ItemsControl ItemsSource="{Binding FilteredRecentProjects}"
+                      IsVisible="{Binding HasRecentProjects}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="presentation:ProjectCard">
-                    <pm:ProjectRecentCard Margin="0,0,0,10" />
+                    <pm:ProjectRecentCard Margin="0,0,14,14" />
                 </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
 
+        <!-- Empty state -->
         <Border Classes="card"
-                Padding="18"
+                Padding="32"
                 IsVisible="{Binding IsRecentProjectsEmpty}">
-            <StackPanel Spacing="4">
-                <TextBlock Text="No saved projects yet"
+            <StackPanel Spacing="6" HorizontalAlignment="Center">
+                <TextBlock Text="No projects yet"
                            Foreground="{DynamicResource FluxText}"
-                           FontSize="16"
-                           FontWeight="SemiBold" />
+                           FontSize="16" FontWeight="SemiBold"
+                           HorizontalAlignment="Center" />
                 <TextBlock Text="Create a project or open an existing .fluxion file."
                            Foreground="{DynamicResource FluxTextMuted}"
-                           TextWrapping="Wrap" />
+                           HorizontalAlignment="Center" />
             </StackPanel>
         </Border>
     </StackPanel>

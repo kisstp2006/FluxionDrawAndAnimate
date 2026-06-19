@@ -1,0 +1,97 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:pres="using:FluxionDrawAndAnimate.Presentation"
+             xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
+             x:Class="FluxionDrawAndAnimate.Ui.ProjectManager.HomeSearchBar"
+             x:DataType="vm:MainViewModel">
+    <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto" ColumnSpacing="10">
+
+        <!-- Search input -->
+        <Border Grid.Column="0"
+                Background="{DynamicResource FluxBgCard}"
+                BorderBrush="{DynamicResource FluxBorder}"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="12,0">
+            <Grid ColumnDefinitions="Auto,*">
+                <TextBlock Text="🔍"
+                           Foreground="{DynamicResource FluxTextMuted}"
+                           FontSize="13"
+                           VerticalAlignment="Center"
+                           Margin="0,0,8,0" />
+                <TextBox Grid.Column="1"
+                         Text="{Binding HomePageRegistry.ProjectSearchQuery}"
+                         PlaceholderText="Search projects…"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Foreground="{DynamicResource FluxText}"
+                         FontSize="13"
+                         MinHeight="38" />
+            </Grid>
+        </Border>
+
+        <!-- All Projects filter -->
+        <Button Grid.Column="1"
+                Classes="action"
+                MinHeight="38" MinWidth="130"
+                Padding="12,6"
+                FontSize="13">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                <TextBlock Text="All Projects" />
+                <TextBlock Text="∨" Foreground="{DynamicResource FluxTextMuted}" FontSize="11" VerticalAlignment="Center" />
+            </StackPanel>
+        </Button>
+
+        <!-- All Types filter -->
+        <Button Grid.Column="2"
+                Classes="action"
+                MinHeight="38" MinWidth="110"
+                Padding="12,6"
+                FontSize="13">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                <TextBlock Text="{Binding HomePageRegistry.ProjectTypeFilter}" />
+                <TextBlock Text="∨" Foreground="{DynamicResource FluxTextMuted}" FontSize="11" VerticalAlignment="Center" />
+            </StackPanel>
+        </Button>
+
+        <!-- Sort by -->
+        <Button Grid.Column="3"
+                Classes="action"
+                MinHeight="38"
+                Padding="12,6"
+                FontSize="13">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                <TextBlock Text="Sort by: " Foreground="{DynamicResource FluxTextMuted}" />
+                <TextBlock Text="{Binding HomePageRegistry.ProjectSortLabel}" />
+                <TextBlock Text="∨" Foreground="{DynamicResource FluxTextMuted}" FontSize="11" VerticalAlignment="Center" />
+            </StackPanel>
+        </Button>
+
+        <!-- Grid / List toggle -->
+        <Border Grid.Column="4"
+                Background="{DynamicResource FluxBgCard}"
+                BorderBrush="{DynamicResource FluxBorder}"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="2">
+            <StackPanel Orientation="Horizontal" Spacing="0">
+                <Button Classes="icon"
+                        Width="34" Height="34"
+                        Padding="0"
+                        CornerRadius="6"
+                        ToolTip.Tip="Grid view"
+                        Command="{Binding SetGridViewCommand}">
+                    <TextBlock Text="⊞" FontSize="14" />
+                </Button>
+                <Button Classes="icon"
+                        Width="34" Height="34"
+                        Padding="0"
+                        CornerRadius="6"
+                        ToolTip.Tip="List view"
+                        Command="{Binding SetListViewCommand}">
+                    <TextBlock Text="≡" FontSize="14" />
+                </Button>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

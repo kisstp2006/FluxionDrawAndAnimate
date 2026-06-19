@@ -39,13 +39,14 @@ public sealed class ProjectCardFactory
             ProjectCardKind.Recent,
             recentProject.Name,
             "Recent project",
-            $"{recentProject.Width} x {recentProject.Height}",
-            $"{recentProject.FrameCount} frames · {recentProject.FramesPerSecond} fps",
+            $"{recentProject.Width} × {recentProject.Height}",
+            $"{recentProject.FrameCount} frames  •  {recentProject.FramesPerSecond} fps",
             Initials(recentProject.Name),
             updatedLabel: RelativeTime(recentProject.LastOpenedAt),
             projectPath: recentProject.Path,
             thumbnailPath: recentProject.ThumbnailPath,
-            thumbnail: TryLoadThumbnail(recentProject.ThumbnailPath));
+            thumbnail: TryLoadThumbnail(recentProject.ThumbnailPath),
+            badgeColor: "#3B82F6");
     }
 
     public RecentProjectInfo CreateRecentInfo(DrawingProject project, string path, string? thumbnailPath = null)
@@ -99,24 +100,24 @@ public sealed class ProjectCardFactory
 
         if (elapsed.TotalMinutes < 1)
         {
-            return "Edited just now";
+            return "Modified just now";
         }
 
         if (elapsed.TotalHours < 1)
         {
-            return $"Edited {(int)elapsed.TotalMinutes}m ago";
+            return $"Modified {(int)elapsed.TotalMinutes}m ago";
         }
 
         if (elapsed.TotalDays < 1)
         {
-            return $"Edited {(int)elapsed.TotalHours}h ago";
+            return $"Modified {(int)elapsed.TotalHours}h ago";
         }
 
         if (elapsed.TotalDays < 30)
         {
-            return $"Edited {(int)elapsed.TotalDays}d ago";
+            return $"Modified {(int)elapsed.TotalDays}d ago";
         }
 
-        return "Edited earlier";
+        return "Modified earlier";
     }
 }

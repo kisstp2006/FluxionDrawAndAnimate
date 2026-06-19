@@ -17,7 +17,8 @@ public sealed class ProjectCard
         ProjectCreationOptions? creationOptions = null,
         string? projectPath = null,
         string? thumbnailPath = null,
-        IImage? thumbnail = null)
+        IImage? thumbnail = null,
+        string? badgeColor = null)
     {
         Kind = kind;
         Title = title;
@@ -31,6 +32,7 @@ public sealed class ProjectCard
         ProjectPath = projectPath;
         ThumbnailPath = thumbnailPath;
         Thumbnail = thumbnail;
+        BadgeColor = badgeColor ?? "#3B4252";
     }
 
     public ProjectCardKind Kind { get; }
@@ -45,8 +47,18 @@ public sealed class ProjectCard
     public string? ProjectPath { get; }
     public string? ThumbnailPath { get; }
     public IImage? Thumbnail { get; }
+    public string BadgeColor { get; }
     public bool HasThumbnail => Thumbnail is not null;
     public bool HasNoThumbnail => !HasThumbnail;
     public bool HasBadge => !string.IsNullOrWhiteSpace(BadgeLabel);
     public bool HasUpdatedLabel => !string.IsNullOrWhiteSpace(UpdatedLabel);
+
+    public IBrush BadgeBrush
+    {
+        get
+        {
+            try { return new SolidColorBrush(Color.Parse(BadgeColor)); }
+            catch { return new SolidColorBrush(Color.Parse("#3B4252")); }
+        }
+    }
 }
