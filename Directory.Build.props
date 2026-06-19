@@ -1,0 +1,57 @@
+<Project>
+
+  <!--
+    Auto-discover the Android SDK directory so `dotnet build` and IDEs (Rider/VS)
+    find it without requiring system-wide environment variables.
+
+    The .NET Android tooling (error XA5300) needs AndroidSdkDirectory to point
+    at a real Android SDK root. We resolve it using a separate PropertyGroup per
+    candidate so each condition is evaluated independently and reliably.
+
+    Resolution order, first match wins:
+      1. An explicit AndroidSdkDirectory already set by the user/machine.
+      2. ANDROID_HOME environment variable.
+      3. ANDROID_SDK_ROOT environment variable.
+      4. Common Linux paths (~/Android/Sdk, ~/android-sdk,
+         /usr/lib/android-sdk, /opt/android-sdk).
+      5. Common macOS paths (~/Library/Android/sdk).
+      6. Common Windows paths (%LOCALAPPDATA%\Android\Sdk).
+
+    Only applied when the property is not already set and the directory exists,
+    so it never overrides an explicit configuration or breaks other developers.
+    Non-Android projects simply see an unused property — no side effects.
+  -->
+
+  <PropertyGroup Condition="'$(AndroidSdkDirectory)' == '' And '$(ANDROID_HOME)' != '' And Exists('$(ANDROID_HOME)')">
+    <AndroidSdkDirectory>$(ANDROID_HOME)</AndroidSdkDirectory>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(AndroidSdkDirectory)' == '' And '$(ANDROID_SDK_ROOT)' != '' And Exists('$(ANDROID_SDK_ROOT)')">
+    <AndroidSdkDirectory>$(ANDROID_SDK_ROOT)</AndroidSdkDirectory>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(AndroidSdkDirectory)' == '' And Exists('$(HOME)/Android/Sdk')">
+    <AndroidSdkDirectory>$(HOME)/Android/Sdk</AndroidSdkDirectory>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(AndroidSdkDirectory)' == '' And Exists('$(HOME)/android-sdk')">
+    <AndroidSdkDirectory>$(HOME)/android-sdk</AndroidSdkDirectory>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(AndroidSdkDirectory)' == '' And Exists('/usr/lib/android-sdk')">
+    <AndroidSdkDirectory>/usr/lib/android-sdk</AndroidSdkDirectory>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(AndroidSdkDirectory)' == '' And Exists('/opt/android-sdk')">
+    <AndroidSdkDirectory>/opt/android-sdk</AndroidSdkDirectory>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(AndroidSdkDirectory)' == '' And Exists('$(HOME)/Library/Android/sdk')">
+    <AndroidSdkDirectory>$(HOME)/Library/Android/sdk</AndroidSdkDirectory>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(AndroidSdkDirectory)' == '' And '$(LOCALAPPDATA)' != '' And Exists('$(LOCALAPPDATA)\Android\Sdk')">
+    <AndroidSdkDirectory>$(LOCALAPPDATA)\Android\Sdk</AndroidSdkDirectory>
+  </PropertyGroup>
+
+</Project>
