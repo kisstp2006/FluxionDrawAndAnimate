@@ -100,6 +100,51 @@
         <Setter Property="Padding" Value="14,8" />
     </Style>
 
+    <!-- Home search: borderless TextBox hosted inside a custom Border.
+         Suppresses the default focus chrome so the outer Border remains the
+         only visual frame, keeps text vertically centered, and uses a larger,
+         readable font size. -->
+    <Style Selector="TextBox.searchField">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource FluxText}" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="MinHeight" Value="40" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="CaretBrush" Value="{DynamicResource FluxAccent}" />
+    </Style>
+    <Style Selector="TextBox.searchField /template/ TextBlock">
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="TextBox.searchField:focus /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="TextBox.searchField:focus /template/ Border#PART_FocusVisual">
+        <Setter Property="IsVisible" Value="False" />
+    </Style>
+
+    <!-- Outer container for the home search bar; lifts the border on focus so
+         the field clearly reacts without reintroducing the default TextBox chrome. -->
+    <Style Selector="Border.searchFieldHost">
+        <Setter Property="Background" Value="{DynamicResource FluxBgCard}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource FluxBorder}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.12" />
+                <BrushTransition Property="Background" Duration="0:0:0.12" />
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="Border.searchFieldHost:focus-within">
+        <Setter Property="BorderBrush" Value="{DynamicResource FluxAccent}" />
+        <Setter Property="Background" Value="{DynamicResource FluxBgInput}" />
+    </Style>
+
     <!-- Home page sidebar navigation items -->
     <Style Selector="Button.navItem">
         <Setter Property="Background" Value="Transparent" />

@@ -10,5 +10,4 @@
     <Deploy />
   </Project>
   <Project Path="FluxionDrawAndAnimate/FluxionDrawAndAnimate.csproj" />
-  <Project Path="FluxionDrawAndAnimate.Core.Tests/FluxionDrawAndAnimate.Core.Tests.csproj" />
 </Solution>

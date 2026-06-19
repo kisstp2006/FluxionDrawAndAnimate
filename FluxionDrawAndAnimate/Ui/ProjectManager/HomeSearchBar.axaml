@@ -8,25 +8,20 @@
 
         <!-- Search input -->
         <Border Grid.Column="0"
-                Background="{DynamicResource FluxBgCard}"
-                BorderBrush="{DynamicResource FluxBorder}"
-                BorderThickness="1"
-                CornerRadius="8"
-                Padding="12,0">
-            <Grid ColumnDefinitions="Auto,*">
+                Classes="searchFieldHost">
+            <Grid ColumnDefinitions="Auto,*"
+                  VerticalAlignment="Center"
+                  HorizontalAlignment="Stretch">
                 <TextBlock Text="🔍"
                            Foreground="{DynamicResource FluxTextMuted}"
-                           FontSize="13"
+                           FontSize="15"
                            VerticalAlignment="Center"
-                           Margin="0,0,8,0" />
+                           Margin="0,0,10,0" />
                 <TextBox Grid.Column="1"
+                         Classes="searchField"
                          Text="{Binding HomePageRegistry.ProjectSearchQuery}"
                          PlaceholderText="Search projects…"
-                         Background="Transparent"
-                         BorderThickness="0"
-                         Foreground="{DynamicResource FluxText}"
-                         FontSize="13"
-                         MinHeight="38" />
+                         VerticalAlignment="Center" />
             </Grid>
         </Border>
 
