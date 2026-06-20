@@ -90,11 +90,19 @@ public static class StudioToolbarRegistrar
         });
         r.Register(new StudioToolbarItemDefinition
         {
+            Id = "view-fit",
+            Icon = "mdi-fit-to-page-outline",
+            Tooltip = "Fit canvas to view  (F)",
+            Command = vm.FitCanvasCommand,
+            Section = StudioToolbarSection.Left, SortOrder = 21
+        });
+        r.Register(new StudioToolbarItemDefinition
+        {
             Id = "view-onion",
             Icon = "mdi-layers-outline",
             Tooltip = "Toggle onion skin",
             Command = vm.ToggleOnionSkinCommand,
-            Section = StudioToolbarSection.Left, SortOrder = 21
+            Section = StudioToolbarSection.Left, SortOrder = 22
         });
         r.Register(new StudioToolbarItemDefinition
         {
@@ -102,7 +110,7 @@ public static class StudioToolbarRegistrar
             Icon = "mdi-magnet-on",
             Tooltip = "Toggle snap",
             Command = vm.ToggleSnapCommand,
-            Section = StudioToolbarSection.Left, SortOrder = 22
+            Section = StudioToolbarSection.Left, SortOrder = 23
         });
         r.Register(new StudioToolbarItemDefinition
         {
@@ -110,14 +118,14 @@ public static class StudioToolbarRegistrar
             Icon = "mdi-grid",
             Tooltip = "Toggle grid",
             Command = vm.ToggleGridCommand,
-            Section = StudioToolbarSection.Left, SortOrder = 23
+            Section = StudioToolbarSection.Left, SortOrder = 24
         });
         r.Register(new StudioToolbarItemDefinition
         {
             Id = "view-capture",
             Icon = "mdi-camera-outline",
             Tooltip = "Capture frame  (coming soon)",
-            Section = StudioToolbarSection.Left, SortOrder = 24
+            Section = StudioToolbarSection.Left, SortOrder = 25
         });
     }
 

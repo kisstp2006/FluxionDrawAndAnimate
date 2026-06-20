@@ -237,8 +237,9 @@ public partial class MainViewModel : ViewModelBase
     }
 
     // ── Studio canvas live info (updated by DrawingCanvasControl callback) ──
-    [ObservableProperty]
+    // Not [ObservableProperty] — the ScaleChangedCallback sets _canvasZoom directly to avoid loops.
     private double _canvasZoom = 1.0;
+    public double CanvasZoom => _canvasZoom;
 
     [ObservableProperty]
     private bool _snapEnabled = true;
@@ -521,8 +522,6 @@ public partial class MainViewModel : ViewModelBase
         RebuildLiveStatusBarItems();
     }
 
-    partial void OnCanvasZoomChanged(double value) =>
-        RefreshLiveStatusBarItems(nameof(CanvasZoom));
 
     partial void OnSnapEnabledChanged(bool value) =>
         RefreshLiveStatusBarItems(nameof(SnapEnabled));
@@ -574,10 +573,29 @@ public partial class MainViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void ActivateDrawingTool(Core.Drawing.ToolKind kind)
-    {
-        ActiveToolKind = kind;
-    }
+    private void ActivateDrawingTool(Core.Drawing.ToolKind kind) => ActiveToolKind = kind;
+
+    // ── Canvas viewport ──────────────────────────────────────────────────
+
+    /// <summary>Increment this to trigger FitToView on the bound canvas.</summary>
+    [ObservableProperty]
+    private int _fitToViewTrigger;
+
+    [RelayCommand]
+    private void FitCanvas() => FitToViewTrigger++;
+
+    [RelayCommand]
+    private void ResetCanvasView() => FitToViewTrigger++;   // FitToView covers reset too for now
+
+    private Action<double>? _scaleChangedCallback;
+    /// <summary>Canvas calls this when the user zooms; VM updates CanvasZoom for the status bar.</summary>
+    public Action<double> ScaleChangedCallback =>
+        _scaleChangedCallback ??= scale =>
+        {
+            _canvasZoom = scale;
+            OnPropertyChanged(nameof(CanvasZoom));
+            RefreshLiveStatusBarItems(nameof(CanvasZoom));
+        };
 
     /// <summary>Foreground colour swatch for the tool panel bottom area.</summary>
     public Avalonia.Media.IBrush BrushBaseColorBrush =>
