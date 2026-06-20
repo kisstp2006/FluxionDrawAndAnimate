@@ -207,6 +207,11 @@ public partial class MainViewModel : ViewModelBase
     private bool _isSettingsVisible;
 
     [ObservableProperty]
+    private bool _isNewProjectDialogVisible;
+
+    public bool IsProjectDetailsVisible => SelectedRecentProject is not null;
+
+    [ObservableProperty]
     private WorkspaceMode _workspaceMode = WorkspaceMode.Studio;
 
     [ObservableProperty]
