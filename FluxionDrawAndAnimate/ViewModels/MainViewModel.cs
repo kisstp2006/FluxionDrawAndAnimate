@@ -311,6 +311,31 @@ public partial class MainViewModel : ViewModelBase
         {
             cat.IsActive = cat.Id == value;
         }
+        OnPropertyChanged(nameof(SelectedSettingsCategoryIndex));
+    }
+
+    /// <summary>
+    /// Computed integer index into <see cref="SettingsCategories"/>.
+    /// Used by the horizontal pill selector on phone layouts; the desktop
+    /// sidebar uses <see cref="SelectSettingsCategoryCommand"/> with the
+    /// string Id instead.
+    /// </summary>
+    public int SelectedSettingsCategoryIndex
+    {
+        get
+        {
+            for (var i = 0; i < SettingsCategories.Count; i++)
+            {
+                if (SettingsCategories[i].Id == SelectedSettingsCategoryId)
+                    return i;
+            }
+            return 0;
+        }
+        set
+        {
+            if (value >= 0 && value < SettingsCategories.Count)
+                SelectSettingsCategory(SettingsCategories[value].Id);
+        }
     }
 
     [RelayCommand]

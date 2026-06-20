@@ -38,7 +38,10 @@ public partial class SettingsDialog : UserControl
 
     private void OnVmPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(MainViewModel.SelectedSettingsCategoryId) && _vm is not null)
+        if (_vm is null) return;
+
+        if (e.PropertyName == nameof(MainViewModel.SelectedSettingsCategoryId)
+            || e.PropertyName == nameof(MainViewModel.IsPhoneLayout))
         {
             ShowCategoryPage(_vm.SelectedSettingsCategoryId);
         }
@@ -65,7 +68,19 @@ public partial class SettingsDialog : UserControl
             _pageCache[categoryId] = page;
         }
 
-        SettingsPageContent.Content = page;
+        // Only the visible ContentControl gets the page — Avalonia forbids
+        // a single control from having two visual parents.
+        // Clear the inactive host first so the page can move without error.
+        if (_vm.IsPhoneLayout)
+        {
+            SettingsPageContentDesktop.Content = null;
+            SettingsPageContentPhone.Content = page;
+        }
+        else
+        {
+            SettingsPageContentPhone.Content = null;
+            SettingsPageContentDesktop.Content = page;
+        }
     }
 }
 

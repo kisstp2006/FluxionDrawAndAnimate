@@ -5,7 +5,11 @@
              xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
              x:Class="FluxionDrawAndAnimate.Ui.Settings.SettingsDialog"
              x:DataType="vm:MainViewModel">
-    <Border Width="940"
+
+    <!-- Single root: Panel stacks both layouts — only one visible at a time -->
+    <Panel>
+    <Border IsVisible="{Binding !IsPhoneLayout}"
+            Width="940"
             MaxHeight="700"
             Background="{DynamicResource FluxBgPanel}"
             BorderBrush="{DynamicResource FluxBorder}"
@@ -79,7 +83,7 @@
 
                 <!-- Right content area (page swapped by code-behind) -->
                 <ContentControl Grid.Column="1"
-                                x:Name="SettingsPageContent"
+                                x:Name="SettingsPageContentDesktop"
                                 HorizontalContentAlignment="Stretch"
                                 VerticalContentAlignment="Stretch" />
             </Grid>
@@ -118,4 +122,115 @@
             </Border>
         </Grid>
     </Border>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         PHONE  —  full-screen width, pill category strip, compact layout
+         Reuses the same code-behind page cache; just swaps the content
+         host name (SettingsPageContentPhone).
+    ═══════════════════════════════════════════════════════════════════ -->
+    <Border IsVisible="{Binding IsPhoneLayout}"
+            Background="{DynamicResource FluxBgPanel}"
+            BorderBrush="{DynamicResource FluxBorder}"
+            BorderThickness="0"
+            CornerRadius="0"
+            ClipToBounds="True">
+        <Grid RowDefinitions="Auto,Auto,*,Auto">
+
+            <!-- ── Compact header ── -->
+            <Border Grid.Row="0"
+                    BorderBrush="{DynamicResource FluxBorder}"
+                    BorderThickness="0,0,0,1"
+                    Padding="16,0">
+                <Grid ColumnDefinitions="Auto,*" MinHeight="48">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                        <icons:Icon Value="mdi-cog-outline"
+                                   Foreground="{DynamicResource FluxAccent}"
+                                   FontSize="16"
+                                   VerticalAlignment="Center" />
+                        <StackPanel Spacing="0" VerticalAlignment="Center">
+                            <TextBlock Text="Settings"
+                                       Foreground="{DynamicResource FluxText}"
+                                       FontSize="16" FontWeight="SemiBold" />
+                        </StackPanel>
+                    </StackPanel>
+                    <Button Grid.Column="1"
+                            Classes="icon"
+                            HorizontalAlignment="Right"
+                            Command="{Binding CloseSettingsCommand}"
+                            Width="32" Height="32"
+                            Padding="0"
+                            CornerRadius="8"
+                            VerticalAlignment="Center">
+                        <icons:Icon Value="mdi-close" FontSize="14" />
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- ── Horizontal pill category selector ── -->
+            <Border Grid.Row="1"
+                    BorderBrush="{DynamicResource FluxBorder}"
+                    BorderThickness="0,0,0,1"
+                    Background="{DynamicResource FluxBgPage}"
+                    Padding="8,6">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Disabled">
+                    <ListBox Classes="segmented"
+                             ItemsSource="{Binding SettingsCategories}"
+                             SelectedIndex="{Binding SelectedSettingsCategoryIndex, Mode=TwoWay}">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="4" />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="pres:SettingsCategoryDefinition">
+                                <StackPanel Orientation="Horizontal" Spacing="6" Margin="6,0">
+                                    <icons:Icon Value="{Binding Icon}" FontSize="13" VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding Title}" VerticalAlignment="Center" FontSize="12" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </ScrollViewer>
+            </Border>
+
+            <!-- ── Scrollable page content ── -->
+            <ContentControl Grid.Row="2"
+                            x:Name="SettingsPageContentPhone"
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch" />
+
+            <!-- ── Compact footer ── -->
+            <Border Grid.Row="3"
+                    BorderBrush="{DynamicResource FluxBorder}"
+                    BorderThickness="0,1,0,0"
+                    Padding="12,0">
+                <Grid ColumnDefinitions="Auto,*,Auto" MinHeight="52">
+                    <Button Grid.Column="0"
+                            Classes="icon"
+                            Command="{Binding ResetCategorySettingsCommand}"
+                            MinWidth="40" MinHeight="40"
+                            Padding="10,0" FontSize="12"
+                            VerticalAlignment="Center">
+                        <icons:Icon Value="mdi-restore" FontSize="14" />
+                    </Button>
+                    <StackPanel Grid.Column="2"
+                                Orientation="Horizontal"
+                                Spacing="8"
+                                VerticalAlignment="Center">
+                        <Button Classes="action"
+                                Command="{Binding ApplySettingsCommand}"
+                                Content="Apply"
+                                Padding="14,6" FontSize="13" />
+                        <Button Classes="primary"
+                                Command="{Binding SaveSettingsCommand}"
+                                Content="Save"
+                                Padding="16,6" FontSize="13" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+
+    </Panel>
 </UserControl>
