@@ -89,19 +89,22 @@ public static class AppShellRegistrar
     {
         r.RegisterAction(new TitleBarActionDefinition
         {
-            Id = "new-project", Title = "+ New Project",
+            Id = "new-project", Title = "New Project",
+            Icon = "mdi-plus",
             Command = vm.CreateProjectCommand,
             IsPrimary = true, SortOrder = 0
         });
         r.RegisterAction(new TitleBarActionDefinition
         {
             Id = "open", Title = "Open",
+            Icon = "mdi-folder-open-outline",
             Command = vm.OpenProjectCommand,
             SortOrder = 1
         });
         r.RegisterAction(new TitleBarActionDefinition
         {
-            Id = "settings", Title = "⚙",
+            Id = "settings", Title = "",
+            Icon = "mdi-cog-outline",
             Command = vm.ShowSettingsCommand,
             SortOrder = 10
         });

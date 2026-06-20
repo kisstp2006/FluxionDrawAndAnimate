@@ -1,0 +1,19 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:sc="using:FluxionDrawAndAnimate.Ui.Settings.Components"
+             x:Class="FluxionDrawAndAnimate.Ui.Settings.Components.SettingsSegmentedRow"
+             x:Name="root">
+    <Grid ColumnDefinitions="*,Auto" MinHeight="44" VerticalAlignment="Center">
+        <StackPanel Grid.Column="0" Spacing="2" VerticalAlignment="Center" Margin="0,0,16,0">
+            <TextBlock Classes="settingLabel" Text="{Binding Label, ElementName=root}" />
+            <TextBlock Classes="settingDesc"
+                       Text="{Binding Description, ElementName=root}"
+                       IsVisible="{Binding Description, ElementName=root,
+                           Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </StackPanel>
+        <sc:SegmentedControl Grid.Column="1"
+                             Options="{Binding Options, ElementName=root}"
+                             SelectedOption="{Binding SelectedOption, ElementName=root}"
+                             VerticalAlignment="Center" />
+    </Grid>
+</UserControl>

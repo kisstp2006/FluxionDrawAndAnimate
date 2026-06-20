@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:icons="https://github.com/projektanker/icons.avalonia"
              xmlns:pres="using:FluxionDrawAndAnimate.Presentation"
              xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
              x:Class="FluxionDrawAndAnimate.Ui.ProjectManager.HomeSearchBar"
@@ -12,7 +13,7 @@
             <Grid ColumnDefinitions="Auto,*"
                   VerticalAlignment="Center"
                   HorizontalAlignment="Stretch">
-                <TextBlock Text="🔍"
+                <icons:Icon Value="mdi-magnify"
                            Foreground="{DynamicResource FluxTextMuted}"
                            FontSize="15"
                            VerticalAlignment="Center"
@@ -33,7 +34,7 @@
                 FontSize="13">
             <StackPanel Orientation="Horizontal" Spacing="6">
                 <TextBlock Text="All Projects" />
-                <TextBlock Text="∨" Foreground="{DynamicResource FluxTextMuted}" FontSize="11" VerticalAlignment="Center" />
+                <icons:Icon Value="mdi-chevron-down" Foreground="{DynamicResource FluxTextMuted}" FontSize="11" VerticalAlignment="Center" />
             </StackPanel>
         </Button>
 
@@ -45,7 +46,7 @@
                 FontSize="13">
             <StackPanel Orientation="Horizontal" Spacing="6">
                 <TextBlock Text="{Binding HomePageRegistry.ProjectTypeFilter}" />
-                <TextBlock Text="∨" Foreground="{DynamicResource FluxTextMuted}" FontSize="11" VerticalAlignment="Center" />
+                <icons:Icon Value="mdi-chevron-down" Foreground="{DynamicResource FluxTextMuted}" FontSize="11" VerticalAlignment="Center" />
             </StackPanel>
         </Button>
 
@@ -58,7 +59,7 @@
             <StackPanel Orientation="Horizontal" Spacing="6">
                 <TextBlock Text="Sort by: " Foreground="{DynamicResource FluxTextMuted}" />
                 <TextBlock Text="{Binding HomePageRegistry.ProjectSortLabel}" />
-                <TextBlock Text="∨" Foreground="{DynamicResource FluxTextMuted}" FontSize="11" VerticalAlignment="Center" />
+                <icons:Icon Value="mdi-chevron-down" Foreground="{DynamicResource FluxTextMuted}" FontSize="11" VerticalAlignment="Center" />
             </StackPanel>
         </Button>
 
@@ -76,7 +77,7 @@
                         CornerRadius="6"
                         ToolTip.Tip="Grid view"
                         Command="{Binding SetGridViewCommand}">
-                    <TextBlock Text="⊞" FontSize="14" />
+                    <icons:Icon Value="mdi-view-grid" FontSize="14" />
                 </Button>
                 <Button Classes="icon"
                         Width="34" Height="34"
@@ -84,7 +85,7 @@
                         CornerRadius="6"
                         ToolTip.Tip="List view"
                         Command="{Binding SetListViewCommand}">
-                    <TextBlock Text="≡" FontSize="14" />
+                    <icons:Icon Value="mdi-view-list" FontSize="14" />
                 </Button>
             </StackPanel>
         </Border>

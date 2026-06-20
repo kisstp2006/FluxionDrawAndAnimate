@@ -1,14 +1,16 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:icons="https://github.com/projektanker/icons.avalonia"
              xmlns:pm="using:FluxionDrawAndAnimate.Ui.ProjectManager"
              xmlns:presentation="using:FluxionDrawAndAnimate.Presentation"
              xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
              x:Class="FluxionDrawAndAnimate.Ui.ProjectManager.ProjectManagerWideLayout"
              x:DataType="vm:MainViewModel">
-    <Grid ColumnDefinitions="220,*">
+    <Grid ColumnDefinitions="Auto,*">
 
-        <!-- ── Left navigation sidebar ── -->
-        <Border Background="{DynamicResource FluxBgPanel}"
+        <!-- ── Left navigation sidebar (width driven by FluxHomeSidebarWidth token) ── -->
+        <Border Width="{DynamicResource FluxHomeSidebarWidth}"
+                Background="{DynamicResource FluxBgPanel}"
                 BorderBrush="{DynamicResource FluxBorder}"
                 BorderThickness="0,0,1,0">
             <Grid RowDefinitions="*,Auto">
@@ -38,11 +40,9 @@
                                                 Command="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).SetActiveSidebarItemCommand}"
                                                 CommandParameter="{Binding Id}">
                                             <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding Icon}"
-                                                           FontSize="16"
-                                                           Width="20"
-                                                           TextAlignment="Center"
-                                                           VerticalAlignment="Center" />
+                                                <icons:Icon Value="{Binding Icon}"
+                                                            FontSize="16"
+                                                            VerticalAlignment="Center" />
                                                 <TextBlock Text="{Binding Label}"
                                                            VerticalAlignment="Center" />
                                             </StackPanel>
@@ -60,10 +60,9 @@
                     <Button Classes="navItem"
                             Command="{Binding ShowSettingsCommand}">
                         <StackPanel Orientation="Horizontal" Spacing="12">
-                            <TextBlock Text="⚙"
+                            <icons:Icon Value="mdi-cog-outline"
                                        FontSize="16"
                                        Width="20"
-                                       TextAlignment="Center"
                                        VerticalAlignment="Center" />
                             <TextBlock Text="Settings" VerticalAlignment="Center" />
                         </StackPanel>
@@ -73,7 +72,7 @@
                     <Border Margin="4,12,4,0">
                         <StackPanel Spacing="4">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock Text="☁"
+                                <icons:Icon Value="mdi-cloud-outline"
                                            Foreground="{DynamicResource FluxTextMuted}"
                                            FontSize="14"
                                            VerticalAlignment="Center" />
@@ -122,7 +121,7 @@
                     <Border Classes="card" Padding="40" HorizontalAlignment="Center"
                             IsVisible="{Binding ActiveSidebarItemId, ConverterParameter=learn, FallbackValue=False}">
                         <StackPanel Spacing="10" HorizontalAlignment="Center">
-                            <TextBlock Text="✦" FontSize="36" Foreground="{DynamicResource FluxAccent}" HorizontalAlignment="Center" />
+                            <icons:Icon Value="mdi-star-four-points-outline" FontSize="36" Foreground="{DynamicResource FluxAccent}" HorizontalAlignment="Center" />
                             <TextBlock Text="Learn" Foreground="{DynamicResource FluxText}" FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Center" />
                             <TextBlock Text="Tutorials and documentation coming soon." Foreground="{DynamicResource FluxTextMuted}" HorizontalAlignment="Center" />
                         </StackPanel>
@@ -131,7 +130,7 @@
                     <Border Classes="card" Padding="40" HorizontalAlignment="Center"
                             IsVisible="{Binding ActiveSidebarItemId, ConverterParameter=cloud, FallbackValue=False}">
                         <StackPanel Spacing="10" HorizontalAlignment="Center">
-                            <TextBlock Text="☁" FontSize="36" Foreground="{DynamicResource FluxAccent}" HorizontalAlignment="Center" />
+                            <icons:Icon Value="mdi-cloud-outline" FontSize="36" Foreground="{DynamicResource FluxAccent}" HorizontalAlignment="Center" />
                             <TextBlock Text="Cloud" Foreground="{DynamicResource FluxText}" FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Center" />
                             <TextBlock Text="Cloud sync coming soon." Foreground="{DynamicResource FluxTextMuted}" HorizontalAlignment="Center" />
                         </StackPanel>
@@ -140,7 +139,7 @@
                     <Border Classes="card" Padding="40" HorizontalAlignment="Center"
                             IsVisible="{Binding ActiveSidebarItemId, ConverterParameter=trash, FallbackValue=False}">
                         <StackPanel Spacing="10" HorizontalAlignment="Center">
-                            <TextBlock Text="⊘" FontSize="36" Foreground="{DynamicResource FluxAccent}" HorizontalAlignment="Center" />
+                            <icons:Icon Value="mdi-delete-outline" FontSize="36" Foreground="{DynamicResource FluxAccent}" HorizontalAlignment="Center" />
                             <TextBlock Text="Trash" Foreground="{DynamicResource FluxText}" FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Center" />
                             <TextBlock Text="Deleted projects will appear here." Foreground="{DynamicResource FluxTextMuted}" HorizontalAlignment="Center" />
                         </StackPanel>

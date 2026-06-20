@@ -1,0 +1,252 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:sc="using:FluxionDrawAndAnimate.Ui.Settings.Components"
+             xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
+             x:Class="FluxionDrawAndAnimate.Ui.Settings.Pages.AppearanceSettingsPage"
+             x:DataType="vm:MainViewModel">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="24,20" Spacing="14">
+
+            <!-- Page header -->
+            <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,6">
+                <StackPanel Spacing="3">
+                    <TextBlock Text="Appearance"
+                               Foreground="{DynamicResource FluxText}"
+                               FontSize="20" FontWeight="SemiBold" />
+                    <TextBlock Text="Adjust the look, density, and visual behaviour of the Studio interface."
+                               Foreground="{DynamicResource FluxTextMuted}"
+                               FontSize="13" />
+                </StackPanel>
+                <Button Grid.Column="1"
+                        Classes="action"
+                        Command="{Binding ResetAppearanceCategoryCommand}"
+                        Content="Reset Appearance"
+                        Padding="12,6" MinHeight="34" FontSize="12"
+                        VerticalAlignment="Center" />
+            </Grid>
+
+            <!-- ── Group 1: Theme ── -->
+            <Border Classes="card" Padding="18,14">
+                <StackPanel Spacing="0">
+                    <StackPanel Spacing="3" Margin="0,0,0,12">
+                        <TextBlock Text="Theme"
+                                   Foreground="{DynamicResource FluxText}"
+                                   FontSize="15" FontWeight="SemiBold" />
+                        <TextBlock Text="Choose how the interface adapts to your workspace."
+                                   Foreground="{DynamicResource FluxTextMuted}"
+                                   FontSize="12" />
+                    </StackPanel>
+
+                    <sc:SettingsSegmentedRow
+                        Label="App Theme"
+                        Description="Controls the overall brightness of the interface."
+                        Options="{Binding AppearanceSettings.ThemeOptions}"
+                        SelectedOption="{Binding AppearanceSettings.AppTheme}" />
+
+                    <Border Height="1" Background="{DynamicResource FluxBorder}" Margin="0,8" />
+
+                    <sc:SettingsDropdownRow
+                        Label="Editor Surface"
+                        Description="Adjusts the contrast of canvas surroundings and panels."
+                        Options="{Binding AppearanceSettings.EditorSurfaceOptions}"
+                        SelectedOption="{Binding AppearanceSettings.EditorSurface}"
+                        DropdownWidth="200" />
+
+                    <Border Height="1" Background="{DynamicResource FluxBorder}" Margin="0,8" />
+
+                    <sc:SettingsToggleRow
+                        Label="Window Transparency"
+                        Description="Adds subtle translucency to floating panels and popups."
+                        IsOn="{Binding AppearanceSettings.WindowTransparency}" />
+                </StackPanel>
+            </Border>
+
+            <!-- ── Group 2: Accent & Color ── -->
+            <Border Classes="card" Padding="18,14">
+                <StackPanel Spacing="0">
+                    <StackPanel Spacing="3" Margin="0,0,0,12">
+                        <TextBlock Text="Accent &amp; Color"
+                                   Foreground="{DynamicResource FluxText}"
+                                   FontSize="15" FontWeight="SemiBold" />
+                        <TextBlock Text="Personalize highlights, selections and active controls."
+                                   Foreground="{DynamicResource FluxTextMuted}"
+                                   FontSize="12" />
+                    </StackPanel>
+
+                    <sc:SettingsDropdownRow
+                        Label="Accent Color"
+                        Description="Used for selected tools, active tabs and primary buttons."
+                        Options="{Binding AppearanceSettings.AccentColorOptions}"
+                        SelectedOption="{Binding AppearanceSettings.AccentColorName}"
+                        DropdownWidth="160" />
+
+                    <Border Height="1" Background="{DynamicResource FluxBorder}" Margin="0,8" />
+
+                    <sc:SettingsSliderRow
+                        Label="Accent Intensity"
+                        Description="Controls how strong highlights and glows appear."
+                        Min="20" Max="100"
+                        Value="{Binding AppearanceSettings.AccentIntensity}"
+                        Suffix="%" />
+
+                    <Border Height="1" Background="{DynamicResource FluxBorder}" Margin="0,8" />
+
+                    <!-- Selection Highlight: label + color swatches -->
+                    <Grid ColumnDefinitions="*,Auto" MinHeight="44" VerticalAlignment="Center">
+                        <StackPanel Grid.Column="0" Spacing="2" VerticalAlignment="Center">
+                            <TextBlock Classes="settingLabel" Text="Selection Highlight" />
+                            <TextBlock Classes="settingDesc"
+                                       Text="Color used for selected layers, cards and active rows." />
+                        </StackPanel>
+                        <sc:ColorSwatchSelector Grid.Column="1"
+                            Colors="{Binding AppearanceSettings.HighlightSwatchColors}"
+                            SelectedColor="{Binding AppearanceSettings.SelectionHighlightHex}"
+                            VerticalAlignment="Center" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- ── Group 3: Layout Density ── -->
+            <Border Classes="card" Padding="18,14">
+                <StackPanel Spacing="0">
+                    <StackPanel Spacing="3" Margin="0,0,0,12">
+                        <TextBlock Text="Layout Density"
+                                   Foreground="{DynamicResource FluxText}"
+                                   FontSize="15" FontWeight="SemiBold" />
+                        <TextBlock Text="Tune spacing for desktop, tablet or compact workspaces."
+                                   Foreground="{DynamicResource FluxTextMuted}"
+                                   FontSize="12" />
+                    </StackPanel>
+
+                    <sc:SettingsSegmentedRow
+                        Label="UI Density"
+                        Description="Changes spacing and control sizes across the app."
+                        Options="{Binding AppearanceSettings.DensityOptions}"
+                        SelectedOption="{Binding AppearanceSettings.UiDensity}" />
+
+                    <Border Height="1" Background="{DynamicResource FluxBorder}" Margin="0,8" />
+
+                    <sc:SettingsDropdownRow
+                        Label="Sidebar Size"
+                        Description="Controls navigation and tool sidebar width."
+                        Options="{Binding AppearanceSettings.SidebarSizeOptions}"
+                        SelectedOption="{Binding AppearanceSettings.SidebarSizeOption}"
+                        DropdownWidth="160" />
+
+                    <Border Height="1" Background="{DynamicResource FluxBorder}" Margin="0,8" />
+
+                    <sc:SettingsSliderRow
+                        Label="Panel Corner Radius"
+                        Description="Controls how rounded panels and cards appear."
+                        Min="0" Max="24"
+                        Value="{Binding AppearanceSettings.PanelCornerRadius}"
+                        Suffix=" px" />
+                </StackPanel>
+            </Border>
+
+            <!-- ── Group 4: Text & Icons ── -->
+            <Border Classes="card" Padding="18,14">
+                <StackPanel Spacing="0">
+                    <StackPanel Spacing="3" Margin="0,0,0,12">
+                        <TextBlock Text="Text &amp; Icons"
+                                   Foreground="{DynamicResource FluxText}"
+                                   FontSize="15" FontWeight="SemiBold" />
+                        <TextBlock Text="Improve readability and toolbar clarity."
+                                   Foreground="{DynamicResource FluxTextMuted}"
+                                   FontSize="12" />
+                    </StackPanel>
+
+                    <sc:SettingsSliderRow
+                        Label="Font Scale"
+                        Description="Scales labels, menus, panels and metadata text."
+                        Min="75" Max="150"
+                        Value="{Binding AppearanceSettings.FontScalePercent}"
+                        Suffix="%" />
+
+                    <Border Height="1" Background="{DynamicResource FluxBorder}" Margin="0,8" />
+
+                    <sc:SettingsDropdownRow
+                        Label="Icon Style"
+                        Description="Choose icon weight used in tools and panels."
+                        Options="{Binding AppearanceSettings.IconStyleOptions}"
+                        SelectedOption="{Binding AppearanceSettings.IconStyle}"
+                        DropdownWidth="160" />
+
+                    <Border Height="1" Background="{DynamicResource FluxBorder}" Margin="0,8" />
+
+                    <sc:SettingsToggleRow
+                        Label="Show Tool Labels"
+                        Description="Display names next to toolbar icons where space allows."
+                        IsOn="{Binding AppearanceSettings.ShowToolLabels}" />
+                </StackPanel>
+            </Border>
+
+            <!-- ── Group 5: Preview ── -->
+            <Border Classes="card" Padding="18,14">
+                <StackPanel Spacing="10">
+                    <StackPanel Spacing="3">
+                        <TextBlock Text="Preview"
+                                   Foreground="{DynamicResource FluxText}"
+                                   FontSize="15" FontWeight="SemiBold" />
+                        <TextBlock Text="A live preview of how panels and controls will look."
+                                   Foreground="{DynamicResource FluxTextMuted}"
+                                   FontSize="12" />
+                    </StackPanel>
+                    <!-- Mini UI preview -->
+                    <Border Background="{DynamicResource FluxBgPage}"
+                            CornerRadius="10" Padding="10" Height="120"
+                            ClipToBounds="True">
+                        <Grid ColumnDefinitions="56,*">
+                            <!-- Mini tool rail -->
+                            <Border Background="{DynamicResource FluxBgPanel}"
+                                    CornerRadius="8" Padding="6">
+                                <StackPanel Spacing="6">
+                                    <Border Width="34" Height="34" CornerRadius="7"
+                                            Background="{DynamicResource FluxAccent}">
+                                        <TextBlock Text="P" Foreground="White" FontSize="12"
+                                                   FontWeight="Bold" HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center" />
+                                    </Border>
+                                    <Border Width="34" Height="34" CornerRadius="7"
+                                            Background="{DynamicResource FluxBgElevated}">
+                                        <TextBlock Text="E" Foreground="{DynamicResource FluxTextMuted}"
+                                                   FontSize="12" HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center" />
+                                    </Border>
+                                    <Border Width="34" Height="34" CornerRadius="7"
+                                            Background="{DynamicResource FluxBgElevated}">
+                                        <TextBlock Text="B" Foreground="{DynamicResource FluxTextMuted}"
+                                                   FontSize="12" HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center" />
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                            <!-- Mini content area -->
+                            <StackPanel Grid.Column="1" Margin="8,0,0,0" Spacing="6">
+                                <Border Classes="card" Padding="8,6" Height="36">
+                                    <TextBlock Text="Project Card Preview"
+                                               Foreground="{DynamicResource FluxText}"
+                                               FontSize="11" VerticalAlignment="Center" />
+                                </Border>
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                                    <Border Background="{DynamicResource FluxBgElevated}"
+                                            CornerRadius="5" Height="24" />
+                                    <Button Grid.Column="1"
+                                            Classes="icon primary"
+                                            Content="+" MinWidth="0" Width="32" Height="24"
+                                            Padding="0" FontSize="14" CornerRadius="5" />
+                                </Grid>
+                                <Border Background="{DynamicResource FluxBgInput}"
+                                        CornerRadius="4" Height="6">
+                                    <Border HorizontalAlignment="Left" Width="100" Height="6"
+                                            CornerRadius="4" Background="{DynamicResource FluxAccent}" />
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

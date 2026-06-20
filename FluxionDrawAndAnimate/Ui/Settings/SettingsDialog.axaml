@@ -1,0 +1,121 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:icons="https://github.com/projektanker/icons.avalonia"
+             xmlns:pres="using:FluxionDrawAndAnimate.Presentation.Settings"
+             xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
+             x:Class="FluxionDrawAndAnimate.Ui.Settings.SettingsDialog"
+             x:DataType="vm:MainViewModel">
+    <Border Width="940"
+            MaxHeight="700"
+            Background="{DynamicResource FluxBgPanel}"
+            BorderBrush="{DynamicResource FluxBorder}"
+            BorderThickness="1"
+            CornerRadius="16"
+            ClipToBounds="True">
+        <Grid RowDefinitions="Auto,*,Auto">
+
+            <!-- ── Header ── -->
+            <Border Grid.Row="0"
+                    BorderBrush="{DynamicResource FluxBorder}"
+                    BorderThickness="0,0,0,1"
+                    Padding="24,0">
+                <Grid ColumnDefinitions="Auto,*,Auto" MinHeight="60">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                        <icons:Icon Value="mdi-cog-outline"
+                                   Foreground="{DynamicResource FluxAccent}"
+                                   FontSize="18"
+                                   VerticalAlignment="Center" />
+                        <StackPanel Spacing="1" VerticalAlignment="Center">
+                            <TextBlock Text="Settings"
+                                       Foreground="{DynamicResource FluxText}"
+                                       FontSize="18" FontWeight="SemiBold" />
+                            <TextBlock Text="Customize your workspace and drawing experience"
+                                       Foreground="{DynamicResource FluxTextMuted}"
+                                       FontSize="12" />
+                        </StackPanel>
+                    </StackPanel>
+                    <Button Grid.Column="2"
+                            Classes="icon"
+                            Command="{Binding CloseSettingsCommand}"
+                            Width="34" Height="34"
+                            Padding="0"
+                            CornerRadius="8"
+                            VerticalAlignment="Center">
+                        <icons:Icon Value="mdi-close" FontSize="14" />
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- ── Body: sidebar + content ── -->
+            <Grid Grid.Row="1" ColumnDefinitions="220,*">
+
+                <!-- Left sidebar -->
+                <Border BorderBrush="{DynamicResource FluxBorder}"
+                        BorderThickness="0,0,1,0"
+                        Background="{DynamicResource FluxBgPage}">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="10,12" Spacing="2">
+                            <ItemsControl ItemsSource="{Binding SettingsCategories}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="pres:SettingsCategoryDefinition">
+                                        <Button Classes.navActive="{Binding IsActive}"
+                                                Classes="settingsNavItem"
+                                                Command="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).SelectSettingsCategoryCommand}"
+                                                CommandParameter="{Binding Id}">
+                                            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                                                <icons:Icon Value="{Binding Icon}"
+                                                            FontSize="16"
+                                                            VerticalAlignment="Center" />
+                                                <TextBlock Text="{Binding Title}"
+                                                           VerticalAlignment="Center" />
+                                            </StackPanel>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+
+                <!-- Right content area (page swapped by code-behind) -->
+                <ContentControl Grid.Column="1"
+                                x:Name="SettingsPageContent"
+                                HorizontalContentAlignment="Stretch"
+                                VerticalContentAlignment="Stretch" />
+            </Grid>
+
+            <!-- ── Footer ── -->
+            <Border Grid.Row="2"
+                    BorderBrush="{DynamicResource FluxBorder}"
+                    BorderThickness="0,1,0,0"
+                    Padding="24,0">
+                <Grid ColumnDefinitions="*,Auto" MinHeight="64">
+                    <!-- Left: Reset -->
+                    <Button Classes="action"
+                            Command="{Binding ResetCategorySettingsCommand}"
+                            Content="Reset to Defaults"
+                            Padding="14,8" FontSize="13"
+                            VerticalAlignment="Center" />
+                    <!-- Right: Cancel / Apply / Save -->
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                Spacing="10"
+                                VerticalAlignment="Center">
+                        <Button Classes="action"
+                                Command="{Binding CloseSettingsCommand}"
+                                Content="Cancel"
+                                Padding="14,8" FontSize="13" />
+                        <Button Classes="action"
+                                Command="{Binding ApplySettingsCommand}"
+                                Content="Apply"
+                                Padding="14,8" FontSize="13" />
+                        <Button Classes="primary"
+                                Command="{Binding SaveSettingsCommand}"
+                                Content="Save"
+                                Padding="20,8" FontSize="13" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

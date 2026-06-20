@@ -10,6 +10,7 @@ public sealed class TitleBarActionDefinition
 {
     public required string Id { get; init; }
     public required string Title { get; init; }
+    public string Icon { get; init; } = "";
     public ICommand? Command { get; init; }
     public bool IsPrimary { get; init; }
     public int SortOrder { get; init; }

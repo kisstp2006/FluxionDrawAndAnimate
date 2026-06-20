@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:icons="https://github.com/projektanker/icons.avalonia"
              xmlns:statusBar="using:FluxionDrawAndAnimate.Presentation.StatusBar"
              xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
              x:Class="FluxionDrawAndAnimate.Ui.Shell.AppBottomBar"
@@ -36,13 +37,13 @@
                                 </MultiBinding>
                             </Button.IsVisible>
                             <StackPanel Orientation="Horizontal" Spacing="4">
-                                <TextBlock Text="{Binding Icon}"
-                                           IsVisible="{Binding Icon, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                           FontSize="12" />
+                                <icons:Icon Value="{Binding Icon}"
+                                            IsVisible="{Binding Icon, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                            FontSize="13" />
                                 <TextBlock Text="{Binding CurrentText}"
                                            IsVisible="{Binding CurrentText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                            FontSize="12" />
-                                <TextBlock Text="∨"
+                                <icons:Icon Value="mdi-chevron-down"
                                            IsVisible="{Binding HasDropdown}"
                                            Foreground="{DynamicResource FluxTextMuted}"
                                            FontSize="10"
@@ -61,10 +62,10 @@
                                     <Binding Path="Command" Converter="{x:Static ObjectConverters.IsNull}" />
                                 </MultiBinding>
                             </StackPanel.IsVisible>
-                            <TextBlock Text="{Binding Icon}"
-                                       IsVisible="{Binding Icon, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                       Foreground="{DynamicResource FluxTextMuted}"
-                                       FontSize="13" />
+                            <icons:Icon Value="{Binding Icon}"
+                                        IsVisible="{Binding Icon, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                        Foreground="{DynamicResource FluxTextMuted}"
+                                        FontSize="14" />
                             <TextBlock Text="{Binding CurrentText}"
                                        IsVisible="{Binding CurrentText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                        Foreground="{DynamicResource FluxTextMuted}"
@@ -99,9 +100,9 @@
                                     VerticalAlignment="Center"
                                     IsVisible="{Binding Command, Converter={x:Static ObjectConverters.IsNotNull}}">
                                 <StackPanel Orientation="Horizontal" Spacing="4">
-                                    <TextBlock Text="{Binding Icon}"
-                                               IsVisible="{Binding Icon, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                               FontSize="12" />
+                                    <icons:Icon Value="{Binding Icon}"
+                                                IsVisible="{Binding Icon, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                FontSize="13" />
                                     <TextBlock Text="{Binding CurrentText}"
                                                IsVisible="{Binding CurrentText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                                FontSize="12" />
@@ -111,10 +112,10 @@
                             <!-- Label + optional progress bar (no command) -->
                             <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center"
                                         IsVisible="{Binding Command, Converter={x:Static ObjectConverters.IsNull}}">
-                                <TextBlock Text="{Binding Icon}"
-                                           IsVisible="{Binding Icon, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                           Foreground="{DynamicResource FluxTextMuted}"
-                                           FontSize="13" />
+                                <icons:Icon Value="{Binding Icon}"
+                                            IsVisible="{Binding Icon, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                            Foreground="{DynamicResource FluxTextMuted}"
+                                            FontSize="14" />
                                 <TextBlock Text="{Binding CurrentText}"
                                            Foreground="{DynamicResource FluxTextMuted}"
                                            FontSize="12" />
@@ -136,7 +137,7 @@
 
             <!-- Always-present status indicator (✓ StatusMessage) -->
             <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
-                <TextBlock Text="✓"
+                <icons:Icon Value="mdi-check-circle-outline"
                            Foreground="#4CAF50"
                            FontSize="12"
                            VerticalAlignment="Center" />

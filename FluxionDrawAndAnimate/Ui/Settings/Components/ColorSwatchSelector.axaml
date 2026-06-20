@@ -1,0 +1,34 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="FluxionDrawAndAnimate.Ui.Settings.Components.ColorSwatchSelector"
+             x:Name="root">
+    <UserControl.Styles>
+        <!-- Selected swatch gets a white ring via outline border -->
+        <Style Selector="ListBox.colorSwatches ListBoxItem:selected Border.swatch">
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="BorderThickness" Value="2.5" />
+        </Style>
+    </UserControl.Styles>
+    <ListBox Classes="colorSwatches"
+             ItemsSource="{Binding Colors, ElementName=root}"
+             SelectedItem="{Binding SelectedColor, ElementName=root}">
+        <ListBox.ItemsPanel>
+            <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" Spacing="6" />
+            </ItemsPanelTemplate>
+        </ListBox.ItemsPanel>
+        <ListBox.ItemTemplate>
+            <DataTemplate>
+                <Border Classes="swatch"
+                        Width="26" Height="26"
+                        CornerRadius="13"
+                        BorderBrush="Transparent"
+                        BorderThickness="2.5">
+                    <Border.Background>
+                        <SolidColorBrush Color="{Binding}" />
+                    </Border.Background>
+                </Border>
+            </DataTemplate>
+        </ListBox.ItemTemplate>
+    </ListBox>
+</UserControl>

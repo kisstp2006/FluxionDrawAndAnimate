@@ -41,7 +41,7 @@ public static class HomePageRegistrar
             Id = "new-studio",
             Title = "New Studio Project",
             Subtitle = "Blank canvas  •  Studio workspace",
-            Icon = "+",
+            Icon = "mdi-layers-plus",
             Command = vm.CreateProjectCommand,
             IsPrimary = true,
             SortOrder = 0
@@ -52,7 +52,7 @@ public static class HomePageRegistrar
             Id = "new-drawing",
             Title = "New Drawing Project",
             Subtitle = "Canvas  •  Layers",
-            Icon = "✎",
+            Icon = "mdi-pencil-plus-outline",
             Command = vm.CreateProjectCommand,
             SortOrder = 1
         });
@@ -62,7 +62,7 @@ public static class HomePageRegistrar
             Id = "open-existing",
             Title = "Open Existing",
             Subtitle = "Browse your files",
-            Icon = "📁",
+            Icon = "mdi-folder-open-outline",
             Command = vm.OpenProjectCommand,
             SortOrder = 2
         });
@@ -72,7 +72,7 @@ public static class HomePageRegistrar
             Id = "recover-autosave",
             Title = "Recover Autosave",
             Subtitle = "No autosaves found",
-            Icon = "↺",
+            Icon = "mdi-backup-restore",
             SortOrder = 3
         });
     }

@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:icons="https://github.com/projektanker/icons.avalonia"
              xmlns:presentation="using:FluxionDrawAndAnimate.Presentation"
              x:Class="FluxionDrawAndAnimate.Ui.ProjectManager.ProjectRecentCard"
              x:DataType="presentation:ProjectCard">
@@ -21,11 +22,12 @@
                            FontSize="32" FontWeight="SemiBold"
                            HorizontalAlignment="Center" VerticalAlignment="Center" />
                 <!-- Three-dot menu -->
-                <Button Content="•••"
-                        HorizontalAlignment="Right" VerticalAlignment="Top"
-                        Margin="0,6,6,0" Padding="6,2" FontSize="12"
+                <Button HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Margin="0,6,6,0" Padding="4,2"
                         Background="#66000000" Foreground="White"
-                        CornerRadius="5" BorderThickness="0" />
+                        CornerRadius="5" BorderThickness="0">
+                    <icons:Icon Value="mdi-dots-horizontal" FontSize="14" />
+                </Button>
             </Grid>
 
             <!-- Card info -->
@@ -54,7 +56,7 @@
                     <TextBlock Text="{Binding UpdatedLabel}"
                                Foreground="{DynamicResource FluxTextMuted}" FontSize="11"
                                VerticalAlignment="Center" IsVisible="{Binding HasUpdatedLabel}" />
-                    <TextBlock Grid.Column="1" Text="☁"
+                    <icons:Icon Grid.Column="1" Value="mdi-cloud-outline"
                                Foreground="{DynamicResource FluxTextMuted}" FontSize="13"
                                VerticalAlignment="Center" />
                 </Grid>

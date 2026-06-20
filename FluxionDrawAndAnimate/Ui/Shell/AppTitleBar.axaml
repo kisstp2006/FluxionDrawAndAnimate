@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:icons="https://github.com/projektanker/icons.avalonia"
              xmlns:shell="using:FluxionDrawAndAnimate.Presentation.Shell"
              xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
              x:Class="FluxionDrawAndAnimate.Ui.Shell.AppTitleBar"
@@ -139,13 +140,27 @@
                             <!-- Two overlapping buttons; only one visible based on IsPrimary -->
                             <Panel>
                                 <Button Classes="icon primary"
-                                        Content="{Binding Title}"
                                         Command="{Binding Command}"
-                                        IsVisible="{Binding IsPrimary}" />
+                                        IsVisible="{Binding IsPrimary}">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <icons:Icon Value="{Binding Icon}" FontSize="14"
+                                                    IsVisible="{Binding Icon, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                        <TextBlock Text="{Binding Title}"
+                                                   IsVisible="{Binding Title, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                   FontSize="13" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
                                 <Button Classes="icon"
-                                        Content="{Binding Title}"
                                         Command="{Binding Command}"
-                                        IsVisible="{Binding !IsPrimary}" />
+                                        IsVisible="{Binding !IsPrimary}">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <icons:Icon Value="{Binding Icon}" FontSize="14"
+                                                    IsVisible="{Binding Icon, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                        <TextBlock Text="{Binding Title}"
+                                                   IsVisible="{Binding Title, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                   FontSize="13" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
                             </Panel>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

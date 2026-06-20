@@ -81,13 +81,13 @@
         <Setter Property="Background" Value="{DynamicResource FluxBgPanel}" />
         <Setter Property="BorderBrush" Value="{DynamicResource FluxBorder}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="CornerRadius" Value="{DynamicResource FluxCornerRadius}" />
     </Style>
     <Style Selector="Border.card">
         <Setter Property="Background" Value="{DynamicResource FluxBgCard}" />
         <Setter Property="BorderBrush" Value="{DynamicResource FluxBorder}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="CornerRadius" Value="{DynamicResource FluxCornerRadius}" />
     </Style>
 
     <!-- Inputs -->
@@ -95,7 +95,7 @@
         <Setter Property="Background" Value="{DynamicResource FluxBgInput}" />
         <Setter Property="Foreground" Value="{DynamicResource FluxText}" />
         <Setter Property="BorderBrush" Value="{DynamicResource FluxBorder}" />
-        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="CornerRadius" Value="{DynamicResource FluxCornerRadiusMd}" />
         <Setter Property="MinHeight" Value="48" />
         <Setter Property="Padding" Value="14,8" />
     </Style>
@@ -143,6 +143,99 @@
     <Style Selector="Border.searchFieldHost:focus-within">
         <Setter Property="BorderBrush" Value="{DynamicResource FluxAccent}" />
         <Setter Property="Background" Value="{DynamicResource FluxBgInput}" />
+    </Style>
+
+    <!-- Segmented control (multi-option pill selector) -->
+    <Style Selector="ListBox.segmented">
+        <Setter Property="Background" Value="{DynamicResource FluxBgInput}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="3" />
+        <Setter Property="CornerRadius" Value="8" />
+    </Style>
+    <Style Selector="ListBox.segmented ListBoxItem">
+        <Setter Property="Padding" Value="14,6" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource FluxTextMuted}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.1" />
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="ListBox.segmented ListBoxItem:selected /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource FluxAccent}" />
+    </Style>
+    <Style Selector="ListBox.segmented ListBoxItem:selected TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource FluxAccentText}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="ListBox.segmented ListBoxItem:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource FluxBgElevated}" />
+    </Style>
+
+    <!-- Color swatch selector -->
+    <Style Selector="ListBox.colorSwatches">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+    <Style Selector="ListBox.colorSwatches ListBoxItem">
+        <Setter Property="Padding" Value="3" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="CornerRadius" Value="50" />
+    </Style>
+    <Style Selector="ListBox.colorSwatches ListBoxItem:selected /template/ ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+
+    <!-- Settings dialog sidebar item -->
+    <Style Selector="Button.settingsNavItem">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource FluxTextMuted}" />
+        <Setter Property="Padding" Value="12,10" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+    <Style Selector="Button.settingsNavItem:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource FluxBgElevated}" />
+        <Setter Property="Foreground" Value="{DynamicResource FluxText}" />
+    </Style>
+    <Style Selector="Button.settingsNavItem.navActive /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource FluxAccent}" />
+        <Setter Property="Foreground" Value="{DynamicResource FluxAccentText}" />
+    </Style>
+    <Style Selector="Button.settingsNavItem.navActive TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource FluxAccentText}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <!-- Settings row label / description — use font-scale tokens -->
+    <Style Selector="TextBlock.settingLabel">
+        <Setter Property="Foreground" Value="{DynamicResource FluxText}" />
+        <Setter Property="FontSize" Value="{DynamicResource FluxFontSizeMD}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="TextBlock.settingDesc">
+        <Setter Property="Foreground" Value="{DynamicResource FluxTextMuted}" />
+        <Setter Property="FontSize" Value="{DynamicResource FluxFontSizeSM}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+    <!-- Apply font scale to common text classes too -->
+    <Style Selector="TextBlock.muted">
+        <Setter Property="Foreground" Value="{DynamicResource FluxTextMuted}" />
+        <Setter Property="FontSize" Value="{DynamicResource FluxFontSizeSM}" />
+    </Style>
+    <Style Selector="TextBlock.caption">
+        <Setter Property="FontSize" Value="{DynamicResource FluxFontSizeXS}" />
+        <Setter Property="Foreground" Value="{DynamicResource FluxTextMuted}" />
     </Style>
 
     <!-- Home page sidebar navigation items -->

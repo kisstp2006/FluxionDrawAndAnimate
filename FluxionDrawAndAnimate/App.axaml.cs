@@ -3,6 +3,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Optris.Icons.Avalonia;
+using Optris.Icons.Avalonia.MaterialDesign;
 using FluxionDrawAndAnimate.Core.Persistence;
 using FluxionDrawAndAnimate.Core.Editing;
 using FluxionDrawAndAnimate.Core.Projects;
@@ -17,6 +19,7 @@ public partial class App : Application
 {
     public override void Initialize()
     {
+        IconProvider.Current.Register<MaterialDesignIconProvider>();
         AvaloniaXamlLoader.Load(this);
     }
 

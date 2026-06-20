@@ -1,0 +1,21 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="FluxionDrawAndAnimate.Ui.Settings.Pages.StubSettingsPage"
+             x:Name="root">
+    <StackPanel Margin="24,20" Spacing="6">
+        <TextBlock Text="{Binding PageTitle, ElementName=root}"
+                   Foreground="{DynamicResource FluxText}"
+                   FontSize="20" FontWeight="SemiBold" />
+        <TextBlock Text="{Binding PageDescription, ElementName=root}"
+                   Foreground="{DynamicResource FluxTextMuted}"
+                   FontSize="13" />
+        <Border Classes="card" Padding="32" Margin="0,20,0,0"
+                HorizontalAlignment="Center">
+            <StackPanel Spacing="8" HorizontalAlignment="Center">
+                <TextBlock Text="Coming soon"
+                           Foreground="{DynamicResource FluxTextMuted}"
+                           FontSize="14" HorizontalAlignment="Center" />
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

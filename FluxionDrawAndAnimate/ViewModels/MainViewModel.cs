@@ -11,10 +11,12 @@ using FluxionDrawAndAnimate.Core.Editing;
 using FluxionDrawAndAnimate.Core.Projects;
 using FluxionDrawAndAnimate.Core.Settings;
 using FluxionDrawAndAnimate.Presentation;
+using FluxionDrawAndAnimate.Presentation.Settings;
 using FluxionDrawAndAnimate.Presentation.Shell;
 using FluxionDrawAndAnimate.Presentation.StatusBar;
 using FluxionDrawAndAnimate.Services;
 using FluxionDrawAndAnimate.Ui.Core;
+using System.ComponentModel;
 
 namespace FluxionDrawAndAnimate.ViewModels;
 
@@ -39,6 +41,13 @@ public partial class MainViewModel : ViewModelBase
     public AppShellRegistry ShellRegistry { get; } = new();
     public StatusBarRegistry StatusBarRegistry { get; } = new();
     public HomePageRegistry HomePageRegistry { get; } = new();
+    public AppearanceSettingsViewModel AppearanceSettings { get; } = new();
+    public IReadOnlyList<SettingsCategoryDefinition> SettingsCategories { get; }
+        = SettingsCategoryRegistrar.CreateDefault();
+
+    // Convenience passthrough for AXAML bindings inside DataTemplates
+    // (avoids complex ancestor-cast binding expressions).
+    public bool ShowToolLabels => AppearanceSettings.ShowToolLabels;
 
     private void InitUndoStack()
     {
@@ -51,6 +60,30 @@ public partial class MainViewModel : ViewModelBase
                 OnPropertyChanged(nameof(FilteredRecentProjects));
             }
         };
+
+        // Appearance: re-apply the changed setting and notify derived VM props.
+        AppearanceSettings.PropertyChanged += OnAppearanceSettingChanged;
+    }
+
+    private void OnAppearanceSettingChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        // Single-dispatch: always re-apply the full set; each apply is O(1).
+        AppearanceApplier.ApplyAll(AppearanceSettings);
+
+        // Notify any VM-level computed properties that depend on appearance.
+        switch (e.PropertyName)
+        {
+            case nameof(AppearanceSettingsViewModel.ShowToolLabels):
+                OnPropertyChanged(nameof(ShowToolLabels));
+                break;
+
+            // Theme change also requires the ProjectCreatorThemeMode to stay in sync.
+            case nameof(AppearanceSettingsViewModel.AppTheme):
+                ProjectCreatorThemeMode = AppearanceSettings.AppTheme == "Light"
+                    ? ProjectCreatorThemeMode.Light
+                    : ProjectCreatorThemeMode.Dark;
+                break;
+        }
     }
 
     [ObservableProperty]
@@ -113,6 +146,56 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty]
     private PageDefinition? _activePage;
 
+    // ── Settings dialog ──────────────────────────────────────────────────────
+
+    [ObservableProperty]
+    private string _selectedSettingsCategoryId = "appearance";
+
+    partial void OnSelectedSettingsCategoryIdChanged(string value)
+    {
+        foreach (var cat in SettingsCategories)
+        {
+            cat.IsActive = cat.Id == value;
+        }
+    }
+
+    [RelayCommand]
+    private void SelectSettingsCategory(string id)
+    {
+        SelectedSettingsCategoryId = id;
+    }
+
+    [RelayCommand]
+    private void ApplySettings()
+    {
+        AppearanceApplier.ApplyAll(AppearanceSettings);
+        ProjectCreatorThemeMode = AppearanceSettings.AppTheme == "Light"
+            ? ProjectCreatorThemeMode.Light
+            : ProjectCreatorThemeMode.Dark;
+    }
+
+    [RelayCommand]
+    private void SaveSettings()
+    {
+        ApplySettings();
+        IsSettingsVisible = false;
+    }
+
+    [RelayCommand]
+    private void ResetCategorySettings()
+    {
+        if (SelectedSettingsCategoryId == "appearance")
+        {
+            AppearanceSettings.ResetToDefaults();
+        }
+    }
+
+    [RelayCommand]
+    private void ResetAppearanceCategory()
+    {
+        AppearanceSettings.ResetToDefaults();
+    }
+
     // ── Home page sidebar navigation ────────────────────────────────────────
 
     [ObservableProperty]
@@ -120,13 +203,13 @@ public partial class MainViewModel : ViewModelBase
 
     public IReadOnlyList<HomeNavItem> HomeNavItems { get; } =
     [
-        new("home",      "⌂",  "Home"),
-        new("projects",  "⊡",  "Projects",  "BROWSE"),
-        new("recent",    "◷",  "Recent"),
-        new("templates", "⊞",  "Templates"),
-        new("learn",     "✦",  "Learn"),
-        new("cloud",     "☁",  "Cloud",     "LIBRARY"),
-        new("trash",     "⊘",  "Trash"),
+        new("home",      "mdi-home-outline",          "Home"),
+        new("projects",  "mdi-folder-outline",         "Projects",  "BROWSE"),
+        new("recent",    "mdi-clock-time-four-outline","Recent"),
+        new("templates", "mdi-view-grid-outline",      "Templates"),
+        new("learn",     "mdi-school-outline",         "Learn"),
+        new("cloud",     "mdi-cloud-outline",          "Cloud",     "LIBRARY"),
+        new("trash",     "mdi-delete-outline",         "Trash"),
     ];
 
     partial void OnActiveSidebarItemIdChanged(string value)
@@ -212,8 +295,11 @@ public partial class MainViewModel : ViewModelBase
         HomePageRegistrar.RegisterDefaults(HomePageRegistry, this);
         ActivePage = ShellRegistry.FindPage("home");
         RebuildLiveStatusBarItems();
-        // Initialise sidebar active state
+        // Initialise sidebar + settings active states
         OnActiveSidebarItemIdChanged(_activeSidebarItemId);
+        OnSelectedSettingsCategoryIdChanged(_selectedSettingsCategoryId);
+        // Apply appearance defaults so dynamic resources are set before first render
+        AppearanceApplier.ApplyAll(AppearanceSettings);
 
         Project = projectFactory.CreateNewProject();
         Tools = new ObservableCollection<ToolPreset>(toolPaletteFactory.CreateDefaultTools());

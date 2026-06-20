@@ -2,38 +2,64 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!--
         Single source of truth for Fluxion's colour tokens.
-        Semantic names only - views never hardcode hex values.
-        Light/Dark resolve automatically from the app ThemeVariant.
+        ThemeDictionaries  → automatically toggled by Light / Dark theme variant.
+        Dynamic tokens     → defined below ThemeDictionaries; overridden at runtime
+                             by AppearanceApplier when the user changes a setting.
+                             Application.Resources entries take priority over
+                             ThemeDictionaries in Avalonia's lookup chain.
     -->
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Dark">
-            <SolidColorBrush x:Key="FluxBgPage" Color="#111419" />
-            <SolidColorBrush x:Key="FluxBgPanel" Color="#171B22" />
-            <SolidColorBrush x:Key="FluxBgCard" Color="#1E2530" />
+            <SolidColorBrush x:Key="FluxBgPage"     Color="#111419" />
+            <SolidColorBrush x:Key="FluxBgPanel"    Color="#171B22" />
+            <SolidColorBrush x:Key="FluxBgCard"     Color="#1E2530" />
             <SolidColorBrush x:Key="FluxBgElevated" Color="#252B35" />
-            <SolidColorBrush x:Key="FluxBgControl" Color="#232A34" />
-            <SolidColorBrush x:Key="FluxBgInput" Color="#141A21" />
-            <SolidColorBrush x:Key="FluxBorder" Color="#333C49" />
-            <SolidColorBrush x:Key="FluxText" Color="#F5F7FB" />
-            <SolidColorBrush x:Key="FluxTextMuted" Color="#A2ADBC" />
-            <SolidColorBrush x:Key="FluxAccent" Color="#F43F7F" />
-            <SolidColorBrush x:Key="FluxAccentText" Color="#FFFFFF" />
-            <SolidColorBrush x:Key="FluxFrameCell" Color="#F7F7F7" />
+            <SolidColorBrush x:Key="FluxBgControl"  Color="#232A34" />
+            <SolidColorBrush x:Key="FluxBgInput"    Color="#141A21" />
+            <SolidColorBrush x:Key="FluxBorder"     Color="#333C49" />
+            <SolidColorBrush x:Key="FluxText"       Color="#F5F7FB" />
+            <SolidColorBrush x:Key="FluxTextMuted"  Color="#A2ADBC" />
+            <SolidColorBrush x:Key="FluxFrameCell"  Color="#F7F7F7" />
         </ResourceDictionary>
 
         <ResourceDictionary x:Key="Light">
-            <SolidColorBrush x:Key="FluxBgPage" Color="#F3F6FA" />
-            <SolidColorBrush x:Key="FluxBgPanel" Color="#FFFFFF" />
-            <SolidColorBrush x:Key="FluxBgCard" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="FluxBgPage"     Color="#F3F6FA" />
+            <SolidColorBrush x:Key="FluxBgPanel"    Color="#FFFFFF" />
+            <SolidColorBrush x:Key="FluxBgCard"     Color="#FFFFFF" />
             <SolidColorBrush x:Key="FluxBgElevated" Color="#EDF2F7" />
-            <SolidColorBrush x:Key="FluxBgControl" Color="#EEF2F7" />
-            <SolidColorBrush x:Key="FluxBgInput" Color="#FFFFFF" />
-            <SolidColorBrush x:Key="FluxBorder" Color="#DCE3ED" />
-            <SolidColorBrush x:Key="FluxText" Color="#1F2733" />
-            <SolidColorBrush x:Key="FluxTextMuted" Color="#5C6878" />
-            <SolidColorBrush x:Key="FluxAccent" Color="#F43F7F" />
-            <SolidColorBrush x:Key="FluxAccentText" Color="#FFFFFF" />
-            <SolidColorBrush x:Key="FluxFrameCell" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="FluxBgControl"  Color="#EEF2F7" />
+            <SolidColorBrush x:Key="FluxBgInput"    Color="#FFFFFF" />
+            <SolidColorBrush x:Key="FluxBorder"     Color="#DCE3ED" />
+            <SolidColorBrush x:Key="FluxText"       Color="#1F2733" />
+            <SolidColorBrush x:Key="FluxTextMuted"  Color="#5C6878" />
+            <SolidColorBrush x:Key="FluxFrameCell"  Color="#FFFFFF" />
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
+
+    <!--
+        Dynamic tokens — theme-invariant, changed at runtime by AppearanceApplier.
+        Safe defaults mirror the initial AppearanceSettingsViewModel values.
+        Accent is here (not in ThemeDictionaries) so overriding it in
+        Application.Resources is sufficient — no per-theme duplication.
+    -->
+    <SolidColorBrush x:Key="FluxAccent"     Color="#7C3AED" />
+    <SolidColorBrush x:Key="FluxAccentText" Color="#FFFFFF" />
+
+    <!-- Corner radii -->
+    <CornerRadius x:Key="FluxCornerRadius">10</CornerRadius>
+    <CornerRadius x:Key="FluxCornerRadiusMd">8</CornerRadius>
+    <CornerRadius x:Key="FluxCornerRadiusSm">6</CornerRadius>
+
+    <!-- Layout -->
+    <x:Double x:Key="FluxHomeSidebarWidth">220</x:Double>
+
+    <!-- Font scale (updated as a group by ApplyFontScale) -->
+    <x:Double x:Key="FluxFontSizeXS">11</x:Double>
+    <x:Double x:Key="FluxFontSizeSM">12</x:Double>
+    <x:Double x:Key="FluxFontSizeMD">14</x:Double>
+    <x:Double x:Key="FluxFontSizeLG">16</x:Double>
+    <x:Double x:Key="FluxFontSizeXL">20</x:Double>
+
+    <!-- Density (spacing unit used in key style setters) -->
+    <x:Double x:Key="FluxDensitySpacing">12</x:Double>
 </ResourceDictionary>

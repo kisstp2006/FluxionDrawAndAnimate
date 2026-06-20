@@ -1,16 +1,8 @@
-using System;
 using System.Reflection;
 using FluxionDrawAndAnimate.ViewModels;
 
 namespace FluxionDrawAndAnimate.Presentation.StatusBar;
 
-/// <summary>
-/// Registers default status bar items.
-///
-/// Global items (all pages) — left: app version.
-/// Studio items — left: zoom, canvas icons, tool, size, pressure, position, snap, grid.
-///               right: memory bar + settings.
-/// </summary>
 public static class StatusBarRegistrar
 {
     public static void RegisterDefaults(StatusBarRegistry registry, MainViewModel vm)
@@ -19,8 +11,6 @@ public static class StatusBarRegistrar
         RegisterStudioLeft(registry, vm);
         RegisterStudioRight(registry, vm);
     }
-
-    // ── Global (all pages) ──────────────────────────────────────────────
 
     private static void RegisterGlobal(StatusBarRegistry r)
     {
@@ -35,11 +25,9 @@ public static class StatusBarRegistrar
         });
     }
 
-    // ── Studio page — left section ──────────────────────────────────────
-
     private static void RegisterStudioLeft(StatusBarRegistry r, MainViewModel vm)
     {
-        // Zoom level with dropdown marker
+        // Zoom display
         r.Register(new StatusBarItemDefinition
         {
             Id = "studio-zoom", Section = StatusBarSection.Left,
@@ -55,27 +43,22 @@ public static class StatusBarRegistrar
             IsSeparator = true, PageId = "studio", SortOrder = 11
         });
 
-        // Zoom-to-fit icon
         r.Register(new StatusBarItemDefinition
         {
             Id = "studio-zoom-fit", Section = StatusBarSection.Left,
-            Icon = "⊡", Text = "",
+            Icon = "mdi-fit-to-page-outline", Text = "",
             PageId = "studio", SortOrder = 12
         });
-
-        // Export / snapshot icon
         r.Register(new StatusBarItemDefinition
         {
             Id = "studio-snapshot", Section = StatusBarSection.Left,
-            Icon = "⬜", Text = "",
+            Icon = "mdi-camera-outline", Text = "",
             PageId = "studio", SortOrder = 13
         });
-
-        // History / rotate icon
         r.Register(new StatusBarItemDefinition
         {
             Id = "studio-history", Section = StatusBarSection.Left,
-            Icon = "↺", Text = "",
+            Icon = "mdi-history", Text = "",
             PageId = "studio", SortOrder = 14
         });
 
@@ -85,7 +68,6 @@ public static class StatusBarRegistrar
             IsSeparator = true, PageId = "studio", SortOrder = 15
         });
 
-        // Active tool
         r.Register(new StatusBarItemDefinition
         {
             Id = "studio-tool", Section = StatusBarSection.Left,
@@ -93,8 +75,6 @@ public static class StatusBarRegistrar
             ObservedProperties = [nameof(MainViewModel.ActiveToolName)],
             PageId = "studio", SortOrder = 20
         });
-
-        // Brush size
         r.Register(new StatusBarItemDefinition
         {
             Id = "studio-size", Section = StatusBarSection.Left,
@@ -102,8 +82,6 @@ public static class StatusBarRegistrar
             ObservedProperties = [nameof(MainViewModel.BrushSize)],
             PageId = "studio", SortOrder = 21
         });
-
-        // Last pressure
         r.Register(new StatusBarItemDefinition
         {
             Id = "studio-pressure", Section = StatusBarSection.Left,
@@ -111,15 +89,13 @@ public static class StatusBarRegistrar
             ObservedProperties = [nameof(MainViewModel.LastPressure)],
             PageId = "studio", SortOrder = 22
         });
-
-        // Canvas cursor position
         r.Register(new StatusBarItemDefinition
         {
             Id = "studio-position", Section = StatusBarSection.Left,
             GetLiveText = ds =>
             {
                 var m = (MainViewModel)ds!;
-                return $"Position:  {(int)m.CursorDocumentX}, {(int)m.CursorDocumentY}";
+                return $"Position:  {(int)m.CursorDocumentX}, {(int)m.CursorDocumentY}";
             },
             ObservedProperties = [nameof(MainViewModel.CursorDocumentX)],
             PageId = "studio", SortOrder = 23
@@ -131,7 +107,6 @@ public static class StatusBarRegistrar
             IsSeparator = true, PageId = "studio", SortOrder = 24
         });
 
-        // Snap toggle
         r.Register(new StatusBarItemDefinition
         {
             Id = "studio-snap", Section = StatusBarSection.Left,
@@ -140,22 +115,17 @@ public static class StatusBarRegistrar
             Command = vm.ToggleSnapCommand,
             PageId = "studio", SortOrder = 25
         });
-
-        // Grid toggle icon
         r.Register(new StatusBarItemDefinition
         {
             Id = "studio-grid", Section = StatusBarSection.Left,
-            Icon = "⊞", Text = "",
+            Icon = "mdi-grid", Text = "",
             Command = vm.ToggleGridCommand,
             PageId = "studio", SortOrder = 26
         });
     }
 
-    // ── Studio page — right section ─────────────────────────────────────
-
     private static void RegisterStudioRight(StatusBarRegistry r, MainViewModel vm)
     {
-        // Memory usage — text + progress bar
         r.Register(new StatusBarItemDefinition
         {
             Id = "studio-memory", Section = StatusBarSection.Right,
@@ -164,12 +134,10 @@ public static class StatusBarRegistrar
             ObservedProperties = [nameof(MainViewModel.MemoryUsagePercent)],
             PageId = "studio", SortOrder = 0
         });
-
-        // Settings gear
         r.Register(new StatusBarItemDefinition
         {
             Id = "studio-settings", Section = StatusBarSection.Right,
-            Icon = "⚙", Text = "",
+            Icon = "mdi-cog-outline", Text = "",
             Command = vm.ShowSettingsCommand,
             PageId = "studio", SortOrder = 10
         });

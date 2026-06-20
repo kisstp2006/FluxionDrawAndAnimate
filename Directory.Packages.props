@@ -19,8 +19,9 @@
 
         <!-- Icon libraries for the shared UI layer (FluxionDrawAndAnimate.csproj).
              Used across all heads (Desktop/Android/iOS/Browser). -->
-        <PackageVersion Include="Projektanker.Icons.Avalonia" Version="9.4.0" />
-        <PackageVersion Include="Projektanker.Icons.Avalonia.MaterialDesign" Version="9.4.0" />
+        <!-- Avalonia 12.x-compatible icon fork of Projektanker.Icons -->
+        <PackageVersion Include="Optris.Icons.Avalonia" Version="12.0.7" />
+        <PackageVersion Include="Optris.Icons.Avalonia.MaterialDesign" Version="12.0.7" />
 
         <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.15" />
 

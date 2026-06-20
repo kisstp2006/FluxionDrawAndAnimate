@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:icons="https://github.com/projektanker/icons.avalonia"
              xmlns:pres="using:FluxionDrawAndAnimate.Presentation"
              xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
              x:Class="FluxionDrawAndAnimate.Ui.ProjectManager.HomeQuickActions"
@@ -31,11 +32,10 @@
                         </Button.BorderThickness>
                         <StackPanel Spacing="4">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock Text="{Binding Icon}"
-                                           Foreground="White"
-                                           FontSize="16"
-                                           FontWeight="Bold"
-                                           VerticalAlignment="Center" />
+                                <icons:Icon Value="{Binding Icon}"
+                                            Foreground="White"
+                                            FontSize="18"
+                                            VerticalAlignment="Center" />
                                 <TextBlock Text="{Binding Title}"
                                            Foreground="White"
                                            FontSize="14"
@@ -62,10 +62,10 @@
                             IsVisible="{Binding !IsPrimary}">
                         <StackPanel Spacing="4">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock Text="{Binding Icon}"
-                                           Foreground="{DynamicResource FluxText}"
-                                           FontSize="15"
-                                           VerticalAlignment="Center" />
+                                <icons:Icon Value="{Binding Icon}"
+                                            Foreground="{DynamicResource FluxText}"
+                                            FontSize="17"
+                                            VerticalAlignment="Center" />
                                 <TextBlock Text="{Binding Title}"
                                            Foreground="{DynamicResource FluxText}"
                                            FontSize="13"

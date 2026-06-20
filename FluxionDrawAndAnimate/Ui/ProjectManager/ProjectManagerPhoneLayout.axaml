@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:icons="https://github.com/projektanker/icons.avalonia"
              xmlns:pm="using:FluxionDrawAndAnimate.Ui.ProjectManager"
              xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
              x:Class="FluxionDrawAndAnimate.Ui.ProjectManager.ProjectManagerPhoneLayout"
@@ -12,8 +13,12 @@
                     <Button Grid.Column="1"
                             Classes="action"
                             Command="{Binding ShowSettingsCommand}"
-                            Content="⚙ Settings"
-                            VerticalAlignment="Top" />
+                            VerticalAlignment="Top">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <icons:Icon Value="mdi-cog-outline" FontSize="14" />
+                            <TextBlock Text="Settings" FontSize="13" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
                 </Grid>
 
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
