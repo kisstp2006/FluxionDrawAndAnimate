@@ -25,20 +25,34 @@
                  DESKTOP / TABLET  —  tool panel | canvas | props
             ══════════════════════════════════════════════════════ -->
             <Grid IsVisible="{Binding !IsPhoneLayout}"
-                  ColumnDefinitions="Auto,*,Auto">
+                  >
+                <!-- Resizable 5-column layout:
+                     Col 0 = tool panel | Col 1 = left splitter | Col 2 = canvas
+                     Col 3 = right splitter | Col 4 = inspector -->
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="160" MinWidth="120" MaxWidth="320" />
+                    <ColumnDefinition Width="5"   MinWidth="5"  MaxWidth="5" />
+                    <ColumnDefinition Width="*"   MinWidth="200" />
+                    <ColumnDefinition Width="5"   MinWidth="5"  MaxWidth="5" />
+                    <ColumnDefinition Width="280" MinWidth="200" MaxWidth="420" />
+                </Grid.ColumnDefinitions>
 
-                <!-- Tool panel (left) — ZIndex brings it in front of the canvas -->
+                <!-- Tool panel -->
                 <Border Grid.Column="0"
                         ZIndex="10"
                         Background="{DynamicResource FluxBgPanel}"
                         BorderBrush="{DynamicResource FluxBorder}"
-                        BorderThickness="0,0,1,0"
-                        Width="160">
+                        BorderThickness="0,0,0,0">
                     <local:StudioToolPanel />
                 </Border>
 
-                <!-- Canvas (center) — ClipToBounds prevents any transform overflow -->
-                <controls:DrawingCanvasControl Grid.Column="1"
+                <!-- Left resize splitter (between tool panel and canvas) -->
+                <GridSplitter Grid.Column="1"
+                              ZIndex="20"
+                              Classes="panelSplitter" />
+
+                <!-- Canvas -->
+                <controls:DrawingCanvasControl Grid.Column="2"
                                                ZIndex="0"
                                                ClipToBounds="True"
                                                x:Name="MainCanvas"
@@ -55,13 +69,19 @@
                                                ScaleChangedCallback="{Binding ScaleChangedCallback}"
                                                FitToViewTrigger="{Binding FitToViewTrigger}" />
 
-                <!-- Right inspector panel — built from StudioInspectorRegistry -->
-                <Border Grid.Column="2"
+                <!-- Right resize splitter (between canvas and inspector) -->
+                <GridSplitter Grid.Column="3"
+                              ZIndex="20"
+                              IsVisible="{Binding ShowSidePanel}"
+                              Classes="panelSplitter" />
+
+                <!-- Right inspector panel -->
+                <Border Grid.Column="4"
+                        ZIndex="10"
                         Background="{DynamicResource FluxBgPanel}"
                         BorderBrush="{DynamicResource FluxBorder}"
-                        BorderThickness="1,0,0,0"
-                        IsVisible="{Binding ShowSidePanel}"
-                        Width="{Binding PropertiesPanelWidth}">
+                        BorderThickness="0,0,0,0"
+                        IsVisible="{Binding ShowSidePanel}">
                     <inspector:StudioInspectorPanel />
                 </Border>
             </Grid>

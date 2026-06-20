@@ -6,6 +6,22 @@
         Classes="icon primary" = compact sizing + accent colours.
     -->
 
+    <!-- Panel resize splitter -->
+    <Style Selector="GridSplitter.panelSplitter">
+        <Setter Property="Background" Value="{DynamicResource FluxBorder}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="Cursor" Value="SizeWestEast" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="Background" Duration="0:0:0.12" />
+            </Transitions>
+        </Setter>
+    </Style>
+    <Style Selector="GridSplitter.panelSplitter:pointerover">
+        <Setter Property="Background" Value="{DynamicResource FluxAccent}" />
+    </Style>
+
     <!-- Text -->
     <Style Selector="TextBlock.muted">
         <Setter Property="Foreground" Value="{DynamicResource FluxTextMuted}" />
