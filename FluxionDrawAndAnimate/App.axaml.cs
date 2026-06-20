@@ -70,6 +70,14 @@ public partial class App : Application
             new JsonUserSettingsStore());
 
         vm.SetFavoritesStore(new JsonFavoritesStore());
+
+        // Inject the platform-specific shell (immersive / fullscreen controller).
+        // On Android, MainActivity.OnCreate has already installed a real
+        // AndroidPlatformShell into PlatformShellProvider.Current before this
+        // method runs. On every other platform the provider lazily returns a
+        // NullPlatformShell that no-ops every call.
+        vm.SetPlatformShell(PlatformShellProvider.Current);
+
         return vm;
     }
 }

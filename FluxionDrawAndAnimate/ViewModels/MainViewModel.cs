@@ -33,10 +33,39 @@ public partial class MainViewModel : ViewModelBase
     private readonly SettingEditorResolver _settingEditorResolver;
     private readonly IUserSettingsStore _userSettingsStore;
     private Services.IFavoritesStore _favoritesStore = new Services.NullFavoritesStore();
+    private Services.IPlatformShell _platformShell = new Services.NullPlatformShell();
 
     public void SetFavoritesStore(Services.IFavoritesStore store)
     {
         _favoritesStore = store;
+    }
+
+    /// <summary>
+    /// Injects the platform shell (immersive / fullscreen controller).
+    /// Called from <c>App.OnFrameworkInitializationCompleted</c> after the VM
+    /// is constructed; Android passes a real <c>AndroidPlatformShell</c>, every
+    /// other platform leaves the default <c>NullPlatformShell</c> in place.
+    /// Mirrors <see cref="SetFavoritesStore"/> so no constructor signature
+    /// changes are needed.
+    /// </summary>
+    public void SetPlatformShell(Services.IPlatformShell shell)
+    {
+        _platformShell = shell ?? new Services.NullPlatformShell();
+        // Apply the current layout mode immediately in case the shell was set
+        // after the first layout evaluation.
+        ApplyPlatformShellForCurrentLayout();
+    }
+
+    /// <summary>
+    /// Pushes the current phone/studio layout to the platform shell so it can
+    /// toggle immersive mode. No-op on desktop / browser / iOS where
+    /// <see cref="Services.NullPlatformShell"/> ignores the call.
+    /// </summary>
+    private void ApplyPlatformShellForCurrentLayout()
+    {
+        // Immersive mode only makes sense on phone layouts where screen real
+        // estate is at a premium. Studio/tablet keep the normal chrome.
+        _platformShell.ApplyImmersive(IsPhoneLayout);
     }
     private readonly LayoutProfileFactory _layoutProfileFactory = new();
     private readonly Dictionary<string, SettingItemViewModel> _settingItems = new(StringComparer.OrdinalIgnoreCase);
@@ -585,6 +614,7 @@ public partial class MainViewModel : ViewModelBase
         OnPropertyChanged(nameof(IsStudioMode));
         OnPropertyChanged(nameof(IsPhoneMode));
         NotifyLayoutChanged();
+        ApplyPlatformShellForCurrentLayout();
     }
 
     private void NotifyLayoutChanged()
@@ -598,6 +628,10 @@ public partial class MainViewModel : ViewModelBase
         OnPropertyChanged(nameof(IsPhoneLayout));
         OnPropertyChanged(nameof(IsHomePhoneLayout));
         OnPropertyChanged(nameof(IsHomeWideLayout));
+        // Width-driven (automatic) transitions between phone and non-phone
+        // layouts also need to update immersive mode — not just the explicit
+        // WorkspaceMode toggle handled in OnWorkspaceModeChanged.
+        ApplyPlatformShellForCurrentLayout();
         OnPropertyChanged(nameof(IsHomeTabletLayout));
         OnPropertyChanged(nameof(IsHomeStudioLayout));
     }

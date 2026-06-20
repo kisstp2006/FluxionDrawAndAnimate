@@ -79,6 +79,14 @@ public sealed class DrawingCanvasControl : Control
     private double _touchStartOffY;
     private double _touchStartAngle;
     private double _touchStartRotation;
+    private bool _gestureInProgress; // true when 2+ fingers are down
+
+    // Deadzone thresholds (in screen pixels) for touch gesture discrimination.
+    // Without these a perfectly-intended pinch zoom can drift slightly sideways
+    // because two human fingers never move with 100% symmetry — the tiny centre
+    // displacement gets interpreted as a pan and overrides the zoom.
+    private const double TouchPanDeadzone  = 10.0;  // centre must drift ≥ 10 px before pan activates
+    private const double TouchZoomDeadzone = 5.0;   // finger distance must change ≥ 5 px before zoom activates
 
     // Static brushes / pens
     private static readonly IBrush WorkspaceBrush = new SolidColorBrush(Color.FromRgb(21, 22, 25));
@@ -330,8 +338,14 @@ public sealed class DrawingCanvasControl : Control
             _touches.RemoveAll(t => t.Id == e.Pointer.Id);
             _touches.Add((e.Pointer.Id, pos));
 
-            if (_touches.Count == 2)
+            if (_touches.Count >= 2)
             {
+                // Two or more fingers — enter gesture mode. Save the current
+                // viewport as the baseline so pinch zoom/pan/rotate is relative
+                // to the moment the second finger touched down.
+                _gestureInProgress = true;
+                _currentStroke = null; // cancel any in-flight stroke
+
                 _touchStartDist = Dist(_touches[0].Pos, _touches[1].Pos);
                 _touchStartCenter = Mid(_touches[0].Pos, _touches[1].Pos);
                 _touchStartScale = _vpScale;
@@ -339,11 +353,13 @@ public sealed class DrawingCanvasControl : Control
                 _touchStartOffY = _vpOffsetY;
                 _touchStartAngle = Angle(_touches[0].Pos, _touches[1].Pos);
                 _touchStartRotation = _vpRotation;
-                _currentStroke = null; // cancel any stroke
+
+                e.Pointer.Capture(this);
+                e.Handled = true;
+                return;
             }
 
             e.Pointer.Capture(this);
-            if (_touches.Count >= 2) { e.Handled = true; return; }
         }
 
         // ── Middle mouse / Space+Left → pan ───────────────────────────
@@ -358,6 +374,7 @@ public sealed class DrawingCanvasControl : Control
 
         // ── Painting tools ────────────────────────────────────────────
         if (project is null) return;
+        if (_gestureInProgress) return; // don't start painting mid-gesture
 
         // Non-painting tools — block
         var nonPainting = new[]
@@ -411,17 +428,39 @@ public sealed class DrawingCanvasControl : Control
                 }
             }
 
-            if (_touches.Count == 2)
+            if (_touches.Count >= 2)
             {
                 var dist = Dist(_touches[0].Pos, _touches[1].Pos);
                 var center = Mid(_touches[0].Pos, _touches[1].Pos);
                 var angle = Angle(_touches[0].Pos, _touches[1].Pos);
 
-                if (_touchStartDist > 0)
-                    _vpScale = Math.Clamp(_touchStartScale * dist / _touchStartDist, 0.05, 32.0);
+                // ── Zoom (deadzone gated) ──────────────────────────
+                // Only apply zoom when the distance between fingers has
+                // changed by at least TouchZoomDeadzone pixels.  This
+                // prevents the viewport from jittering on tiny movements.
+                var distDelta = Math.Abs(dist - _touchStartDist);
+                if (distDelta > TouchZoomDeadzone && _touchStartDist > 0)
+                {
+                    _vpScale = Math.Clamp(
+                        _touchStartScale * dist / _touchStartDist,
+                        0.05, 32.0);
+                }
 
-                _vpOffsetX = _touchStartOffX + (center.X - _touchStartCenter.X);
-                _vpOffsetY = _touchStartOffY + (center.Y - _touchStartCenter.Y);
+                // ── Pan (deadzone gated) ───────────────────────────
+                // Only pan when the finger-centre has drifted at least
+                // TouchPanDeadzone pixels.  Without this, even a tiny
+                // asymmetry in a two-finger pinch makes the canvas slide
+                // sideways — which is the main complaint in the issue.
+                var centerDriftX = center.X - _touchStartCenter.X;
+                var centerDriftY = center.Y - _touchStartCenter.Y;
+                var centerDrift = Math.Sqrt(centerDriftX * centerDriftX + centerDriftY * centerDriftY);
+                if (centerDrift > TouchPanDeadzone)
+                {
+                    _vpOffsetX = _touchStartOffX + centerDriftX;
+                    _vpOffsetY = _touchStartOffY + centerDriftY;
+                }
+
+                // ── Rotate (no deadzone — unlikely to trigger accidentally) ──
                 _vpRotation = _touchStartRotation + (angle - _touchStartAngle);
 
                 NotifyScale();
@@ -429,6 +468,9 @@ public sealed class DrawingCanvasControl : Control
                 e.Handled = true;
                 return;
             }
+
+            // Single touch while no gesture is in progress — fall through
+            // to drawing below.
         }
 
         // ── Pan ────────────────────────────────────────────────────────
@@ -444,6 +486,7 @@ public sealed class DrawingCanvasControl : Control
 
         // ── Drawing ────────────────────────────────────────────────────
         if (_currentStroke is null || project is null) return;
+        if (_gestureInProgress) return; // block painting while multi-touch gesture is active
 
         var redraw = false;
         foreach (var intermediate in e.GetIntermediatePoints(this))
@@ -467,7 +510,11 @@ public sealed class DrawingCanvasControl : Control
         if (e.Pointer.Type == PointerType.Touch)
         {
             _touches.RemoveAll(t => t.Id == e.Pointer.Id);
-            if (_touches.Count < 2) _touchStartDist = 0;
+            if (_touches.Count < 2)
+            {
+                _touchStartDist = 0;
+                _gestureInProgress = false;
+            }
         }
 
         if (_isPanning) { _isPanning = false; e.Handled = true; return; }
