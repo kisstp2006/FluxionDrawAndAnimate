@@ -1,0 +1,28 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
+             xmlns:pres="using:FluxionDrawAndAnimate.Presentation"
+             x:Class="FluxionDrawAndAnimate.Ui.Studio.Inspector.InspectorSwatchesPanel"
+             x:DataType="vm:MainViewModel">
+    <ItemsControl ItemsSource="{Binding BrushSwatchBrushes}">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <WrapPanel Orientation="Horizontal" />
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="pres:SwatchEntry">
+                <Button Margin="3"
+                        Width="28" Height="28"
+                        Padding="0"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        Background="{Binding Brush}"
+                        BorderBrush="{DynamicResource FluxBorder}"
+                        Command="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).SelectSwatchCommand}"
+                        CommandParameter="{Binding Color}"
+                        Cursor="Hand" />
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+</UserControl>

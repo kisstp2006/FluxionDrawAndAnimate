@@ -1,0 +1,41 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:icons="https://github.com/projektanker/icons.avalonia"
+             x:Class="FluxionDrawAndAnimate.Ui.Studio.Inspector.InspectorCard"
+             x:Name="root">
+    <Border Classes="card"
+            Margin="0,0,0,8"
+            Padding="0"
+            ClipToBounds="True">
+        <StackPanel>
+            <!-- Clickable header -->
+            <Button Background="Transparent"
+                    BorderThickness="0"
+                    Padding="14,10"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    Click="OnHeaderClicked"
+                    Cursor="Hand">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{Binding Title, ElementName=root}"
+                               Foreground="{DynamicResource FluxText}"
+                               FontSize="13" FontWeight="SemiBold"
+                               VerticalAlignment="Center" />
+                    <Panel Grid.Column="1" VerticalAlignment="Center">
+                        <icons:Icon Value="mdi-chevron-up" FontSize="14"
+                                    Foreground="{DynamicResource FluxTextMuted}"
+                                    IsVisible="{Binding IsExpanded, ElementName=root}" />
+                        <icons:Icon Value="mdi-chevron-down" FontSize="14"
+                                    Foreground="{DynamicResource FluxTextMuted}"
+                                    IsVisible="{Binding !IsExpanded, ElementName=root}" />
+                    </Panel>
+                </Grid>
+            </Button>
+
+            <!-- Content — shown when expanded -->
+            <ContentPresenter IsVisible="{Binding IsExpanded, ElementName=root}"
+                              Content="{Binding PanelContent, ElementName=root}"
+                              Margin="14,0,14,12" />
+        </StackPanel>
+    </Border>
+</UserControl>

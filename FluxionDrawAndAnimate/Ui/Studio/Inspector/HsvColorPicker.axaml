@@ -1,0 +1,43 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="FluxionDrawAndAnimate.Ui.Studio.Inspector.HsvColorPicker"
+             x:Name="root"
+             Width="220" Height="220">
+    <Canvas Width="220" Height="220">
+        <!-- Hue ring + SV square rendered to the HwImage bitmap -->
+        <Image x:Name="HwImage"
+               Width="220" Height="220"
+               Canvas.Left="0" Canvas.Top="0"
+               IsHitTestVisible="False" />
+
+        <!-- Interaction overlay for the hue ring -->
+        <Ellipse x:Name="RingOverlay"
+                 Width="220" Height="220"
+                 Canvas.Left="0" Canvas.Top="0"
+                 Fill="Transparent"
+                 PointerPressed="OnRingPointerPressed"
+                 PointerMoved="OnRingPointerMoved" />
+
+        <!-- Interaction overlay for the inner SV square -->
+        <Rectangle x:Name="SvOverlay"
+                   Fill="Transparent"
+                   PointerPressed="OnSvPointerPressed"
+                   PointerMoved="OnSvPointerMoved" />
+
+        <!-- Hue indicator (small white ring on the hue circle) -->
+        <Ellipse x:Name="HueIndicator"
+                 Width="12" Height="12"
+                 Stroke="White"
+                 StrokeThickness="2"
+                 Fill="Transparent"
+                 IsHitTestVisible="False" />
+
+        <!-- SV indicator (crosshair on the SV square) -->
+        <Ellipse x:Name="SvIndicator"
+                 Width="10" Height="10"
+                 Stroke="White"
+                 StrokeThickness="1.5"
+                 Fill="Transparent"
+                 IsHitTestVisible="False" />
+    </Canvas>
+</UserControl>

@@ -1,0 +1,43 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:icons="https://github.com/projektanker/icons.avalonia"
+             xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
+             xmlns:inspector="using:FluxionDrawAndAnimate.Ui.Studio.Inspector"
+             x:Class="FluxionDrawAndAnimate.Ui.Studio.Inspector.InspectorColorPanel"
+             x:DataType="vm:MainViewModel">
+    <StackPanel Spacing="10" HorizontalAlignment="Stretch">
+        <!-- Custom HSV colour picker: hue ring + SV square -->
+        <inspector:HsvColorPicker SelectedColor="{Binding BrushBaseColor, Mode=TwoWay}"
+                                  HorizontalAlignment="Center" />
+
+        <!-- Hex input + colour swatch preview -->
+        <Border Background="{DynamicResource FluxBgInput}"
+                BorderBrush="{DynamicResource FluxBorder}"
+                BorderThickness="1"
+                CornerRadius="7"
+                Padding="10,6">
+            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                <TextBox Text="{Binding BrushColorHex}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Foreground="{DynamicResource FluxText}"
+                         FontSize="13"
+                         FontFamily="Monospace"
+                         VerticalAlignment="Center"
+                         MinHeight="0" />
+                <Border Grid.Column="1"
+                        Width="22" Height="22"
+                        CornerRadius="4"
+                        Background="{Binding BrushBaseColorBrush}"
+                        BorderBrush="{DynamicResource FluxBorder}"
+                        BorderThickness="1"
+                        VerticalAlignment="Center" />
+                <icons:Icon Grid.Column="2"
+                            Value="mdi-eyedropper-variant"
+                            FontSize="14"
+                            Foreground="{DynamicResource FluxTextMuted}"
+                            VerticalAlignment="Center" />
+            </Grid>
+        </Border>
+    </StackPanel>
+</UserControl>

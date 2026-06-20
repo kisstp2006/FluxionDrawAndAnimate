@@ -1,0 +1,104 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
+             x:Class="FluxionDrawAndAnimate.Ui.Studio.Inspector.InspectorToolPropertiesPanel"
+             x:DataType="vm:MainViewModel">
+    <StackPanel Spacing="10">
+        <!-- Active tool name -->
+        <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="Brush"
+                       Foreground="{DynamicResource FluxTextMuted}"
+                       FontSize="12" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="1"
+                       Text="{Binding ActiveToolName}"
+                       Foreground="{DynamicResource FluxText}"
+                       FontSize="12" FontWeight="SemiBold"
+                       VerticalAlignment="Center" />
+        </Grid>
+
+        <Border Height="1" Background="{DynamicResource FluxBorder}" />
+
+        <!-- Size -->
+        <Grid ColumnDefinitions="80,*,48" ColumnSpacing="8">
+            <TextBlock Text="Size"
+                       Foreground="{DynamicResource FluxTextMuted}"
+                       FontSize="12" VerticalAlignment="Center" />
+            <Slider Grid.Column="1" Minimum="1" Maximum="500"
+                    Value="{Binding BrushSizeSetting}"
+                    VerticalAlignment="Center" />
+            <TextBlock Grid.Column="2"
+                       Foreground="{DynamicResource FluxTextMuted}"
+                       FontSize="12" TextAlignment="Right" VerticalAlignment="Center">
+                <Run Text="{Binding BrushSize, StringFormat='{}{0:0}'}" /><Run Text=" px" />
+            </TextBlock>
+        </Grid>
+
+        <!-- Opacity -->
+        <Grid ColumnDefinitions="80,*,48" ColumnSpacing="8">
+            <TextBlock Text="Opacity"
+                       Foreground="{DynamicResource FluxTextMuted}"
+                       FontSize="12" VerticalAlignment="Center" />
+            <Slider Grid.Column="1" Minimum="5" Maximum="100"
+                    Value="{Binding BrushOpacityPercent, Mode=TwoWay}"
+                    VerticalAlignment="Center" />
+            <TextBlock Grid.Column="2"
+                       Foreground="{DynamicResource FluxTextMuted}"
+                       FontSize="12" TextAlignment="Right" VerticalAlignment="Center">
+                <Run Text="{Binding BrushOpacityPercent, StringFormat='{}{0:0}'}" /><Run Text=" %" />
+            </TextBlock>
+        </Grid>
+
+        <!-- Flow (separate from opacity) -->
+        <Grid ColumnDefinitions="80,*,48" ColumnSpacing="8">
+            <TextBlock Text="Flow"
+                       Foreground="{DynamicResource FluxTextMuted}"
+                       FontSize="12" VerticalAlignment="Center" />
+            <Slider Grid.Column="1" Minimum="5" Maximum="100"
+                    Value="{Binding BrushFlowPercent, Mode=TwoWay}"
+                    VerticalAlignment="Center" />
+            <TextBlock Grid.Column="2"
+                       Foreground="{DynamicResource FluxTextMuted}"
+                       FontSize="12" TextAlignment="Right" VerticalAlignment="Center">
+                <Run Text="{Binding BrushFlowPercent, StringFormat='{}{0:0}'}" /><Run Text=" %" />
+            </TextBlock>
+        </Grid>
+
+        <!-- Stabilizer (from preset, read-only) -->
+        <Grid ColumnDefinitions="80,*,48" ColumnSpacing="8">
+            <TextBlock Text="Stabilizer"
+                       Foreground="{DynamicResource FluxTextMuted}"
+                       FontSize="12" VerticalAlignment="Center" />
+            <Slider Grid.Column="1" Minimum="0" Maximum="20"
+                    Value="{Binding ActiveBrushStabilizer}"
+                    IsEnabled="False"
+                    VerticalAlignment="Center" />
+            <TextBlock Grid.Column="2"
+                       Text="{Binding ActiveBrushStabilizer}"
+                       Foreground="{DynamicResource FluxTextMuted}"
+                       FontSize="12" TextAlignment="Right" VerticalAlignment="Center" />
+        </Grid>
+
+        <Border Height="1" Background="{DynamicResource FluxBorder}" />
+
+        <!-- Pressure curve — computed from active brush dynamics -->
+        <TextBlock Text="Pressure"
+                   Foreground="{DynamicResource FluxTextMuted}"
+                   FontSize="12" />
+        <Border Height="52"
+                Background="{DynamicResource FluxBgInput}"
+                CornerRadius="6"
+                BorderBrush="{DynamicResource FluxBorder}"
+                BorderThickness="1"
+                Padding="6,6">
+            <Canvas Width="100" Height="40"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch">
+                <Polyline Points="{Binding PressureCurvePoints}"
+                          Stroke="{DynamicResource FluxAccent}"
+                          StrokeThickness="1.5"
+                          StrokeLineCap="Round"
+                          StrokeJoin="Round" />
+            </Canvas>
+        </Border>
+    </StackPanel>
+</UserControl>

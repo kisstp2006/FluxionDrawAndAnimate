@@ -44,6 +44,110 @@ public partial class MainViewModel : ViewModelBase
     public HomePageRegistry HomePageRegistry { get; } = new();
     public StudioToolbarRegistry StudioToolbarRegistry { get; } = new();
     public StudioToolPanelRegistry StudioToolPanelRegistry { get; } = new();
+    public StudioInspectorRegistry StudioInspectorRegistry { get; } = new();
+
+    // ── Brush colour hex (synced both ways with BrushBaseColor) ──────────
+    private string _brushColorHex = "#262C42";
+    private bool _syncingHex;
+
+    public string BrushColorHex
+    {
+        get => _brushColorHex;
+        set
+        {
+            if (_syncingHex || _brushColorHex == value) return;
+            _brushColorHex = value;
+            OnPropertyChanged();
+            TryApplyHexColor(value);
+        }
+    }
+
+    private void TryApplyHexColor(string hex)
+    {
+        _syncingHex = true;
+        try
+        {
+            var clean = hex.TrimStart('#');
+            if (clean.Length == 6)
+            {
+                var r = Convert.ToByte(clean[..2], 16);
+                var g = Convert.ToByte(clean[2..4], 16);
+                var b = Convert.ToByte(clean[4..6], 16);
+                BrushBaseColor = RgbaColor.FromRgb(r, g, b);
+            }
+        }
+        catch { /* ignore invalid hex */ }
+        finally { _syncingHex = false; }
+    }
+
+    // ── Brush opacity as percentage ──────────────────────────────────────
+    public double BrushOpacityPercent
+    {
+        get => Math.Round(BrushOpacity * 100, 0);
+        set { BrushOpacity = Math.Clamp(value / 100.0, 0.05, 1.0); OnPropertyChanged(); }
+    }
+
+    // ── Flow (independent from opacity) ──────────────────────────────────
+    [ObservableProperty]
+    private double _brushFlow = 1.0;
+
+    public double BrushFlowPercent
+    {
+        get => Math.Round(BrushFlow * 100, 0);
+        set { BrushFlow = Math.Clamp(value / 100.0, 0.05, 1.0); OnPropertyChanged(); }
+    }
+
+    partial void OnBrushFlowChanged(double value) => OnPropertyChanged(nameof(BrushFlowPercent));
+
+    // ── Avalonia.Media.Color bridge for ColorView binding ─────────────────
+    // ColorView speaks Avalonia.Media.Color; BrushBaseColor is our custom RgbaColor.
+    private bool _settingMediaColor;
+    public Avalonia.Media.Color BrushMediaColor
+    {
+        get => Avalonia.Media.Color.FromRgb(BrushBaseColor.R, BrushBaseColor.G, BrushBaseColor.B);
+        set
+        {
+            if (_settingMediaColor) return;
+            _settingMediaColor = true;
+            BrushBaseColor = RgbaColor.FromRgb(value.R, value.G, value.B);
+            _settingMediaColor = false;
+            OnPropertyChanged();
+        }
+    }
+
+    // ── Pressure curve points (Avalonia.Point list for Polyline binding) ──
+    public IReadOnlyList<Avalonia.Point> PressureCurvePoints
+    {
+        get
+        {
+            var pts = ActiveBrushSettings?.Dynamics.SizeBinding?.Curve.Points;
+            if (pts is null || pts.Count < 2)
+                return [new(0, 38), new(98, 0)];
+            return pts.Select(p => new Avalonia.Point(p.X * 98, (1.0 - p.Y) * 38)).ToList();
+        }
+    }
+
+    // ── Active brush info (from preset settings) ─────────────────────────
+    public int    ActiveBrushStabilizer => ActiveBrushSettings?.StabilizerSamples ?? 0;
+    public string ActiveBrushShape      => ActiveBrushSettings?.Shape.ToString() ?? "Round";
+
+    // ── Default colour swatches palette (with pre-built brushes for binding) ──
+    public IReadOnlyList<Presentation.SwatchEntry> BrushSwatchBrushes { get; } =
+        new Core.Drawing.RgbaColor[]
+        {
+            Core.Drawing.RgbaColor.FromRgb(220,  50,  50),
+            Core.Drawing.RgbaColor.FromRgb(255, 120,  30),
+            Core.Drawing.RgbaColor.FromRgb(255, 200,  50),
+            Core.Drawing.RgbaColor.FromRgb(100, 200,  80),
+            Core.Drawing.RgbaColor.FromRgb( 50, 150, 230),
+            Core.Drawing.RgbaColor.FromRgb(120,  70, 200),
+            Core.Drawing.RgbaColor.FromRgb(255, 255, 255),
+            Core.Drawing.RgbaColor.FromRgb(180, 180, 180),
+            Core.Drawing.RgbaColor.FromRgb( 80,  80,  80),
+            Core.Drawing.RgbaColor.FromRgb(  0,   0,   0),
+            Core.Drawing.RgbaColor.FromRgb(200, 140, 100),
+            Core.Drawing.RgbaColor.FromRgb( 60,  40,  30),
+        }.Select(c => new Presentation.SwatchEntry(c)).ToList();
 
     private IReadOnlyList<StudioToolPanelSection> _studioToolSections = [];
     public IReadOnlyList<StudioToolPanelSection> StudioToolSections
@@ -307,6 +411,7 @@ public partial class MainViewModel : ViewModelBase
         StudioToolbarRegistrar.RegisterDefaults(StudioToolbarRegistry, this);
         StudioToolPanelRegistrar.RegisterDefaults(StudioToolPanelRegistry);
         StudioToolPanelRegistry.SectionsChanged += () => StudioToolSections = StudioToolPanelRegistry.Sections;
+        StudioInspectorRegistrar.RegisterDefaults(StudioInspectorRegistry);
         StudioToolSections = StudioToolPanelRegistry.Sections;
         ActivePage = ShellRegistry.FindPage("home");
         RebuildLiveStatusBarItems();
@@ -541,24 +646,44 @@ public partial class MainViewModel : ViewModelBase
 
     partial void OnActiveToolKindChanged(Core.Drawing.ToolKind value)
     {
-        // Sync IsActive on all tool panel definitions
         foreach (var tool in StudioToolPanelRegistry.Items)
-        {
             tool.IsActive = tool.ToolKind == value;
-        }
         OnPropertyChanged(nameof(ActiveToolName));
+        OnPropertyChanged(nameof(PressureCurvePoints));
         RefreshLiveStatusBarItems(nameof(ActiveToolName));
     }
 
     partial void OnActiveToolChanged(ToolPreset value)
     {
         OnPropertyChanged(nameof(ActiveBrushSettings));
+        OnPropertyChanged(nameof(ActiveBrushStabilizer));
+        OnPropertyChanged(nameof(ActiveBrushShape));
     }
 
     partial void OnBrushBaseColorChanged(RgbaColor value)
     {
         OnPropertyChanged(nameof(BrushColor));
         OnPropertyChanged(nameof(BrushBaseColorBrush));
+        if (!_syncingHex)
+        {
+            _brushColorHex = $"#{value.R:X2}{value.G:X2}{value.B:X2}";
+            OnPropertyChanged(nameof(BrushColorHex));
+        }
+        if (!_settingMediaColor)
+            OnPropertyChanged(nameof(BrushMediaColor));
+    }
+
+    partial void OnBrushOpacityChanged(double value)
+    {
+        OnPropertyChanged(nameof(BrushColor));
+        OnPropertyChanged(nameof(BrushOpacityPercent));
+    }
+
+    [RelayCommand]
+    private void SelectSwatch(object? param)
+    {
+        if (param is Core.Drawing.RgbaColor color)
+            BrushBaseColor = color;
     }
 
     partial void OnBrushSizeSettingChanged(double value)
@@ -567,10 +692,6 @@ public partial class MainViewModel : ViewModelBase
         RefreshLiveStatusBarItems(nameof(BrushSize));
     }
 
-    partial void OnBrushOpacityChanged(double value)
-    {
-        OnPropertyChanged(nameof(BrushColor));
-    }
 
     [RelayCommand]
     private void ActivateDrawingTool(Core.Drawing.ToolKind kind) => ActiveToolKind = kind;

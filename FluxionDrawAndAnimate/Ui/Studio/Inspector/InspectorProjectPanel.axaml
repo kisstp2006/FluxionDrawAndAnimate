@@ -1,0 +1,39 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
+             x:Class="FluxionDrawAndAnimate.Ui.Studio.Inspector.InspectorProjectPanel"
+             x:DataType="vm:MainViewModel">
+    <StackPanel Spacing="8">
+        <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="Name" Foreground="{DynamicResource FluxTextMuted}" FontSize="12" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="1" Text="{Binding Project.Name}"
+                       Foreground="{DynamicResource FluxText}" FontSize="12" FontWeight="SemiBold"
+                       VerticalAlignment="Center" />
+        </Grid>
+        <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="Resolution" Foreground="{DynamicResource FluxTextMuted}" FontSize="12" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="1" Foreground="{DynamicResource FluxText}" FontSize="12" VerticalAlignment="Center">
+                <Run Text="{Binding Project.Width}" /><Run Text=" × " /><Run Text="{Binding Project.Height}" />
+            </TextBlock>
+        </Grid>
+        <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="Frame Rate" Foreground="{DynamicResource FluxTextMuted}" FontSize="12" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="1" Foreground="{DynamicResource FluxText}" FontSize="12" VerticalAlignment="Center">
+                <Run Text="{Binding Project.FramesPerSecond}" /><Run Text=" FPS" />
+            </TextBlock>
+        </Grid>
+        <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="Duration" Foreground="{DynamicResource FluxTextMuted}" FontSize="12" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="1" Foreground="{DynamicResource FluxText}" FontSize="12" VerticalAlignment="Center">
+                <Run Text="{Binding TotalFrames}" /><Run Text=" frames" />
+            </TextBlock>
+        </Grid>
+        <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="Color Space" Foreground="{DynamicResource FluxTextMuted}" FontSize="12" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="1"
+                       Text="{Binding Project.ColorProfile.Kind}"
+                       Foreground="{DynamicResource FluxText}" FontSize="12"
+                       VerticalAlignment="Center" />
+        </Grid>
+    </StackPanel>
+</UserControl>
