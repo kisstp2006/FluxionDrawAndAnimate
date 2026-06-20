@@ -39,7 +39,6 @@ public static class SettingsCategoryRegistrar
                     "Keyboard shortcuts and shortcut profile management.") },
 
         new() { Id = "about",       Title = "About",        Icon = "mdi-information-outline",
-                SortOrder = 8, CreatePage = () => new StubSettingsPage("About",
-                    "Version, credits, open-source licences and build info.") },
+                SortOrder = 8, CreatePage = () => new AboutSettingsPage() },
     ];
 }

@@ -1,5 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:app="using:FluxionDrawAndAnimate"
         xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -9,6 +10,6 @@
         Icon="/Assets/avalonia-logo.ico"
         MinWidth="390"
         MinHeight="640"
-        Title="Fluxion Draw &amp; Animate">
-        <views:MainView />
+        Title="{x:Static app:AppInfo.FullName}">
+    <views:MainView />
 </Window>

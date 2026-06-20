@@ -1,0 +1,164 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:icons="https://github.com/projektanker/icons.avalonia"
+             xmlns:app="using:FluxionDrawAndAnimate"
+             x:Class="FluxionDrawAndAnimate.Ui.Settings.Pages.AboutSettingsPage"
+             x:Name="root">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24,20" Spacing="16">
+
+            <!-- Page header -->
+            <TextBlock Text="About"
+                       Foreground="{DynamicResource FluxText}"
+                       FontSize="20" FontWeight="SemiBold"
+                       Margin="0,0,0,4" />
+
+            <!-- ── App identity card ── -->
+            <Border Classes="card" Padding="24,20">
+                <StackPanel Spacing="12">
+                    <!-- Logo + name + version -->
+                    <Grid ColumnDefinitions="64,*" ColumnSpacing="18">
+                        <Border Width="60" Height="60"
+                                Background="{DynamicResource FluxAccent}"
+                                CornerRadius="14">
+                            <TextBlock Text="F"
+                                       Foreground="{DynamicResource FluxAccentText}"
+                                       FontSize="36" FontWeight="Black"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Border>
+                        <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Center">
+                            <TextBlock Text="{x:Static app:AppInfo.Name}"
+                                       Foreground="{DynamicResource FluxText}"
+                                       FontSize="24" FontWeight="Bold" />
+                            <TextBlock Text="{x:Static app:AppInfo.Tagline}"
+                                       Foreground="{DynamicResource FluxTextMuted}"
+                                       FontSize="13" />
+                            <Border Background="{DynamicResource FluxBgElevated}"
+                                    CornerRadius="6" Padding="8,4"
+                                    HorizontalAlignment="Left" Margin="0,4,0,0">
+                                <TextBlock Foreground="{DynamicResource FluxAccent}"
+                                           FontSize="12" FontWeight="SemiBold">
+                                    <Run Text="v" /><Run Text="{x:Static app:AppInfo.Version}" />
+                                </TextBlock>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+
+                    <Border Height="1" Background="{DynamicResource FluxBorder}" Margin="0,4" />
+
+                    <TextBlock Text="{x:Static app:AppInfo.Description}"
+                               Foreground="{DynamicResource FluxTextMuted}"
+                               FontSize="13" TextWrapping="Wrap" />
+
+                    <!-- Website link -->
+                    <Button x:Name="WebsiteButton"
+                            Click="OnWebsiteClicked"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Padding="0"
+                            HorizontalContentAlignment="Left"
+                            Cursor="Hand">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <icons:Icon Value="mdi-github" FontSize="16"
+                                        Foreground="{DynamicResource FluxAccent}" />
+                            <TextBlock Text="{x:Static app:AppInfo.Website}"
+                                       Foreground="{DynamicResource FluxAccent}"
+                                       FontSize="13"
+                                       TextDecorations="Underline" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+
+            <!-- ── License ── -->
+            <Border Classes="card" Padding="18,14">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="License"
+                               Foreground="{DynamicResource FluxText}"
+                               FontSize="15" FontWeight="SemiBold" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Spacing="2">
+                            <TextBlock Text="{x:Static app:AppInfo.License}"
+                                       Foreground="{DynamicResource FluxText}"
+                                       FontSize="14" FontWeight="SemiBold" />
+                            <TextBlock Text="Free and open-source software"
+                                       Foreground="{DynamicResource FluxTextMuted}"
+                                       FontSize="12" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="1"
+                                   Text="{x:Static app:AppInfo.Copyright}"
+                                   Foreground="{DynamicResource FluxTextMuted}"
+                                   FontSize="12" VerticalAlignment="Center" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- ── Platform & runtime ── -->
+            <Border Classes="card" Padding="18,14">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Environment"
+                               Foreground="{DynamicResource FluxText}"
+                               FontSize="15" FontWeight="SemiBold" />
+                    <Grid ColumnDefinitions="140,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="12">
+                        <!-- Platform -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Platform"
+                                   Foreground="{DynamicResource FluxTextMuted}" FontSize="13" />
+                        <TextBlock Grid.Row="0" Grid.Column="1"
+                                   Text="{Binding CurrentPlatform, ElementName=root}"
+                                   Foreground="{DynamicResource FluxText}" FontSize="13" />
+                        <!-- Architecture -->
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Architecture"
+                                   Foreground="{DynamicResource FluxTextMuted}" FontSize="13" />
+                        <TextBlock Grid.Row="1" Grid.Column="1"
+                                   Text="{Binding CurrentArch, ElementName=root}"
+                                   Foreground="{DynamicResource FluxText}" FontSize="13" />
+                        <!-- Runtime -->
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Runtime"
+                                   Foreground="{DynamicResource FluxTextMuted}" FontSize="13" />
+                        <TextBlock Grid.Row="2" Grid.Column="1"
+                                   Text="{Binding CurrentRuntime, ElementName=root}"
+                                   Foreground="{DynamicResource FluxText}" FontSize="13" />
+                        <!-- OS detail -->
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="OS"
+                                   Foreground="{DynamicResource FluxTextMuted}" FontSize="13" />
+                        <TextBlock Grid.Row="3" Grid.Column="1"
+                                   Text="{Binding OsDescription, ElementName=root}"
+                                   Foreground="{DynamicResource FluxText}" FontSize="13"
+                                   TextWrapping="Wrap" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- ── Built with ── -->
+            <Border Classes="card" Padding="18,14">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Built with"
+                               Foreground="{DynamicResource FluxText}"
+                               FontSize="15" FontWeight="SemiBold" />
+                    <ItemsControl>
+                        <ItemsControl.Items>
+                            <x:String>Avalonia UI  —  cross-platform .NET UI framework</x:String>
+                            <x:String>SkiaSharp  —  2D graphics engine</x:String>
+                            <x:String>CommunityToolkit.Mvvm  —  MVVM source generators</x:String>
+                            <x:String>Optris.Icons.Avalonia  —  Material Design icons</x:String>
+                        </ItemsControl.Items>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,3">
+                                    <icons:Icon Value="mdi-check-circle-outline"
+                                                Foreground="{DynamicResource FluxAccent}"
+                                                FontSize="14" VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding}"
+                                               Foreground="{DynamicResource FluxTextMuted}"
+                                               FontSize="13" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

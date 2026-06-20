@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:icons="https://github.com/projektanker/icons.avalonia"
+             xmlns:app="using:FluxionDrawAndAnimate"
              xmlns:shell="using:FluxionDrawAndAnimate.Presentation.Shell"
              xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
              x:Class="FluxionDrawAndAnimate.Ui.Shell.AppTitleBar"
@@ -35,8 +36,8 @@
                                VerticalAlignment="Center" />
                 </Border>
 
-                <!-- App name -->
-                <TextBlock Text="Fluxion"
+                <!-- App name — sourced from AppInfo so a version bump updates everywhere -->
+                <TextBlock Text="{x:Static app:AppInfo.Name}"
                            Foreground="{DynamicResource FluxText}"
                            FontSize="15"
                            FontWeight="SemiBold"
@@ -74,6 +75,7 @@
                                                             <!-- Regular item -->
                                                             <Button IsVisible="{Binding !IsSeparator}"
                                                                     Command="{Binding Command}"
+                                                                    CommandParameter="{Binding CommandParameter}"
                                                                     HorizontalAlignment="Stretch"
                                                                     HorizontalContentAlignment="Stretch"
                                                                     Background="Transparent"

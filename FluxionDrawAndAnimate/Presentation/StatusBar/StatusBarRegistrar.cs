@@ -1,4 +1,3 @@
-using System.Reflection;
 using FluxionDrawAndAnimate.ViewModels;
 
 namespace FluxionDrawAndAnimate.Presentation.StatusBar;
@@ -14,14 +13,10 @@ public static class StatusBarRegistrar
 
     private static void RegisterGlobal(StatusBarRegistry r)
     {
-        var raw = Assembly.GetEntryAssembly()
-            ?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
-            ?.InformationalVersion.Split('+')[0] ?? "1.2.0";
-
         r.Register(new StatusBarItemDefinition
         {
             Id = "app-version", Section = StatusBarSection.Left,
-            Text = $"v{raw}", SortOrder = 0
+            Text = $"v{AppInfo.Version}", SortOrder = 0
         });
     }
 

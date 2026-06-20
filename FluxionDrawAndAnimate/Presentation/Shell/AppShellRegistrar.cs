@@ -80,7 +80,13 @@ public static class AppShellRegistrar
             Title = "Help", SortOrder = 3,
             Items =
             [
-                new() { Title = "About Fluxion", SortOrder = 0 },
+                new()
+                {
+                    Title = "About Fluxion",
+                    Command = vm.OpenSettingsOnPageCommand,
+                    CommandParameter = "about",   // navigates directly to the About page
+                    SortOrder = 0
+                },
             ]
         });
     }

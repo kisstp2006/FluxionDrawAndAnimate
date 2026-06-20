@@ -707,8 +707,26 @@ public partial class MainViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void ShowSettings()
+    private void ShowSettings() => OpenSettingsOnPage(null);
+
+    /// <summary>
+    /// Opens the Settings dialog and navigates to <paramref name="categoryId"/> if registered.
+    /// Falls back to the current selection when the id is null/empty or not found,
+    /// so callers can never crash by passing an unknown page.
+    /// </summary>
+    [RelayCommand]
+    private void OpenSettingsOnPage(string? categoryId)
     {
+        if (!string.IsNullOrWhiteSpace(categoryId))
+        {
+            var exists = SettingsCategories.Any(c =>
+                c.Id.Equals(categoryId, StringComparison.OrdinalIgnoreCase));
+            if (exists)
+            {
+                SelectedSettingsCategoryId = categoryId;
+            }
+            // If the page isn't registered we silently fall back — no exception, no crash.
+        }
         IsSettingsVisible = true;
     }
 
