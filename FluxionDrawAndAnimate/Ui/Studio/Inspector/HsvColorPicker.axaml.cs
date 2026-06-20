@@ -156,45 +156,51 @@ public partial class HsvColorPicker : UserControl
             new PixelSize(Size, Size), new Vector(96, 96),
             PixelFormat.Bgra8888, AlphaFormat.Opaque);
 
-        // Build pixel buffer in managed memory, then copy to bitmap
-        var pixels = new byte[Size * Size * 4];
-        for (var y = 0; y < Size; y++)
-        {
-            for (var x = 0; x < Size; x++)
-            {
-                var cx = x - Size / 2.0;
-                var cy = y - Size / 2.0;
-                var dist = Math.Sqrt(cx * cx + cy * cy);
-                int r, g, b;
-
-                if (dist >= RingInner && dist <= RingOuter)
-                {
-                    var angle = (Math.Atan2(cy, cx) * 180 / Math.PI + 360) % 360;
-                    (r, g, b) = HsvToRgbInt(angle, 1, 1);
-                }
-                else if (x >= SvLeft && x < SvLeft + SvSize &&
-                         y >= SvTop  && y < SvTop  + SvSize)
-                {
-                    var s = (double)(x - SvLeft) / SvSize;
-                    var v = 1.0 - (double)(y - SvTop) / SvSize;
-                    (r, g, b) = HsvToRgbInt(_hue, s, v);
-                }
-                else
-                {
-                    r = g = b = 20;
-                }
-
-                var offset = (y * Size + x) * 4;
-                pixels[offset]     = (byte)b;   // BGRA
-                pixels[offset + 1] = (byte)g;
-                pixels[offset + 2] = (byte)r;
-                pixels[offset + 3] = 255;
-            }
-        }
-
+        // IMPORTANT: use stride-aware blit — fb.RowBytes may be larger than
+        // Size * 4 due to alignment padding, so we MUST copy row by row rather
+        // than doing one Marshal.Copy for the whole flat array.
         using (var fb = bmp.Lock())
         {
-            Marshal.Copy(pixels, 0, fb.Address, pixels.Length);
+            var stride = fb.RowBytes;       // actual bytes per row (may be padded)
+            var rowBuf = new byte[Size * 4]; // one row, no padding
+
+            for (var y = 0; y < Size; y++)
+            {
+                var rowDst = IntPtr.Add(fb.Address, y * stride);
+
+                for (var x = 0; x < Size; x++)
+                {
+                    var cx = x - Size / 2.0;
+                    var cy = y - Size / 2.0;
+                    var dist = Math.Sqrt(cx * cx + cy * cy);
+                    int r, g, b;
+
+                    if (dist >= RingInner && dist <= RingOuter)
+                    {
+                        var angle = (Math.Atan2(cy, cx) * 180 / Math.PI + 360) % 360;
+                        (r, g, b) = HsvToRgbInt(angle, 1, 1);
+                    }
+                    else if (x >= SvLeft && x < SvLeft + SvSize &&
+                             y >= SvTop  && y < SvTop  + SvSize)
+                    {
+                        var s = (double)(x - SvLeft) / SvSize;
+                        var v = 1.0 - (double)(y - SvTop) / SvSize;
+                        (r, g, b) = HsvToRgbInt(_hue, s, v);
+                    }
+                    else
+                    {
+                        r = g = b = 20;
+                    }
+
+                    var px = x * 4;
+                    rowBuf[px]     = (byte)b;  // BGRA
+                    rowBuf[px + 1] = (byte)g;
+                    rowBuf[px + 2] = (byte)r;
+                    rowBuf[px + 3] = 255;
+                }
+
+                Marshal.Copy(rowBuf, 0, rowDst, rowBuf.Length);
+            }
         }
 
         HwImage.Source = bmp;
