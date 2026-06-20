@@ -1,0 +1,125 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:icons="https://github.com/projektanker/icons.avalonia"
+             xmlns:studio="using:FluxionDrawAndAnimate.Presentation.Studio"
+             xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
+             x:Class="FluxionDrawAndAnimate.Ui.Pages.StudioToolPanel"
+             x:DataType="vm:MainViewModel">
+    <UserControl.Styles>
+        <!-- Tool item button -->
+        <Style Selector="Button.toolItem">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Foreground" Value="{DynamicResource FluxText}" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="Padding" Value="10,8" />
+            <Setter Property="CornerRadius" Value="7" />
+            <Setter Property="FontSize" Value="13" />
+        </Style>
+        <Style Selector="Button.toolItem:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource FluxBgElevated}" />
+        </Style>
+        <Style Selector="Button.toolItem.toolActive /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource FluxAccent}" />
+        </Style>
+        <Style Selector="Button.toolItem.toolActive TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource FluxAccentText}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="Button.toolItem.toolActive icons|Icon">
+            <Setter Property="Foreground" Value="{DynamicResource FluxAccentText}" />
+        </Style>
+        <!-- Unavailable (coming soon) tools -->
+        <Style Selector="Button.toolUnavailable">
+            <Setter Property="Opacity" Value="0.4" />
+            <Setter Property="IsEnabled" Value="False" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="*,Auto">
+
+        <!-- ── Scrollable tool list ── -->
+        <ScrollViewer Grid.Row="0"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="8,10,8,6">
+                <ItemsControl ItemsSource="{Binding StudioToolSections}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="studio:StudioToolPanelSection">
+                            <StackPanel Spacing="2">
+                                <!-- Section header -->
+                                <TextBlock Text="{Binding Name}"
+                                           Foreground="{DynamicResource FluxTextMuted}"
+                                           FontSize="11"
+                                           FontWeight="SemiBold"
+                                           Margin="10,10,0,4" />
+
+                                <!-- Tool buttons in this section -->
+                                <ItemsControl ItemsSource="{Binding Tools}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="studio:ToolDefinition">
+                                            <Button Classes.toolActive="{Binding IsActive}"
+                                                    Classes.toolUnavailable="{Binding !IsAvailable}"
+                                                    Classes="toolItem"
+                                                    Command="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).ActivateDrawingToolCommand}"
+                                                    CommandParameter="{Binding ToolKind}"
+                                                    ToolTip.Tip="{Binding Name, StringFormat='{}{0}'}"
+                                                    IsEnabled="{Binding IsAvailable}">
+                                                <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                                    <icons:Icon Value="{Binding Icon}"
+                                                                FontSize="16"
+                                                                Foreground="{DynamicResource FluxTextMuted}"
+                                                                VerticalAlignment="Center" />
+                                                    <TextBlock Text="{Binding Name}"
+                                                               VerticalAlignment="Center" />
+                                                </StackPanel>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- ── Bottom: colour swatches + more ── -->
+        <Border Grid.Row="1"
+                BorderBrush="{DynamicResource FluxBorder}"
+                BorderThickness="0,1,0,0"
+                Padding="12,10">
+            <StackPanel Spacing="8">
+                <!-- Stacked colour swatches (foreground over background) -->
+                <Panel Width="48" Height="38" HorizontalAlignment="Left">
+                    <!-- Background (black) -->
+                    <Border Width="28" Height="28"
+                            Margin="12,8,0,0"
+                            CornerRadius="5"
+                            Background="Black"
+                            BorderBrush="{DynamicResource FluxBorder}"
+                            BorderThickness="1" />
+                    <!-- Foreground (current brush colour) -->
+                    <Border Width="28" Height="28"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            CornerRadius="5"
+                            Background="{Binding BrushBaseColorBrush}"
+                            BorderBrush="{DynamicResource FluxBorder}"
+                            BorderThickness="1" />
+                </Panel>
+
+                <!-- More / colour picker button -->
+                <Button Classes="icon"
+                        HorizontalAlignment="Center"
+                        Width="36" Height="28"
+                        Padding="0"
+                        CornerRadius="6"
+                        ToolTip.Tip="More colour options (coming soon)">
+                    <icons:Icon Value="mdi-dots-horizontal" FontSize="14" />
+                </Button>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

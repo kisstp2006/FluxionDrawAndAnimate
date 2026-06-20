@@ -327,6 +327,25 @@
         <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
 
+    <!-- Phone horizontal tool strip (row of touch-friendly tool buttons) -->
+    <Style Selector="ListBox.phoneToolStrip">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+    <Style Selector="ListBox.phoneToolStrip ListBoxItem">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="ListBox.phoneToolStrip ListBoxItem:selected /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource FluxAccent}" />
+    </Style>
+    <Style Selector="ListBox.phoneToolStrip ListBoxItem:selected TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource FluxAccentText}" />
+    </Style>
+
     <!-- Tool rail (editor, vertical icon column) -->
     <Style Selector="ListBox.toolRail">
         <Setter Property="Background" Value="Transparent" />

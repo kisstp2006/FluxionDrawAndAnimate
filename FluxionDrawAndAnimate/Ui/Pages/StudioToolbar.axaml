@@ -1,0 +1,117 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:icons="https://github.com/projektanker/icons.avalonia"
+             xmlns:studio="using:FluxionDrawAndAnimate.Presentation.Studio"
+             xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
+             x:Class="FluxionDrawAndAnimate.Ui.Pages.StudioToolbar"
+             x:DataType="vm:MainViewModel"
+             Height="44">
+    <Border Background="{DynamicResource FluxBgPanel}"
+            BorderBrush="{DynamicResource FluxBorder}"
+            BorderThickness="0,0,0,1">
+        <Grid ColumnDefinitions="*,Auto" Margin="12,0">
+
+            <!-- ── Left: registered icon buttons ── -->
+            <ItemsControl Grid.Column="0"
+                          ItemsSource="{Binding StudioToolbarRegistry.LeftItems}"
+                          VerticalAlignment="Center">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="2" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="studio:StudioToolbarItemDefinition">
+                        <Panel>
+                            <!-- Separator -->
+                            <Border IsVisible="{Binding IsSeparator}"
+                                    Width="1" Height="20" Margin="6,0"
+                                    Background="{DynamicResource FluxBorder}"
+                                    VerticalAlignment="Center" />
+
+                            <!-- Icon button -->
+                            <Button IsVisible="{Binding !IsSeparator}"
+                                    Command="{Binding Command}"
+                                    ToolTip.Tip="{Binding Tooltip}"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Width="34" Height="34"
+                                    Padding="0"
+                                    CornerRadius="6"
+                                    VerticalAlignment="Center">
+                                <icons:Icon Value="{Binding Icon}" FontSize="16"
+                                            Foreground="{DynamicResource FluxTextMuted}" />
+                                <Button.Styles>
+                                    <Style Selector="Button:pointerover /template/ ContentPresenter">
+                                        <Setter Property="Background" Value="{DynamicResource FluxBgElevated}" />
+                                    </Style>
+                                    <Style Selector="Button:pointerover icons|Icon">
+                                        <Setter Property="Foreground" Value="{DynamicResource FluxText}" />
+                                    </Style>
+                                    <Style Selector="Button:disabled icons|Icon">
+                                        <Setter Property="Opacity" Value="0.35" />
+                                    </Style>
+                                </Button.Styles>
+                            </Button>
+                        </Panel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- ── Right: Share + Export (with optional dropdown) ── -->
+            <ItemsControl Grid.Column="1"
+                          ItemsSource="{Binding StudioToolbarRegistry.RightItems}"
+                          VerticalAlignment="Center">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="8" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="studio:StudioToolbarItemDefinition">
+                        <Panel>
+                            <!-- Primary button (Export) -->
+                            <Button IsVisible="{Binding IsPrimary}"
+                                    Command="{Binding Command}"
+                                    ToolTip.Tip="{Binding Tooltip}"
+                                    Background="{DynamicResource FluxAccent}"
+                                    Foreground="{DynamicResource FluxAccentText}"
+                                    BorderThickness="0"
+                                    Padding="12,6"
+                                    CornerRadius="8"
+                                    MinHeight="32">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <icons:Icon Value="{Binding Icon}" FontSize="14" />
+                                    <TextBlock Text="{Binding Text}" FontSize="13" FontWeight="SemiBold"
+                                               VerticalAlignment="Center" />
+                                    <Border Width="1" Background="#44FFFFFF" Margin="2,4" />
+                                    <icons:Icon Value="mdi-chevron-down" FontSize="12"
+                                                IsVisible="{Binding HasDropdown}"
+                                                VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Secondary button (Share) -->
+                            <Button IsVisible="{Binding !IsPrimary}"
+                                    Command="{Binding Command}"
+                                    ToolTip.Tip="{Binding Tooltip}"
+                                    Background="{DynamicResource FluxBgControl}"
+                                    Foreground="{DynamicResource FluxText}"
+                                    BorderBrush="{DynamicResource FluxBorder}"
+                                    BorderThickness="1"
+                                    Padding="12,6"
+                                    CornerRadius="8"
+                                    MinHeight="32">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <icons:Icon Value="{Binding Icon}" FontSize="14" />
+                                    <TextBlock Text="{Binding Text}" FontSize="13"
+                                               VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+                        </Panel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+    </Border>
+</UserControl>

@@ -2,34 +2,83 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:icons="https://github.com/projektanker/icons.avalonia"
              xmlns:pm="using:FluxionDrawAndAnimate.Ui.ProjectManager"
+             xmlns:pres="using:FluxionDrawAndAnimate.Presentation"
              xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
              x:Class="FluxionDrawAndAnimate.Ui.ProjectManager.ProjectManagerPhoneLayout"
              x:DataType="vm:MainViewModel">
     <Grid RowDefinitions="*,Auto" Background="{DynamicResource FluxBgPage}">
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-            <StackPanel Margin="20,24,20,108" Spacing="22">
+            <StackPanel Margin="20,20,20,108" Spacing="20">
+
+                <!-- Top row: logo + settings button -->
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                     <pm:ProjectBrandHeader />
                     <Button Grid.Column="1"
-                            Classes="action"
+                            Classes="icon"
                             Command="{Binding ShowSettingsCommand}"
+                            Width="44" Height="44"
+                            Padding="0"
                             VerticalAlignment="Top">
-                        <StackPanel Orientation="Horizontal" Spacing="6">
-                            <icons:Icon Value="mdi-cog-outline" FontSize="14" />
-                            <TextBlock Text="Settings" FontSize="13" VerticalAlignment="Center" />
-                        </StackPanel>
+                        <icons:Icon Value="mdi-cog-outline" FontSize="18" />
                     </Button>
                 </Grid>
 
-                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                    <Button Classes="action"
-                            Command="{Binding OpenProjectCommand}"
-                            Content="Open" />
-                    <Button Grid.Column="1"
-                            Classes="action"
-                            Command="{Binding OpenSelectedRecentProjectCommand}"
-                            Content="Recent" />
-                </Grid>
+                <!-- Welcome header (same as desktop) -->
+                <pm:HomeWelcomeHeader />
+
+                <!-- Quick actions: 2×2 grid, touch-friendly (min 64px tall) -->
+                <ItemsControl ItemsSource="{Binding HomePageRegistry.QuickActions}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="pres:QuickActionDefinition">
+                            <Panel Margin="0,0,10,10">
+                                <!-- Primary -->
+                                <Button Command="{Binding Command}"
+                                        Width="155" MinHeight="68"
+                                        Padding="14,12"
+                                        CornerRadius="10"
+                                        HorizontalContentAlignment="Left"
+                                        IsVisible="{Binding IsPrimary}">
+                                    <Button.Background>
+                                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                                            <GradientStop Color="#6C47FF" Offset="0" />
+                                            <GradientStop Color="#A78BFA" Offset="1" />
+                                        </LinearGradientBrush>
+                                    </Button.Background>
+                                    <Button.BorderThickness><Thickness>0</Thickness></Button.BorderThickness>
+                                    <StackPanel Spacing="4">
+                                        <icons:Icon Value="{Binding Icon}" Foreground="White" FontSize="20" />
+                                        <TextBlock Text="{Binding Title}"
+                                                   Foreground="White" FontSize="13" FontWeight="SemiBold"
+                                                   TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </Button>
+                                <!-- Secondary -->
+                                <Button Command="{Binding Command}"
+                                        Width="155" MinHeight="68"
+                                        Padding="14,12"
+                                        CornerRadius="10"
+                                        Background="{DynamicResource FluxBgCard}"
+                                        BorderBrush="{DynamicResource FluxBorder}"
+                                        BorderThickness="1"
+                                        HorizontalContentAlignment="Left"
+                                        IsVisible="{Binding !IsPrimary}">
+                                    <StackPanel Spacing="4">
+                                        <icons:Icon Value="{Binding Icon}" Foreground="{DynamicResource FluxText}" FontSize="18" />
+                                        <TextBlock Text="{Binding Title}"
+                                                   Foreground="{DynamicResource FluxText}"
+                                                   FontSize="13" FontWeight="SemiBold"
+                                                   TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </Button>
+                            </Panel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
 
                 <pm:RecentProjectsSection />
                 <pm:TemplatesSection />

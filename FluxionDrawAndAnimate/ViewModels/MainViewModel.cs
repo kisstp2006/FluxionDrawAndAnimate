@@ -14,6 +14,7 @@ using FluxionDrawAndAnimate.Presentation;
 using FluxionDrawAndAnimate.Presentation.Settings;
 using FluxionDrawAndAnimate.Presentation.Shell;
 using FluxionDrawAndAnimate.Presentation.StatusBar;
+using FluxionDrawAndAnimate.Presentation.Studio;
 using FluxionDrawAndAnimate.Services;
 using FluxionDrawAndAnimate.Ui.Core;
 using System.ComponentModel;
@@ -41,6 +42,15 @@ public partial class MainViewModel : ViewModelBase
     public AppShellRegistry ShellRegistry { get; } = new();
     public StatusBarRegistry StatusBarRegistry { get; } = new();
     public HomePageRegistry HomePageRegistry { get; } = new();
+    public StudioToolbarRegistry StudioToolbarRegistry { get; } = new();
+    public StudioToolPanelRegistry StudioToolPanelRegistry { get; } = new();
+
+    private IReadOnlyList<StudioToolPanelSection> _studioToolSections = [];
+    public IReadOnlyList<StudioToolPanelSection> StudioToolSections
+    {
+        get => _studioToolSections;
+        private set { _studioToolSections = value; OnPropertyChanged(); }
+    }
     public AppearanceSettingsViewModel AppearanceSettings { get; } = new();
     public IReadOnlyList<SettingsCategoryDefinition> SettingsCategories { get; }
         = SettingsCategoryRegistrar.CreateDefault();
@@ -293,6 +303,10 @@ public partial class MainViewModel : ViewModelBase
         AppShellRegistrar.RegisterDefaults(ShellRegistry, this);
         StatusBarRegistrar.RegisterDefaults(StatusBarRegistry, this);
         HomePageRegistrar.RegisterDefaults(HomePageRegistry, this);
+        StudioToolbarRegistrar.RegisterDefaults(StudioToolbarRegistry, this);
+        StudioToolPanelRegistrar.RegisterDefaults(StudioToolPanelRegistry);
+        StudioToolPanelRegistry.SectionsChanged += () => StudioToolSections = StudioToolPanelRegistry.Sections;
+        StudioToolSections = StudioToolPanelRegistry.Sections;
         ActivePage = ShellRegistry.FindPage("home");
         RebuildLiveStatusBarItems();
         // Initialise sidebar + settings active states
@@ -327,6 +341,9 @@ public partial class MainViewModel : ViewModelBase
     // Derived from ActivePage so the shell title bar and legacy bindings stay in sync.
     public bool IsProjectHomeVisible => ActivePage?.Id == "home" || ActivePage is null;
     public bool IsEditorVisible => ActivePage?.Id == "studio";
+
+    /// <summary>True when the viewport is phone-sized (< 600 px), regardless of manual mode override.</summary>
+    public bool IsPhoneLayout => ActiveProfileKind == ResponsiveProfileKind.Phone;
 
     /// <summary>Recent projects filtered by the home page search query.</summary>
     public IReadOnlyList<ProjectCard> FilteredRecentProjects
@@ -427,9 +444,19 @@ public partial class MainViewModel : ViewModelBase
         BrushBaseColor.G,
         BrushBaseColor.B);
     public double BrushSize => BrushSizeSetting;
-    public ToolKind ActiveToolKind => ActiveTool.Kind;
-    public string ActiveToolName => ActiveTool.Name;
-    /// <summary>B//5: the active preset's brush settings, bound to the canvas.</summary>
+    // ActiveToolKind is now set independently by the tool panel;
+    // it no longer derives from the active brush preset.
+    [CommunityToolkit.Mvvm.ComponentModel.ObservableProperty]
+    private FluxionDrawAndAnimate.Core.Drawing.ToolKind _activeToolKind
+        = FluxionDrawAndAnimate.Core.Drawing.ToolKind.Pencil;
+
+    /// <summary>Human-readable name from the registered ToolDefinition (falls back to brush preset name).</summary>
+    public string ActiveToolName =>
+        StudioToolPanelRegistry.Items.FirstOrDefault(t => t.ToolKind == ActiveToolKind)?.Name
+        ?? ActiveTool?.Name
+        ?? "Brush";
+
+    /// <summary>B/5: the active preset's brush settings, bound to the canvas.</summary>
     public BrushSettings? ActiveBrushSettings => ActiveTool?.BrushPreset?.Settings;
     public int DisplayFrame => SelectedFrameIndex + 1;
     public int TotalFrames => Project.FrameCount;
@@ -450,6 +477,7 @@ public partial class MainViewModel : ViewModelBase
         OnPropertyChanged(nameof(TimelineHeight));
         OnPropertyChanged(nameof(PropertiesPanelWidth));
         OnPropertyChanged(nameof(IsLayoutAutomatic));
+        OnPropertyChanged(nameof(IsPhoneLayout));
         OnPropertyChanged(nameof(IsHomePhoneLayout));
         OnPropertyChanged(nameof(IsHomeWideLayout));
         OnPropertyChanged(nameof(IsHomeTabletLayout));
@@ -512,17 +540,26 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
+    partial void OnActiveToolKindChanged(Core.Drawing.ToolKind value)
+    {
+        // Sync IsActive on all tool panel definitions
+        foreach (var tool in StudioToolPanelRegistry.Items)
+        {
+            tool.IsActive = tool.ToolKind == value;
+        }
+        OnPropertyChanged(nameof(ActiveToolName));
+        RefreshLiveStatusBarItems(nameof(ActiveToolName));
+    }
+
     partial void OnActiveToolChanged(ToolPreset value)
     {
-        OnPropertyChanged(nameof(ActiveToolKind));
-        OnPropertyChanged(nameof(ActiveToolName));
         OnPropertyChanged(nameof(ActiveBrushSettings));
-        RefreshLiveStatusBarItems(nameof(ActiveToolName));
     }
 
     partial void OnBrushBaseColorChanged(RgbaColor value)
     {
         OnPropertyChanged(nameof(BrushColor));
+        OnPropertyChanged(nameof(BrushBaseColorBrush));
     }
 
     partial void OnBrushSizeSettingChanged(double value)
@@ -535,6 +572,20 @@ public partial class MainViewModel : ViewModelBase
     {
         OnPropertyChanged(nameof(BrushColor));
     }
+
+    [RelayCommand]
+    private void ActivateDrawingTool(Core.Drawing.ToolKind kind)
+    {
+        ActiveToolKind = kind;
+    }
+
+    /// <summary>Foreground colour swatch for the tool panel bottom area.</summary>
+    public Avalonia.Media.IBrush BrushBaseColorBrush =>
+        new Avalonia.Media.SolidColorBrush(
+            Avalonia.Media.Color.FromRgb(BrushBaseColor.R, BrushBaseColor.G, BrushBaseColor.B));
+
+    [RelayCommand]
+    private void ToggleOnionSkin() => ShowOnionSkin = !ShowOnionSkin;
 
     [RelayCommand]
     private void SetGridView() => HomePageRegistry.ProjectViewMode = HomeProjectViewMode.Grid;

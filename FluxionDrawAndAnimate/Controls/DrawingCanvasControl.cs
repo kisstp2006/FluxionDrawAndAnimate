@@ -182,7 +182,14 @@ public sealed class DrawingCanvasControl : Control
         base.OnPointerPressed(e);
 
         var project = Project;
-        if (project is null || ActiveToolKind == ToolKind.Select || ActiveToolKind == ToolKind.Text)
+        // Non-painting tools — do nothing on pointer down (stubs handled here)
+        var nonPaintingTools = new[]
+        {
+            ToolKind.Select, ToolKind.Lasso, ToolKind.Move, ToolKind.Rotate,
+            ToolKind.Text, ToolKind.Fill, ToolKind.Shape,
+            ToolKind.Eyedropper, ToolKind.Ruler, ToolKind.Symmetry
+        };
+        if (project is null || System.Array.IndexOf(nonPaintingTools, ActiveToolKind) >= 0)
         {
             return;
         }

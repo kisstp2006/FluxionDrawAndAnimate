@@ -43,8 +43,9 @@
                            VerticalAlignment="Center"
                            Margin="0,0,18,0" />
 
-                <!-- Registered menus (File / Edit / View / Help / …) -->
-                <ItemsControl ItemsSource="{Binding ShellRegistry.Menus}">
+                <!-- Registered menus — hidden on phone (too narrow for touch) -->
+                <ItemsControl ItemsSource="{Binding ShellRegistry.Menus}"
+                              IsVisible="{Binding !IsPhoneLayout}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Orientation="Horizontal" Spacing="2" />
@@ -104,11 +105,12 @@
                 </ItemsControl>
             </StackPanel>
 
-            <!-- ── Center: registered page tabs ── -->
+            <!-- ── Center: registered page tabs (hidden on phone to save space) ── -->
             <ListBox Grid.Column="1"
                      Classes="pageTabs"
                      HorizontalAlignment="Center"
                      VerticalAlignment="Center"
+                     IsVisible="{Binding !IsPhoneLayout}"
                      ItemsSource="{Binding ShellRegistry.Pages}"
                      SelectedItem="{Binding ActivePage}">
                 <ListBox.ItemsPanel>
