@@ -21,20 +21,23 @@
                     IsVisible="{Binding HasRecentProjects}" />
         </Grid>
 
-        <!-- Project grid -->
-        <ItemsControl ItemsSource="{Binding FilteredRecentProjects}"
-                      IsVisible="{Binding HasRecentProjects}">
-            <ItemsControl.ItemsPanel>
+        <!-- Project grid — single-click → shows details panel, double-click → opens project -->
+        <ListBox x:Name="ProjectListBox"
+                 Classes="cardList"
+                 ItemsSource="{Binding FilteredRecentProjects}"
+                 SelectedItem="{Binding SelectedRecentProject}"
+                 IsVisible="{Binding HasRecentProjects}">
+            <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel Orientation="Horizontal" />
                 </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
                 <DataTemplate x:DataType="presentation:ProjectCard">
                     <pm:ProjectRecentCard Margin="0,0,14,14" />
                 </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+            </ListBox.ItemTemplate>
+        </ListBox>
 
         <!-- Empty state -->
         <Border Classes="card"

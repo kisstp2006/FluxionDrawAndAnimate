@@ -46,7 +46,7 @@ public static class AppShellRegistrar
             Title = "File", SortOrder = 0,
             Items =
             [
-                new() { Title = "New Project",  Command = vm.CreateProjectCommand,  SortOrder = 0 },
+                new() { Title = "New Project",  Command = vm.ShowNewProjectDialogCommand,  SortOrder = 0 },
                 new() { Title = "Open…",        Command = vm.OpenProjectCommand,    SortOrder = 1 },
                 new() { IsSeparator = true,                                         SortOrder = 2 },
                 new() { Title = "Save",         Command = vm.SaveProjectCommand,    ShortcutText = "Ctrl+S",        SortOrder = 3 },
@@ -97,7 +97,7 @@ public static class AppShellRegistrar
         {
             Id = "new-project", Title = "New Project",
             Icon = "mdi-plus",
-            Command = vm.CreateProjectCommand,
+            Command = vm.ShowNewProjectDialogCommand,
             IsPrimary = true, SortOrder = 0
         });
         r.RegisterAction(new TitleBarActionDefinition

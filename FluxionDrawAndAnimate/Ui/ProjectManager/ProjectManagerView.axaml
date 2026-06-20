@@ -10,7 +10,25 @@
         the view model (no separate breakpoint logic here).
     -->
     <Grid Background="{DynamicResource FluxBgPage}">
+        <!-- Page layouts -->
         <pm:ProjectManagerWideLayout IsVisible="{Binding IsHomeWideLayout}" />
         <pm:ProjectManagerPhoneLayout IsVisible="{Binding IsHomePhoneLayout}" />
+
+        <!-- New Project dialog overlay -->
+        <Grid IsVisible="{Binding IsNewProjectDialogVisible}">
+            <Border Background="#88000000" />
+            <pm:NewProjectDialog
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Margin="20" />
+        </Grid>
+
+        <!-- Project Details floating panel (wide layout only, right-aligned) -->
+        <Grid IsVisible="{Binding IsProjectDetailsVisible}"
+              HorizontalAlignment="Right"
+              VerticalAlignment="Stretch"
+              Margin="0,16,16,16">
+            <pm:ProjectDetailsPanel VerticalAlignment="Center" />
+        </Grid>
     </Grid>
 </UserControl>

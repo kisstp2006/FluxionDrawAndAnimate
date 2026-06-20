@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:icons="https://github.com/projektanker/icons.avalonia"
+             xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
              xmlns:presentation="using:FluxionDrawAndAnimate.Presentation"
              x:Class="FluxionDrawAndAnimate.Ui.ProjectManager.ProjectRecentCard"
              x:DataType="presentation:ProjectCard">
@@ -21,12 +22,56 @@
                            Foreground="{DynamicResource FluxTextMuted}"
                            FontSize="32" FontWeight="SemiBold"
                            HorizontalAlignment="Center" VerticalAlignment="Center" />
-                <!-- Three-dot menu -->
+                <!-- Three-dot context menu -->
                 <Button HorizontalAlignment="Right" VerticalAlignment="Top"
                         Margin="0,6,6,0" Padding="4,2"
                         Background="#66000000" Foreground="White"
                         CornerRadius="5" BorderThickness="0">
                     <icons:Icon Value="mdi-dots-horizontal" FontSize="14" />
+                    <Button.Flyout>
+                        <!-- x:CompileBindings="False" lets us access MainViewModel via ancestor
+                             without being restricted to the ProjectCard x:DataType context. -->
+                        <MenuFlyout Placement="BottomEdgeAlignedRight"
+                                    x:CompileBindings="False">
+                            <MenuItem Header="Open"
+                                      Command="{Binding $parent[ListBox].DataContext.OpenSelectedRecentProjectCommand}">
+                                <MenuItem.Icon>
+                                    <icons:Icon Value="mdi-folder-open-outline" FontSize="14" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <Separator />
+                            <MenuItem Header="Favourite"
+                                      Command="{Binding $parent[ListBox].DataContext.ToggleFavoriteCommand}"
+                                      CommandParameter="{Binding}">
+                                <MenuItem.Icon>
+                                    <icons:Icon Value="mdi-star-outline" FontSize="14" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <Separator />
+                            <MenuItem Header="Duplicate">
+                                <MenuItem.Icon>
+                                    <icons:Icon Value="mdi-content-copy" FontSize="14" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Rename">
+                                <MenuItem.Icon>
+                                    <icons:Icon Value="mdi-pencil-outline" FontSize="14" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <Separator />
+                            <MenuItem Header="Export">
+                                <MenuItem.Icon>
+                                    <icons:Icon Value="mdi-export-variant" FontSize="14" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <Separator />
+                            <MenuItem Header="Delete">
+                                <MenuItem.Icon>
+                                    <icons:Icon Value="mdi-delete-outline" FontSize="14" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </MenuFlyout>
+                    </Button.Flyout>
                 </Button>
             </Grid>
 

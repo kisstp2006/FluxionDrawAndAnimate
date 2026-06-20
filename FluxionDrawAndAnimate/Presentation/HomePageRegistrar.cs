@@ -42,7 +42,7 @@ public static class HomePageRegistrar
             Title = "New Studio Project",
             Subtitle = "Blank canvas  •  Studio workspace",
             Icon = "mdi-layers-plus",
-            Command = vm.CreateProjectCommand,
+            Command = vm.ShowNewProjectDialogCommand,
             IsPrimary = true,
             SortOrder = 0
         });
@@ -53,7 +53,7 @@ public static class HomePageRegistrar
             Title = "New Drawing Project",
             Subtitle = "Canvas  •  Layers",
             Icon = "mdi-pencil-plus-outline",
-            Command = vm.CreateProjectCommand,
+            Command = vm.ShowNewProjectDialogCommand,
             SortOrder = 1
         });
 

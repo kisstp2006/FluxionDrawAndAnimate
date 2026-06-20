@@ -92,7 +92,7 @@
         </Border>
 
         <!-- ── Main content area (reacts to active sidebar item) ── -->
-        <Grid Grid.Column="1" ColumnDefinitions="*,Auto">
+        <Grid Grid.Column="1" ColumnDefinitions="*">
             <ScrollViewer VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled">
                 <StackPanel Margin="28,26" Spacing="28">
@@ -147,19 +147,6 @@
                 </StackPanel>
             </ScrollViewer>
 
-            <!-- Studio: dedicated New Project panel on the right -->
-            <Border Grid.Column="1"
-                    Width="348"
-                    Background="{DynamicResource FluxBgPanel}"
-                    BorderBrush="{DynamicResource FluxBorder}"
-                    BorderThickness="1,0,0,0"
-                    Padding="26"
-                    IsVisible="{Binding IsHomeStudioLayout}">
-                <ScrollViewer VerticalScrollBarVisibility="Auto"
-                              HorizontalScrollBarVisibility="Disabled">
-                    <pm:NewProjectForm />
-                </ScrollViewer>
-            </Border>
         </Grid>
     </Grid>
 </UserControl>

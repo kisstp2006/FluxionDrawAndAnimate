@@ -1,0 +1,258 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:icons="https://github.com/projektanker/icons.avalonia"
+             xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
+             xmlns:presentation="using:FluxionDrawAndAnimate.Presentation"
+             x:Class="FluxionDrawAndAnimate.Ui.ProjectManager.ProjectDetailsPanel"
+             x:DataType="vm:MainViewModel">
+    <Border Background="{DynamicResource FluxBgPanel}"
+            BorderBrush="{DynamicResource FluxBorder}"
+            BorderThickness="1"
+            CornerRadius="14"
+            ClipToBounds="True"
+            Width="320"
+            BoxShadow="0 8 32 0 #44000000">
+        <Grid RowDefinitions="Auto,*,Auto">
+
+            <!-- Header bar -->
+            <Border Grid.Row="0"
+                    BorderBrush="{DynamicResource FluxBorder}"
+                    BorderThickness="0,0,0,1"
+                    Padding="18,14">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Text="Project Details"
+                               Foreground="{DynamicResource FluxText}"
+                               FontSize="15" FontWeight="SemiBold"
+                               VerticalAlignment="Center" />
+                    <Button Grid.Column="1"
+                            Classes="icon"
+                            Command="{Binding CloseProjectDetailsCommand}"
+                            Width="30" Height="30"
+                            Padding="0" CornerRadius="7">
+                        <icons:Icon Value="mdi-close" FontSize="13" />
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- Content -->
+            <ScrollViewer Grid.Row="1"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+                <StackPanel DataContext="{Binding SelectedRecentProject}"
+                            x:DataType="presentation:ProjectCard">
+                    <!-- Thumbnail -->
+                    <Border Height="160"
+                            Background="{DynamicResource FluxBgElevated}"
+                            ClipToBounds="True">
+                        <Grid>
+                            <Image Source="{Binding Thumbnail}"
+                                   Stretch="UniformToFill"
+                                   IsVisible="{Binding HasThumbnail}" />
+                            <TextBlock Text="{Binding ThumbnailLabel}"
+                                       IsVisible="{Binding HasNoThumbnail}"
+                                       Foreground="{DynamicResource FluxTextMuted}"
+                                       FontSize="40" FontWeight="SemiBold"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                            <!-- Camera overlay icon -->
+                            <Border HorizontalAlignment="Right"
+                                    VerticalAlignment="Bottom"
+                                    Margin="10"
+                                    Background="{DynamicResource FluxBgPanel}"
+                                    CornerRadius="8"
+                                    Padding="6">
+                                <icons:Icon Value="mdi-camera-outline" FontSize="16"
+                                            Foreground="{DynamicResource FluxTextMuted}" />
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <StackPanel Margin="18,14,18,0" Spacing="12">
+
+                        <!-- Name + badge + favourite -->
+                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                            <TextBlock Text="{Binding Title}"
+                                       Foreground="{DynamicResource FluxText}"
+                                       FontSize="18" FontWeight="Bold"
+                                       TextTrimming="CharacterEllipsis"
+                                       VerticalAlignment="Center" />
+                            <Border Grid.Column="1"
+                                    Background="{DynamicResource FluxAccent}"
+                                    CornerRadius="5" Padding="7,3"
+                                    IsVisible="{Binding HasBadge}"
+                                    VerticalAlignment="Center">
+                                <TextBlock Text="{Binding BadgeLabel}"
+                                           Foreground="White"
+                                           FontSize="11" FontWeight="SemiBold" />
+                            </Border>
+                            <!-- Favourite toggle — DataContext is ProjectCard so bind Command via ancestor -->
+                            <Button Grid.Column="2"
+                                    Classes="icon"
+                                    Width="30" Height="30"
+                                    Padding="0" CornerRadius="7"
+                                    Command="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).ToggleFavoriteCommand}"
+                                    CommandParameter="{Binding}">
+                                <Panel>
+                                    <icons:Icon Value="mdi-star"
+                                                FontSize="14"
+                                                Foreground="#FBBF24"
+                                                IsVisible="{Binding IsFavorite}" />
+                                    <icons:Icon Value="mdi-star-outline"
+                                                FontSize="14"
+                                                Foreground="{DynamicResource FluxTextMuted}"
+                                                IsVisible="{Binding !IsFavorite}" />
+                                </Panel>
+                            </Button>
+                        </Grid>
+
+                        <Border Height="1" Background="{DynamicResource FluxBorder}" />
+
+                        <!-- Metadata rows -->
+                        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto"
+                              ColumnSpacing="12" RowSpacing="10">
+                            <TextBlock Grid.Row="0" Grid.Column="0"
+                                       Text="Resolution"
+                                       Foreground="{DynamicResource FluxTextMuted}"
+                                       FontSize="12" />
+                            <TextBlock Grid.Row="0" Grid.Column="1"
+                                       Text="{Binding SizeLabel}"
+                                       Foreground="{DynamicResource FluxText}"
+                                       FontSize="12" FontWeight="Medium" />
+
+                            <TextBlock Grid.Row="1" Grid.Column="0"
+                                       Text="Timing"
+                                       Foreground="{DynamicResource FluxTextMuted}"
+                                       FontSize="12" />
+                            <TextBlock Grid.Row="1" Grid.Column="1"
+                                       Text="{Binding TimingLabel}"
+                                       Foreground="{DynamicResource FluxText}"
+                                       FontSize="12" FontWeight="Medium" />
+
+                            <TextBlock Grid.Row="2" Grid.Column="0"
+                                       Text="Modified"
+                                       Foreground="{DynamicResource FluxTextMuted}"
+                                       FontSize="12"
+                                       IsVisible="{Binding HasUpdatedLabel}" />
+                            <TextBlock Grid.Row="2" Grid.Column="1"
+                                       Text="{Binding UpdatedLabel}"
+                                       Foreground="{DynamicResource FluxText}"
+                                       FontSize="12" FontWeight="Medium"
+                                       IsVisible="{Binding HasUpdatedLabel}" />
+
+                            <TextBlock Grid.Row="3" Grid.Column="0"
+                                       Text="Location"
+                                       Foreground="{DynamicResource FluxTextMuted}"
+                                       FontSize="12"
+                                       IsVisible="{Binding ProjectPath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                            <TextBlock Grid.Row="3" Grid.Column="1"
+                                       Text="{Binding ProjectPath}"
+                                       Foreground="{DynamicResource FluxText}"
+                                       FontSize="11"
+                                       TextTrimming="CharacterEllipsis"
+                                       IsVisible="{Binding ProjectPath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                        </Grid>
+
+                        <Border Height="1" Background="{DynamicResource FluxBorder}" />
+
+                        <!-- Tags row (placeholder) -->
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="Tags"
+                                       Foreground="{DynamicResource FluxTextMuted}"
+                                       FontSize="12" />
+                            <WrapPanel Orientation="Horizontal">
+                                <Button Classes="action"
+                                        MinHeight="26" MinWidth="0"
+                                        Padding="8,4" FontSize="12"
+                                        CornerRadius="20"
+                                        Margin="0,0,6,6">
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <icons:Icon Value="mdi-plus" FontSize="12" />
+                                        <TextBlock Text="Add tag" FontSize="12" />
+                                    </StackPanel>
+                                </Button>
+                            </WrapPanel>
+                        </StackPanel>
+
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Action buttons -->
+            <Border Grid.Row="2"
+                    BorderBrush="{DynamicResource FluxBorder}"
+                    BorderThickness="0,1,0,0"
+                    Padding="14,12">
+                <StackPanel Spacing="8">
+                    <!-- Open Project (primary) -->
+                    <Button Classes="primary"
+                            Command="{Binding OpenSelectedRecentProjectCommand}"
+                            HorizontalAlignment="Stretch"
+                            MinHeight="42">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <icons:Icon Value="mdi-folder-open-outline" FontSize="16" />
+                            <TextBlock Text="Open Project" FontSize="14" FontWeight="SemiBold"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Secondary actions row -->
+                    <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="8">
+                        <Button Grid.Column="0"
+                                Classes="action"
+                                HorizontalAlignment="Stretch"
+                                MinHeight="38">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <icons:Icon Value="mdi-content-copy" FontSize="14" />
+                                <TextBlock Text="Duplicate" FontSize="13"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                        <Button Grid.Column="1"
+                                Classes="action"
+                                HorizontalAlignment="Stretch"
+                                MinHeight="38">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <icons:Icon Value="mdi-pencil-outline" FontSize="14" />
+                                <TextBlock Text="Rename" FontSize="13"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                        <Button Grid.Column="2"
+                                Classes="action"
+                                Width="38" MinHeight="38"
+                                Padding="0">
+                            <icons:Icon Value="mdi-dots-horizontal" FontSize="16" />
+                        </Button>
+                    </Grid>
+
+                    <!-- Export -->
+                    <Button Classes="action"
+                            HorizontalAlignment="Stretch"
+                            MinHeight="38">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <icons:Icon Value="mdi-export-variant" FontSize="14" />
+                            <TextBlock Text="Export" FontSize="13"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Delete (danger) -->
+                    <Button Background="#2A1010"
+                            BorderBrush="#5A2020"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            HorizontalAlignment="Stretch"
+                            MinHeight="38"
+                            HorizontalContentAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <icons:Icon Value="mdi-delete-outline" FontSize="14"
+                                        Foreground="#F87171" />
+                            <TextBlock Text="Delete" FontSize="13" Foreground="#F87171"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

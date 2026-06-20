@@ -32,6 +32,12 @@ public partial class MainViewModel : ViewModelBase
     private readonly SettingValueStore _settingValues;
     private readonly SettingEditorResolver _settingEditorResolver;
     private readonly IUserSettingsStore _userSettingsStore;
+    private Services.IFavoritesStore _favoritesStore = new Services.NullFavoritesStore();
+
+    public void SetFavoritesStore(Services.IFavoritesStore store)
+    {
+        _favoritesStore = store;
+    }
     private readonly LayoutProfileFactory _layoutProfileFactory = new();
     private readonly Dictionary<string, SettingItemViewModel> _settingItems = new(StringComparer.OrdinalIgnoreCase);
     private bool _isApplyingSettings;
@@ -441,6 +447,7 @@ public partial class MainViewModel : ViewModelBase
 
         _ = LoadRecentProjectsAsync();
         _ = LoadUserSettingsAsync();
+        _ = LoadFavoritesAsync();
     }
 
     public ObservableCollection<ToolPreset> Tools { get; }
@@ -862,6 +869,20 @@ public partial class MainViewModel : ViewModelBase
         IsSettingsVisible = false;
     }
 
+    // ── New Project dialog ───────────────────────────────────────────────
+
+    [RelayCommand]
+    private void ShowNewProjectDialog()
+    {
+        IsNewProjectDialogVisible = true;
+    }
+
+    [RelayCommand]
+    private void CloseNewProjectDialog()
+    {
+        IsNewProjectDialogVisible = false;
+    }
+
     [RelayCommand]
     private void CreateProject()
     {
@@ -877,8 +898,48 @@ public partial class MainViewModel : ViewModelBase
         Project = _projectFactory.CreateNewProject(options);
         SelectedFrameIndex = 0;
         SelectedLayerIndex = 0;
+        IsNewProjectDialogVisible = false;
         ActivePage = ShellRegistry.FindPage("studio");
         StatusMessage = "New project created";
+    }
+
+    // ── Project details ──────────────────────────────────────────────────
+
+    partial void OnSelectedRecentProjectChanged(ProjectCard? value)
+    {
+        OnPropertyChanged(nameof(IsProjectDetailsVisible));
+    }
+
+    [RelayCommand]
+    private void CloseProjectDetails()
+    {
+        SelectedRecentProject = null;
+    }
+
+    [RelayCommand]
+    private async System.Threading.Tasks.Task ToggleFavorite(Presentation.ProjectCard? card)
+    {
+        if (card is null) return;
+        card.IsFavorite = !card.IsFavorite;
+        await SaveFavoritesAsync();
+    }
+
+    private async System.Threading.Tasks.Task SaveFavoritesAsync()
+    {
+        var paths = RecentProjects
+            .Where(p => p.IsFavorite && !string.IsNullOrEmpty(p.ProjectPath))
+            .Select(p => p.ProjectPath!);
+        await _favoritesStore.SaveAsync(paths);
+    }
+
+    private async System.Threading.Tasks.Task LoadFavoritesAsync()
+    {
+        var favs = await _favoritesStore.LoadAsync();
+        foreach (var card in RecentProjects)
+        {
+            if (!string.IsNullOrEmpty(card.ProjectPath))
+                card.IsFavorite = favs.Contains(card.ProjectPath);
+        }
     }
 
     [RelayCommand]
@@ -1028,6 +1089,8 @@ public partial class MainViewModel : ViewModelBase
         SelectedRecentProject = RecentProjects.FirstOrDefault();
         OnPropertyChanged(nameof(HasRecentProjects));
         OnPropertyChanged(nameof(IsRecentProjectsEmpty));
+        // Re-apply favorites after cards are (re)loaded
+        await LoadFavoritesAsync();
     }
 
     private async Task TrackRecentProjectAsync(DrawingProject project, string path)

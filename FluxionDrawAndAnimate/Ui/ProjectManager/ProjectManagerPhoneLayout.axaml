@@ -97,7 +97,7 @@
                 Margin="16"
                 Padding="10">
             <Button Classes="primary"
-                    Command="{Binding CreateProjectCommand}"
+                    Command="{Binding ShowNewProjectDialogCommand}"
                     Content="Create New"
                     HorizontalAlignment="Stretch" />
         </Border>

@@ -1,9 +1,10 @@
 using Avalonia.Media;
+using CommunityToolkit.Mvvm.ComponentModel;
 using FluxionDrawAndAnimate.Core.Projects;
 
 namespace FluxionDrawAndAnimate.Presentation;
 
-public sealed class ProjectCard
+public sealed partial class ProjectCard : ObservableObject
 {
     public ProjectCard(
         ProjectCardKind kind,
@@ -52,6 +53,9 @@ public sealed class ProjectCard
     public bool HasNoThumbnail => !HasThumbnail;
     public bool HasBadge => !string.IsNullOrWhiteSpace(BadgeLabel);
     public bool HasUpdatedLabel => !string.IsNullOrWhiteSpace(UpdatedLabel);
+
+    [ObservableProperty]
+    private bool _isFavorite;
 
     public IBrush BadgeBrush
     {

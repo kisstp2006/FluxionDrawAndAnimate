@@ -56,7 +56,7 @@ public partial class App : Application
         var fileService = new AvaloniaProjectFileService(getTopLevel, archiveStore);
         var settingsRegistry = new AppSettingsRegistryFactory().CreateDefaultRegistry();
 
-        return new MainViewModel(
+        var vm = new MainViewModel(
             new DefaultProjectFactory(),
             new TimelineEditingService(),
             new ToolPaletteFactory(),
@@ -68,5 +68,8 @@ public partial class App : Application
             settingsRegistry,
             new SettingEditorResolver(),
             new JsonUserSettingsStore());
+
+        vm.SetFavoritesStore(new JsonFavoritesStore());
+        return vm;
     }
 }
