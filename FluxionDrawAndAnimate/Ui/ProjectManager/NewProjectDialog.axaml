@@ -5,8 +5,17 @@
              xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
              x:Class="FluxionDrawAndAnimate.Ui.ProjectManager.NewProjectDialog"
              x:DataType="vm:MainViewModel">
-    <Border Width="480"
-            MaxHeight="680"
+
+    <!-- Single root: Panel stacks both layouts — only one visible at a time -->
+    <Panel>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         DESKTOP / TABLET  —  480 px wide, 3-row grid, unchanged
+    ═══════════════════════════════════════════════════════════════════ -->
+    <Border IsVisible="{Binding !IsPhoneLayout}"
+            Width="480"
+            MaxHeight="700"
+            HorizontalAlignment="Center"
             Background="{DynamicResource FluxBgPanel}"
             BorderBrush="{DynamicResource FluxBorder}"
             BorderThickness="1"
@@ -78,4 +87,80 @@
             </Border>
         </Grid>
     </Border>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         PHONE  —  full-screen width, compact header + footer,
+                   scrollable form fills the screen
+    ═══════════════════════════════════════════════════════════════════ -->
+    <Border IsVisible="{Binding IsPhoneLayout}"
+            Background="{DynamicResource FluxBgPanel}"
+            BorderBrush="{DynamicResource FluxBorder}"
+            BorderThickness="0"
+            CornerRadius="0"
+            ClipToBounds="True">
+        <Grid RowDefinitions="Auto,*,Auto">
+
+            <!-- Compact header -->
+            <Border Grid.Row="0"
+                    BorderBrush="{DynamicResource FluxBorder}"
+                    BorderThickness="0,0,0,1"
+                    Padding="16,0">
+                <Grid ColumnDefinitions="Auto,*,Auto" MinHeight="48">
+                    <icons:Icon Grid.Column="0"
+                                Value="mdi-plus-circle-outline"
+                                FontSize="18"
+                                Foreground="{DynamicResource FluxAccent}"
+                                VerticalAlignment="Center"
+                                Margin="0,0,8,0" />
+                    <StackPanel Grid.Column="1" Spacing="0" VerticalAlignment="Center">
+                        <TextBlock Text="New Project"
+                                   Foreground="{DynamicResource FluxText}"
+                                   FontSize="16" FontWeight="SemiBold" />
+                    </StackPanel>
+                    <Button Grid.Column="2"
+                            Classes="icon"
+                            Command="{Binding CloseNewProjectDialogCommand}"
+                            Width="32" Height="32"
+                            Padding="0" CornerRadius="8"
+                            VerticalAlignment="Center">
+                        <icons:Icon Value="mdi-close" FontSize="14" />
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- Scrollable content (same NewProjectForm, less padding) -->
+            <ScrollViewer Grid.Row="1"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled"
+                          Padding="16,14">
+                <pm:NewProjectForm />
+            </ScrollViewer>
+
+            <!-- Compact footer -->
+            <Border Grid.Row="2"
+                    BorderBrush="{DynamicResource FluxBorder}"
+                    BorderThickness="0,1,0,0"
+                    Padding="12,0">
+                <Grid ColumnDefinitions="*,Auto" MinHeight="52">
+                    <Button Classes="action"
+                            Command="{Binding CloseNewProjectDialogCommand}"
+                            Content="Cancel"
+                            Padding="14,6" FontSize="13"
+                            VerticalAlignment="Center" />
+                    <Button Grid.Column="1"
+                            Classes="primary"
+                            Command="{Binding CreateProjectCommand}"
+                            Padding="16,6" FontSize="13"
+                            VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <icons:Icon Value="mdi-plus" FontSize="13" />
+                            <TextBlock Text="Create" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+
+    </Panel>
 </UserControl>

@@ -17,8 +17,11 @@
         <!-- New Project dialog overlay -->
         <Grid IsVisible="{Binding IsNewProjectDialogVisible}">
             <Border Background="#88000000" />
+            <!-- HorizontalAlignment=Stretch lets the dialog fill the available width.
+                 On desktop the dialog's internal 480×680 Border keeps it compact;
+                 on phone (no Width) it fills the full screen. -->
             <pm:NewProjectDialog
-                HorizontalAlignment="Center"
+                HorizontalAlignment="Stretch"
                 VerticalAlignment="Center"
                 Margin="20" />
         </Grid>

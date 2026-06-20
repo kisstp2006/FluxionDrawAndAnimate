@@ -3,7 +3,9 @@
              xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
              x:Class="FluxionDrawAndAnimate.Ui.ProjectManager.NewProjectForm"
              x:DataType="vm:MainViewModel">
-    <StackPanel Spacing="18">
+
+    <Panel>
+    <StackPanel IsVisible="{Binding !IsPhoneLayout}" Spacing="18">
         <TextBlock Text="New Project"
                    Foreground="{DynamicResource FluxText}"
                    FontSize="22"
@@ -62,4 +64,70 @@
                 Content="Create Project"
                 HorizontalAlignment="Stretch" />
     </StackPanel>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         PHONE  —  compact single-column layout, smaller fonts, less spacing
+    ═══════════════════════════════════════════════════════════════════ -->
+    <StackPanel IsVisible="{Binding IsPhoneLayout}" Spacing="12">
+        <!-- No big title — the dialog header already says "New Project" -->
+
+        <StackPanel Spacing="4">
+            <TextBlock Text="Project Name" Classes="caption" FontSize="12" />
+            <TextBox Classes="input" Text="{Binding NewProjectName}"
+                     FontSize="14" MinHeight="42" />
+        </StackPanel>
+
+        <StackPanel Spacing="4">
+            <TextBlock Text="Canvas Size" Classes="caption" FontSize="12" />
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                <TextBox Classes="input" Text="{Binding NewProjectWidth}"
+                         PlaceholderText="Width" FontSize="14" MinHeight="42" />
+                <TextBox Grid.Column="1" Classes="input"
+                         Text="{Binding NewProjectHeight}"
+                         PlaceholderText="Height" FontSize="14" MinHeight="42" />
+            </Grid>
+        </StackPanel>
+
+        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+            <StackPanel Spacing="4">
+                <TextBlock Text="Frames" Classes="caption" FontSize="12" />
+                <TextBox Classes="input" Text="{Binding NewProjectFrameCount}"
+                         FontSize="14" MinHeight="42" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Spacing="4">
+                <TextBlock Text="FPS" Classes="caption" FontSize="12" />
+                <ComboBox Classes="input" HorizontalAlignment="Stretch"
+                          FontSize="14" MinHeight="42"
+                          ItemsSource="{Binding AvailableFrameRates}"
+                          SelectedItem="{Binding NewProjectFramesPerSecond}" />
+            </StackPanel>
+        </Grid>
+
+        <!-- Template summary card (compact) -->
+        <Border Classes="card" Padding="12">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Spacing="1">
+                    <TextBlock Text="{Binding SelectedProjectTemplate.Title}"
+                               Foreground="{DynamicResource FluxText}"
+                               FontWeight="SemiBold" FontSize="13" />
+                    <TextBlock Text="{Binding SelectedProjectTemplate.SizeLabel}"
+                               Foreground="{DynamicResource FluxTextMuted}"
+                               FontSize="11" />
+                </StackPanel>
+                <TextBlock Grid.Column="1"
+                           Text="{Binding SelectedProjectTemplate.TimingLabel}"
+                           Foreground="{DynamicResource FluxTextMuted}"
+                           FontSize="11"
+                           VerticalAlignment="Center" />
+            </Grid>
+        </Border>
+
+        <Button Classes="primary"
+                Command="{Binding CreateProjectCommand}"
+                Content="Create Project"
+                HorizontalAlignment="Stretch"
+                MinHeight="48" FontSize="15" />
+    </StackPanel>
+
+    </Panel>
 </UserControl>
