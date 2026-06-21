@@ -5,12 +5,12 @@
              xmlns:presentation="using:FluxionDrawAndAnimate.Presentation"
              x:Class="FluxionDrawAndAnimate.Ui.ProjectManager.ProjectDetailsPanel"
              x:DataType="vm:MainViewModel">
-    <Border Background="{DynamicResource FluxBgPanel}"
+    <Border x:Name="DetailsSurface"
+            Background="{DynamicResource FluxBgPanel}"
             BorderBrush="{DynamicResource FluxBorder}"
             BorderThickness="1"
             CornerRadius="14"
             ClipToBounds="True"
-            Width="320"
             BoxShadow="0 8 32 0 #44000000">
         <Grid RowDefinitions="Auto,*,Auto">
 

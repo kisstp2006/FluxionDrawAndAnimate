@@ -111,6 +111,7 @@
 
                 <!-- Compact horizontal tool strip + undo/redo -->
                 <Border Grid.Row="1"
+                        TopLevel.AutoSafeAreaPadding="True"
                         Background="{DynamicResource FluxBgPanel}"
                         BorderBrush="{DynamicResource FluxBorder}"
                         BorderThickness="0,1,0,0"
@@ -146,6 +147,18 @@
                         </ScrollViewer>
                         <!-- Undo / Redo on the right -->
                         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Margin="8,0,0,0">
+                            <Button Classes="icon" Command="{Binding ShowProjectHomeCommand}"
+                                    ToolTip.Tip="Home" MinWidth="44" MinHeight="44">
+                                <icons:Icon Value="mdi-home-outline" FontSize="16" />
+                            </Button>
+                            <Button Classes="icon" Command="{Binding ToggleWorkspaceModeCommand}"
+                                    ToolTip.Tip="{Binding ModeButtonText}" MinWidth="44" MinHeight="44">
+                                <icons:Icon Value="mdi-monitor-cellphone" FontSize="16" />
+                            </Button>
+                            <Button Classes="icon" Command="{Binding ShowSettingsCommand}"
+                                    ToolTip.Tip="Settings" MinWidth="44" MinHeight="44">
+                                <icons:Icon Value="mdi-cog-outline" FontSize="16" />
+                            </Button>
                             <Button Classes="icon" Command="{Binding UndoCommand}"
                                     IsEnabled="{Binding CanUndo}" MinWidth="44" MinHeight="44">
                                 <icons:Icon Value="mdi-undo" FontSize="16" />

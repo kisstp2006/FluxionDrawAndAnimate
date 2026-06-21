@@ -32,6 +32,7 @@ public partial class MainViewModel : ViewModelBase
     private readonly SettingValueStore _settingValues;
     private readonly SettingEditorResolver _settingEditorResolver;
     private readonly IUserSettingsStore _userSettingsStore;
+    private readonly BrushManager _brushManager = new();
     private Services.IFavoritesStore _favoritesStore = new Services.NullFavoritesStore();
     private Services.IPlatformShell _platformShell = new Services.NullPlatformShell();
 
@@ -63,15 +64,16 @@ public partial class MainViewModel : ViewModelBase
     /// </summary>
     private void ApplyPlatformShellForCurrentLayout()
     {
-        // Immersive mode only makes sense on phone layouts where screen real
-        // estate is at a premium. Studio/tablet keep the normal chrome.
-        _platformShell.ApplyImmersive(IsPhoneLayout);
+        // Immersive mode only makes sense while drawing on phone layouts where
+        // screen real estate is at a premium. Project/home views keep normal chrome.
+        _platformShell.ApplyImmersive(IsPhoneStudioLayout);
     }
     private readonly LayoutProfileFactory _layoutProfileFactory = new();
     private readonly Dictionary<string, SettingItemViewModel> _settingItems = new(StringComparer.OrdinalIgnoreCase);
     private bool _isApplyingSettings;
     private double _availableWidth;
     private bool _hasManualModeOverride;
+    private bool _syncingBrushRuntimeState;
 
     public UndoStack UndoStack { get; }
     public AppShellRegistry ShellRegistry { get; } = new();
@@ -132,7 +134,13 @@ public partial class MainViewModel : ViewModelBase
         set { BrushFlow = Math.Clamp(value / 100.0, 0.05, 1.0); OnPropertyChanged(); }
     }
 
-    partial void OnBrushFlowChanged(double value) => OnPropertyChanged(nameof(BrushFlowPercent));
+    partial void OnBrushFlowChanged(double value)
+    {
+        if (!_syncingBrushRuntimeState)
+            GetActiveBrushRuntimeState()?.SetFlow(value);
+
+        OnPropertyChanged(nameof(BrushFlowPercent));
+    }
 
     // ── Avalonia.Media.Color bridge for ColorView binding ─────────────────
     // ColorView speaks Avalonia.Media.Color; BrushBaseColor is our custom RgbaColor.
@@ -253,6 +261,8 @@ public partial class MainViewModel : ViewModelBase
     private Presentation.ProjectCard? _renameTarget;
 
     public bool IsProjectDetailsVisible => SelectedRecentProject is not null;
+    public bool IsProjectDetailsFullScreen => IsProjectDetailsVisible && IsPhoneLayout;
+    public bool IsProjectDetailsDockedVisible => IsProjectDetailsVisible && !IsProjectDetailsFullScreen;
 
     [ObservableProperty]
     private WorkspaceMode _workspaceMode = WorkspaceMode.Studio;
@@ -524,6 +534,8 @@ public partial class MainViewModel : ViewModelBase
 
     /// <summary>True when the viewport is phone-sized (< 600 px), regardless of manual mode override.</summary>
     public bool IsPhoneLayout => ActiveProfileKind == ResponsiveProfileKind.Phone;
+    public bool IsPhoneStudioLayout => IsPhoneLayout && IsEditorVisible;
+    public bool IsShellChromeVisible => !IsPhoneStudioLayout;
 
     /// <summary>Recent projects filtered by the home page search query.</summary>
     public IReadOnlyList<ProjectCard> FilteredRecentProjects
@@ -632,8 +644,8 @@ public partial class MainViewModel : ViewModelBase
 
     /// <summary>Human-readable name from the registered ToolDefinition (falls back to brush preset name).</summary>
     public string ActiveToolName =>
-        StudioToolPanelRegistry.Items.FirstOrDefault(t => t.ToolKind == ActiveToolKind)?.Name
-        ?? ActiveTool?.Name
+        ActiveTool?.Name
+        ?? StudioToolPanelRegistry.Items.FirstOrDefault(t => t.ToolKind == ActiveToolKind)?.Name
         ?? "Brush";
 
     /// <summary>B/5: the active preset's brush settings, bound to the canvas.</summary>
@@ -647,7 +659,6 @@ public partial class MainViewModel : ViewModelBase
         OnPropertyChanged(nameof(IsStudioMode));
         OnPropertyChanged(nameof(IsPhoneMode));
         NotifyLayoutChanged();
-        ApplyPlatformShellForCurrentLayout();
     }
 
     private void NotifyLayoutChanged()
@@ -659,8 +670,12 @@ public partial class MainViewModel : ViewModelBase
         OnPropertyChanged(nameof(PropertiesPanelWidth));
         OnPropertyChanged(nameof(IsLayoutAutomatic));
         OnPropertyChanged(nameof(IsPhoneLayout));
+        OnPropertyChanged(nameof(IsPhoneStudioLayout));
+        OnPropertyChanged(nameof(IsShellChromeVisible));
         OnPropertyChanged(nameof(IsHomePhoneLayout));
         OnPropertyChanged(nameof(IsHomeWideLayout));
+        OnPropertyChanged(nameof(IsProjectDetailsFullScreen));
+        OnPropertyChanged(nameof(IsProjectDetailsDockedVisible));
         // Width-driven (automatic) transitions between phone and non-phone
         // layouts also need to update immersive mode — not just the explicit
         // WorkspaceMode toggle handled in OnWorkspaceModeChanged.
@@ -703,6 +718,9 @@ public partial class MainViewModel : ViewModelBase
     {
         OnPropertyChanged(nameof(IsProjectHomeVisible));
         OnPropertyChanged(nameof(IsEditorVisible));
+        OnPropertyChanged(nameof(IsPhoneStudioLayout));
+        OnPropertyChanged(nameof(IsShellChromeVisible));
+        ApplyPlatformShellForCurrentLayout();
         RebuildLiveStatusBarItems();
     }
 
@@ -728,9 +746,12 @@ public partial class MainViewModel : ViewModelBase
         foreach (var tool in StudioToolPanelRegistry.Items)
             tool.IsActive = tool.ToolKind == value;
 
-        var matchingPreset = Tools.FirstOrDefault(tool => tool.Kind == value);
-        if (matchingPreset is not null && !ReferenceEquals(ActiveTool, matchingPreset))
-            ActiveTool = matchingPreset;
+        if (ActiveTool is null || ActiveTool.Kind != value)
+        {
+            var matchingPreset = Tools.FirstOrDefault(tool => tool.Kind == value);
+            if (matchingPreset is not null && !ReferenceEquals(ActiveTool, matchingPreset))
+                ActiveTool = matchingPreset;
+        }
 
         OnPropertyChanged(nameof(ActiveToolName));
         OnPropertyChanged(nameof(PressureCurvePoints));
@@ -742,9 +763,43 @@ public partial class MainViewModel : ViewModelBase
         if (ActiveToolKind != value.Kind)
             ActiveToolKind = value.Kind;
 
+        ApplyBrushRuntimeState(value);
         OnPropertyChanged(nameof(ActiveBrushSettings));
         OnPropertyChanged(nameof(ActiveBrushStabilizer));
         OnPropertyChanged(nameof(ActiveBrushShape));
+        OnPropertyChanged(nameof(ActiveToolName));
+    }
+
+    private BrushRuntimeState? GetActiveBrushRuntimeState()
+    {
+        var tool = ActiveTool;
+        return tool is null ? null : GetBrushRuntimeState(tool);
+    }
+
+    private BrushRuntimeState GetBrushRuntimeState(ToolPreset tool) =>
+        _brushManager.GetOrCreate(tool.BrushPreset, tool.Kind, tool.Size);
+
+    private void ApplyBrushRuntimeState(ToolPreset tool)
+    {
+        var state = GetBrushRuntimeState(tool);
+
+        _syncingBrushRuntimeState = true;
+        try
+        {
+            BrushSizeSetting = state.Size;
+            BrushOpacity = state.Opacity;
+            BrushFlow = state.Flow;
+        }
+        finally
+        {
+            _syncingBrushRuntimeState = false;
+        }
+
+        OnPropertyChanged(nameof(BrushSize));
+        OnPropertyChanged(nameof(BrushColor));
+        OnPropertyChanged(nameof(BrushOpacityPercent));
+        OnPropertyChanged(nameof(BrushFlowPercent));
+        RefreshLiveStatusBarItems(nameof(BrushSize));
     }
 
     partial void OnBrushBaseColorChanged(RgbaColor value)
@@ -762,6 +817,9 @@ public partial class MainViewModel : ViewModelBase
 
     partial void OnBrushOpacityChanged(double value)
     {
+        if (!_syncingBrushRuntimeState)
+            GetActiveBrushRuntimeState()?.SetOpacity(value);
+
         OnPropertyChanged(nameof(BrushColor));
         OnPropertyChanged(nameof(BrushOpacityPercent));
     }
@@ -775,6 +833,9 @@ public partial class MainViewModel : ViewModelBase
 
     partial void OnBrushSizeSettingChanged(double value)
     {
+        if (!_syncingBrushRuntimeState)
+            GetActiveBrushRuntimeState()?.SetSize(value);
+
         OnPropertyChanged(nameof(BrushSize));
         RefreshLiveStatusBarItems(nameof(BrushSize));
     }
@@ -994,6 +1055,8 @@ public partial class MainViewModel : ViewModelBase
     partial void OnSelectedRecentProjectChanged(ProjectCard? value)
     {
         OnPropertyChanged(nameof(IsProjectDetailsVisible));
+        OnPropertyChanged(nameof(IsProjectDetailsFullScreen));
+        OnPropertyChanged(nameof(IsProjectDetailsDockedVisible));
     }
 
     [RelayCommand]

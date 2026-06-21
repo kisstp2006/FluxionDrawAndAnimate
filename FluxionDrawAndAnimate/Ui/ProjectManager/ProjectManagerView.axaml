@@ -34,12 +34,20 @@
                 VerticalAlignment="Stretch" />
         </Grid>
 
-        <!-- Project Details floating panel (wide layout only, right-aligned) -->
-        <Grid IsVisible="{Binding IsProjectDetailsVisible}"
+        <!-- Project Details: phone layout uses a full-screen sheet, wide layout keeps a docked panel. -->
+        <Grid IsVisible="{Binding IsProjectDetailsFullScreen}">
+            <pm:ProjectDetailsPanel IsFullScreen="True"
+                                    TopLevel.AutoSafeAreaPadding="True"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch" />
+        </Grid>
+
+        <Grid IsVisible="{Binding IsProjectDetailsDockedVisible}"
               HorizontalAlignment="Right"
               VerticalAlignment="Stretch"
               Margin="0,16,16,16">
-            <pm:ProjectDetailsPanel VerticalAlignment="Center" />
+            <pm:ProjectDetailsPanel Width="320"
+                                    VerticalAlignment="Center" />
         </Grid>
     </Grid>
 </UserControl>

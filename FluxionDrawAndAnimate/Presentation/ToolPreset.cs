@@ -47,4 +47,7 @@ public sealed class ToolPreset
 
     /// <summary>The effective brush settings for this tool: the preset's, or the per-tool fallback.</summary>
     public BrushSettings EffectiveSettings => BrushPreset?.Settings ?? BrushSettings.ForTool(Kind);
+
+    /// <summary>Stable runtime-state key for this brush preset.</summary>
+    public string BrushId => BrushManager.ResolveBrushId(BrushPreset?.Id, Kind);
 }
