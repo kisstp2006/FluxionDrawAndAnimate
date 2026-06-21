@@ -60,4 +60,18 @@ public sealed class JsonRecentProjectStore : IRecentProjectStore
         await using var stream = File.Create(_filePath);
         await JsonSerializer.SerializeAsync(stream, projects, JsonOptions, cancellationToken);
     }
+
+    public async Task RemoveAsync(string path, CancellationToken cancellationToken = default)
+    {
+        var projects = (await LoadAsync(cancellationToken))
+            .Where(p => !string.Equals(p.Path, path, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        var directory = Path.GetDirectoryName(_filePath);
+        if (!string.IsNullOrWhiteSpace(directory))
+            Directory.CreateDirectory(directory);
+
+        await using var stream = File.Create(_filePath);
+        await JsonSerializer.SerializeAsync(stream, projects, JsonOptions, cancellationToken);
+    }
 }

@@ -45,13 +45,15 @@
             <shell:AppBottomBar />
         </Border>
 
-        <!-- Settings modal — redesigned dialog floats above any page -->
+        <!-- Settings modal
+             Phone  → full-screen, no dim, back-button supported
+             Desktop → centred card over dim backdrop -->
         <Grid Grid.Row="0" Grid.RowSpan="3" IsVisible="{Binding IsSettingsVisible}">
-            <Border Background="#88000000" />
+            <Border Background="#88000000"
+                    IsVisible="{Binding !IsPhoneLayout}" />
             <settings:SettingsDialog
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Margin="20" />
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch" />
         </Grid>
     </Grid>
 </UserControl>

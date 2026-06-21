@@ -244,6 +244,14 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isNewProjectDialogVisible;
 
+    [ObservableProperty]
+    private bool _isRenameDialogVisible;
+
+    [ObservableProperty]
+    private string _pendingRenameText = "";
+
+    private Presentation.ProjectCard? _renameTarget;
+
     public bool IsProjectDetailsVisible => SelectedRecentProject is not null;
 
     [ObservableProperty]
@@ -973,6 +981,124 @@ public partial class MainViewModel : ViewModelBase
     private void CloseProjectDetails()
     {
         SelectedRecentProject = null;
+    }
+
+    // ── Rename ───────────────────────────────────────────────────────────
+
+    [RelayCommand]
+    private void ShowRenameDialog(Presentation.ProjectCard? card)
+    {
+        if (card is null || string.IsNullOrEmpty(card.ProjectPath)) return;
+        _renameTarget = card;
+        PendingRenameText = System.IO.Path.GetFileNameWithoutExtension(card.ProjectPath);
+        IsRenameDialogVisible = true;
+    }
+
+    [RelayCommand]
+    private void CloseRenameDialog()
+    {
+        IsRenameDialogVisible = false;
+        _renameTarget = null;
+    }
+
+    [RelayCommand]
+    private async Task ConfirmRenameAsync()
+    {
+        var card = _renameTarget;
+        var newName = PendingRenameText.Trim();
+
+        if (card is null || string.IsNullOrEmpty(card.ProjectPath) || string.IsNullOrWhiteSpace(newName))
+            return;
+
+        var oldPath = card.ProjectPath;
+        var dir = System.IO.Path.GetDirectoryName(oldPath)!;
+        var ext = System.IO.Path.GetExtension(oldPath);
+        var newPath = System.IO.Path.Combine(dir, newName + ext);
+
+        if (string.Equals(oldPath, newPath, StringComparison.OrdinalIgnoreCase))
+        {
+            IsRenameDialogVisible = false;
+            return;
+        }
+
+        if (System.IO.File.Exists(newPath))
+        {
+            StatusMessage = "A file with that name already exists.";
+            return;
+        }
+
+        try
+        {
+            System.IO.File.Move(oldPath, newPath);
+            await _recentProjectStore.RemoveAsync(oldPath);
+            await _recentProjectStore.AddOrUpdateAsync(new RecentProjectInfo(
+                newPath, newName, card.SizeLabel.Contains("×") ? 0 : 0, 0, 0, 0,
+                card.ThumbnailPath, DateTimeOffset.UtcNow));
+            await LoadRecentProjectsAsync();
+            IsRenameDialogVisible = false;
+            SelectedRecentProject = RecentProjects.FirstOrDefault(p => p.ProjectPath == newPath);
+            StatusMessage = $"Renamed to \"{newName}\"";
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Rename failed: {ex.Message}";
+        }
+
+        _renameTarget = null;
+    }
+
+    // ── Duplicate ────────────────────────────────────────────────────────
+
+    [RelayCommand]
+    private async Task DuplicateProjectAsync(Presentation.ProjectCard? card)
+    {
+        if (card is null || string.IsNullOrEmpty(card.ProjectPath)) return;
+        if (!System.IO.File.Exists(card.ProjectPath))
+        {
+            StatusMessage = "Source file not found.";
+            return;
+        }
+
+        var dir = System.IO.Path.GetDirectoryName(card.ProjectPath)!;
+        var stem = System.IO.Path.GetFileNameWithoutExtension(card.ProjectPath);
+        var ext  = System.IO.Path.GetExtension(card.ProjectPath);
+
+        var copyName = stem + " (Copy)";
+        var copyPath = System.IO.Path.Combine(dir, copyName + ext);
+        var counter = 2;
+        while (System.IO.File.Exists(copyPath))
+            copyPath = System.IO.Path.Combine(dir, $"{stem} (Copy {counter++}){ext}");
+
+        copyName = System.IO.Path.GetFileNameWithoutExtension(copyPath);
+
+        try
+        {
+            System.IO.File.Copy(card.ProjectPath, copyPath);
+
+            // Open the copy so we get full project metadata for the recent entry
+            var result = await _projectFileService.OpenPathAsync(copyPath);
+            if (result is not null)
+            {
+                result.Project.Name = copyName;
+                var thumbnailPath = await _projectThumbnailService.SaveThumbnailAsync(
+                    result.Project, copyPath, 0);
+                await _recentProjectStore.AddOrUpdateAsync(
+                    _projectCardFactory.CreateRecentInfo(result.Project, copyPath, thumbnailPath));
+            }
+            else
+            {
+                await _recentProjectStore.AddOrUpdateAsync(new RecentProjectInfo(
+                    copyPath, copyName, 0, 0, 0, 0, null, DateTimeOffset.UtcNow));
+            }
+
+            await LoadRecentProjectsAsync();
+            SelectedRecentProject = RecentProjects.FirstOrDefault(p => p.ProjectPath == copyPath);
+            StatusMessage = $"Duplicated as \"{copyName}\"";
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Duplicate failed: {ex.Message}";
+        }
     }
 
     [RelayCommand]

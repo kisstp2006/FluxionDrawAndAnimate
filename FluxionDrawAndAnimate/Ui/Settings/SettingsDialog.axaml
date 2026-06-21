@@ -157,11 +157,11 @@
                             Classes="icon"
                             HorizontalAlignment="Right"
                             Command="{Binding CloseSettingsCommand}"
-                            Width="32" Height="32"
+                            Width="44" Height="44"
                             Padding="0"
-                            CornerRadius="8"
+                            CornerRadius="10"
                             VerticalAlignment="Center">
-                        <icons:Icon Value="mdi-close" FontSize="14" />
+                        <icons:Icon Value="mdi-close" FontSize="16" />
                     </Button>
                 </Grid>
             </Border>
@@ -221,11 +221,13 @@
                         <Button Classes="action"
                                 Command="{Binding ApplySettingsCommand}"
                                 Content="Apply"
-                                Padding="14,6" FontSize="13" />
+                                Padding="14,10" FontSize="13"
+                                MinHeight="44" />
                         <Button Classes="primary"
                                 Command="{Binding SaveSettingsCommand}"
                                 Content="Save"
-                                Padding="16,6" FontSize="13" />
+                                Padding="18,10" FontSize="13"
+                                MinHeight="44" />
                     </StackPanel>
                 </Grid>
             </Border>

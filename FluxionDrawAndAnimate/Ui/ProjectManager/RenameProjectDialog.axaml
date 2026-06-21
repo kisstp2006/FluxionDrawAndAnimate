@@ -1,0 +1,48 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:icons="https://github.com/projektanker/icons.avalonia"
+             xmlns:shared="using:FluxionDrawAndAnimate.Ui.Shared"
+             xmlns:vm="using:FluxionDrawAndAnimate.ViewModels"
+             x:Class="FluxionDrawAndAnimate.Ui.ProjectManager.RenameProjectDialog"
+             x:DataType="vm:MainViewModel">
+    <shared:AppDialogFrame Title="Rename Project"
+                           Subtitle="The file will be renamed on disk"
+                           DialogIcon="mdi-pencil-outline"
+                           CloseCommand="{Binding CloseRenameDialogCommand}"
+                           IsPhoneLayout="{Binding IsPhoneLayout}"
+                           MaxDialogWidth="420">
+        <!-- Body -->
+        <StackPanel Spacing="10">
+            <TextBlock Text="New name"
+                       Foreground="{DynamicResource FluxTextMuted}"
+                       FontSize="12" />
+            <TextBox Classes="input"
+                     Text="{Binding PendingRenameText}"
+                     MinHeight="48"
+                     FontSize="15" />
+        </StackPanel>
+
+        <!-- Footer -->
+        <shared:AppDialogFrame.FooterContent>
+            <Grid ColumnDefinitions="*,Auto" MinHeight="64">
+                <Button Classes="action"
+                        Command="{Binding CloseRenameDialogCommand}"
+                        Content="Cancel"
+                        Padding="14,10" FontSize="13"
+                        MinHeight="44"
+                        VerticalAlignment="Center" />
+                <Button Grid.Column="1"
+                        Classes="primary"
+                        Command="{Binding ConfirmRenameCommand}"
+                        Padding="18,10" FontSize="13"
+                        MinHeight="44"
+                        VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Spacing="7">
+                        <icons:Icon Value="mdi-check" FontSize="14" />
+                        <TextBlock Text="Rename" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </shared:AppDialogFrame.FooterContent>
+    </shared:AppDialogFrame>
+</UserControl>

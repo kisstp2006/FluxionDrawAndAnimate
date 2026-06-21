@@ -1,0 +1,125 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:icons="https://github.com/projektanker/icons.avalonia"
+             x:Class="FluxionDrawAndAnimate.Ui.Shared.AppDialogFrame"
+             x:Name="root">
+    <Panel>
+        <!-- Desktop / Tablet: card with max-width and rounded corners -->
+        <Border IsVisible="{Binding !IsPhoneLayout, ElementName=root}"
+                MaxWidth="{Binding MaxDialogWidth, ElementName=root}"
+                Background="{DynamicResource FluxBgPanel}"
+                BorderBrush="{DynamicResource FluxBorder}"
+                BorderThickness="1"
+                CornerRadius="16"
+                ClipToBounds="True"
+                HorizontalAlignment="Center">
+            <Grid RowDefinitions="Auto,*,Auto">
+                <!-- Header -->
+                <Border Grid.Row="0"
+                        BorderBrush="{DynamicResource FluxBorder}"
+                        BorderThickness="0,0,0,1"
+                        Padding="24,0">
+                    <Grid ColumnDefinitions="Auto,*,Auto" MinHeight="60">
+                        <icons:Icon Grid.Column="0"
+                                    Value="{Binding DialogIcon, ElementName=root}"
+                                    FontSize="20"
+                                    Foreground="{DynamicResource FluxAccent}"
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,12,0" />
+                        <StackPanel Grid.Column="1" Spacing="1" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Title, ElementName=root}"
+                                       Foreground="{DynamicResource FluxText}"
+                                       FontSize="17" FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding Subtitle, ElementName=root}"
+                                       Foreground="{DynamicResource FluxTextMuted}"
+                                       FontSize="12"
+                                       IsVisible="{Binding Subtitle, ElementName=root,
+                                           Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                        </StackPanel>
+                        <Button Grid.Column="2"
+                                Classes="icon"
+                                Command="{Binding CloseCommand, ElementName=root}"
+                                Width="34" Height="34"
+                                Padding="0" CornerRadius="8"
+                                VerticalAlignment="Center">
+                            <icons:Icon Value="mdi-close" FontSize="14" />
+                        </Button>
+                    </Grid>
+                </Border>
+                <!-- Body -->
+                <ScrollViewer Grid.Row="1"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <ContentPresenter Content="{Binding Content, ElementName=root}"
+                                      Padding="24,20" />
+                </ScrollViewer>
+                <!-- Footer -->
+                <Border Grid.Row="2"
+                        BorderBrush="{DynamicResource FluxBorder}"
+                        BorderThickness="0,1,0,0"
+                        Padding="24,0"
+                        IsVisible="{Binding FooterContent, ElementName=root,
+                            Converter={x:Static ObjectConverters.IsNotNull}}">
+                    <ContentPresenter Content="{Binding FooterContent, ElementName=root}"
+                                      HorizontalAlignment="Stretch" />
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Phone: full-screen, compact chrome, larger touch targets (44px) -->
+        <Border IsVisible="{Binding IsPhoneLayout, ElementName=root}"
+                Background="{DynamicResource FluxBgPanel}"
+                BorderThickness="0"
+                CornerRadius="0"
+                ClipToBounds="True">
+            <Grid RowDefinitions="Auto,*,Auto">
+                <!-- Compact header -->
+                <Border Grid.Row="0"
+                        Background="{DynamicResource FluxBgPanel}"
+                        BorderBrush="{DynamicResource FluxBorder}"
+                        BorderThickness="0,0,0,1"
+                        Padding="16,0">
+                    <Grid ColumnDefinitions="Auto,*,Auto" MinHeight="52">
+                        <icons:Icon Grid.Column="0"
+                                    Value="{Binding DialogIcon, ElementName=root}"
+                                    FontSize="18"
+                                    Foreground="{DynamicResource FluxAccent}"
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,10,0" />
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding Title, ElementName=root}"
+                                   Foreground="{DynamicResource FluxText}"
+                                   FontSize="16" FontWeight="SemiBold"
+                                   VerticalAlignment="Center" />
+                        <Button Grid.Column="2"
+                                Classes="icon"
+                                Command="{Binding CloseCommand, ElementName=root}"
+                                Width="44" Height="44"
+                                Padding="0" CornerRadius="10"
+                                VerticalAlignment="Center">
+                            <icons:Icon Value="mdi-close" FontSize="16" />
+                        </Button>
+                    </Grid>
+                </Border>
+                <!-- Body: generous padding for touch -->
+                <ScrollViewer Grid.Row="1"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <ContentPresenter Content="{Binding Content, ElementName=root}"
+                                      Padding="16,16" />
+                </ScrollViewer>
+                <!-- Footer: sticky at bottom, full-width buttons -->
+                <Border Grid.Row="2"
+                        Background="{DynamicResource FluxBgPanel}"
+                        BorderBrush="{DynamicResource FluxBorder}"
+                        BorderThickness="0,1,0,0"
+                        Padding="16,0"
+                        IsVisible="{Binding FooterContent, ElementName=root,
+                            Converter={x:Static ObjectConverters.IsNotNull}}">
+                    <ContentPresenter Content="{Binding FooterContent, ElementName=root}"
+                                      HorizontalAlignment="Stretch" />
+                </Border>
+            </Grid>
+        </Border>
+    </Panel>
+</UserControl>

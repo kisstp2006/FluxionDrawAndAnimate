@@ -14,16 +14,24 @@
         <pm:ProjectManagerWideLayout IsVisible="{Binding IsHomeWideLayout}" />
         <pm:ProjectManagerPhoneLayout IsVisible="{Binding IsHomePhoneLayout}" />
 
-        <!-- New Project dialog overlay -->
+        <!-- New Project dialog overlay
+             Phone  → full-screen (no dim, AppDialogFrame fills the view)
+             Desktop → centred card over dim backdrop -->
         <Grid IsVisible="{Binding IsNewProjectDialogVisible}">
-            <Border Background="#88000000" />
-            <!-- HorizontalAlignment=Stretch lets the dialog fill the available width.
-                 On desktop the dialog's internal 480×680 Border keeps it compact;
-                 on phone (no Width) it fills the full screen. -->
+            <Border Background="#88000000"
+                    IsVisible="{Binding !IsPhoneLayout}" />
             <pm:NewProjectDialog
                 HorizontalAlignment="Stretch"
-                VerticalAlignment="Center"
-                Margin="20" />
+                VerticalAlignment="Stretch" />
+        </Grid>
+
+        <!-- Rename dialog overlay -->
+        <Grid IsVisible="{Binding IsRenameDialogVisible}">
+            <Border Background="#88000000"
+                    IsVisible="{Binding !IsPhoneLayout}" />
+            <pm:RenameProjectDialog
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch" />
         </Grid>
 
         <!-- Project Details floating panel (wide layout only, right-aligned) -->

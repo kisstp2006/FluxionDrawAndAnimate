@@ -48,12 +48,16 @@
                                 </MenuItem.Icon>
                             </MenuItem>
                             <Separator />
-                            <MenuItem Header="Duplicate">
+                            <MenuItem Header="Duplicate"
+                                      Command="{Binding $parent[ListBox].DataContext.DuplicateProjectCommand}"
+                                      CommandParameter="{Binding}">
                                 <MenuItem.Icon>
                                     <icons:Icon Value="mdi-content-copy" FontSize="14" />
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="Rename">
+                            <MenuItem Header="Rename"
+                                      Command="{Binding $parent[ListBox].DataContext.ShowRenameDialogCommand}"
+                                      CommandParameter="{Binding}">
                                 <MenuItem.Icon>
                                     <icons:Icon Value="mdi-pencil-outline" FontSize="14" />
                                 </MenuItem.Icon>

@@ -12,7 +12,8 @@ public sealed class NullRecentProjectStore : IRecentProjectStore
     }
 
     public Task AddOrUpdateAsync(RecentProjectInfo project, CancellationToken cancellationToken = default)
-    {
-        return Task.CompletedTask;
-    }
+        => Task.CompletedTask;
+
+    public Task RemoveAsync(string path, CancellationToken cancellationToken = default)
+        => Task.CompletedTask;
 }

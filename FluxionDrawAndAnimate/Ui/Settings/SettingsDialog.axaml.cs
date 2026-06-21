@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using FluxionDrawAndAnimate.ViewModels;
 
 namespace FluxionDrawAndAnimate.Ui.Settings;
@@ -14,6 +15,27 @@ public partial class SettingsDialog : UserControl
     public SettingsDialog()
     {
         InitializeComponent();
+    }
+
+    protected override void OnAttachedToVisualTree(Avalonia.VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        TopLevel.GetTopLevel(this)?.BackRequested += OnBackRequested;
+    }
+
+    protected override void OnDetachedFromVisualTree(Avalonia.VisualTreeAttachmentEventArgs e)
+    {
+        base.OnDetachedFromVisualTree(e);
+        TopLevel.GetTopLevel(this)?.BackRequested -= OnBackRequested;
+    }
+
+    private void OnBackRequested(object? sender, RoutedEventArgs e)
+    {
+        if (_vm is not null && IsVisible)
+        {
+            _vm.CloseSettingsCommand.Execute(null);
+            e.Handled = true;
+        }
     }
 
     protected override void OnDataContextChanged(EventArgs e)
