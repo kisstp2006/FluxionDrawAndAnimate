@@ -13,30 +13,40 @@ namespace FluxionDrawAndAnimate.Presentation.Studio;
 public sealed class StudioToolbarRegistry
 {
     public ObservableCollection<StudioToolbarItemDefinition> Items { get; } = [];
-
-    public IReadOnlyList<StudioToolbarItemDefinition> LeftItems =>
-        Items.Where(i => i.Section == StudioToolbarSection.Left)
-             .OrderBy(i => i.SortOrder)
-             .ToList();
-
-    public IReadOnlyList<StudioToolbarItemDefinition> RightItems =>
-        Items.Where(i => i.Section == StudioToolbarSection.Right)
-             .OrderBy(i => i.SortOrder)
-             .ToList();
+    public ObservableCollection<StudioToolbarItemDefinition> LeftItems { get; } = [];
+    public ObservableCollection<StudioToolbarItemDefinition> RightItems { get; } = [];
 
     public void Register(StudioToolbarItemDefinition item)
     {
         Items.Add(item);
-        Sort();
+        RebuildSections();
     }
 
-    private void Sort()
+    private void RebuildSections()
     {
         var sorted = Items.OrderBy(i => i.Section).ThenBy(i => i.SortOrder).ToList();
         for (var i = 0; i < sorted.Count; i++)
         {
             var cur = Items.IndexOf(sorted[i]);
             if (cur != i) Items.Move(cur, i);
+        }
+
+        Replace(
+            LeftItems,
+            sorted.Where(i => i.Section == StudioToolbarSection.Left));
+        Replace(
+            RightItems,
+            sorted.Where(i => i.Section == StudioToolbarSection.Right));
+    }
+
+    private static void Replace(
+        ObservableCollection<StudioToolbarItemDefinition> target,
+        IEnumerable<StudioToolbarItemDefinition> source)
+    {
+        target.Clear();
+        foreach (var item in source)
+        {
+            target.Add(item);
         }
     }
 }

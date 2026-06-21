@@ -14,10 +14,13 @@ internal sealed class GestureStateMachine
     private readonly TouchPoint[] _touches = new TouchPoint[4];
     private int _touchCount;
     private double _startDistance;
+    private double _lastDistance;
     private Point _startCenter;
-    private Point _anchorDocumentPoint;
+    private Point _lastCenter;
     private double _startAngle;
-    private ViewportSnapshot _startViewport;
+    private double _lastAngle;
+    private bool _hasPanStarted;
+    private bool _hasZoomStarted;
 
     public GestureStateMachine(double panDeadzone, double zoomDeadzone)
     {
@@ -27,12 +30,7 @@ internal sealed class GestureStateMachine
 
     public bool IsGestureInProgress { get; private set; }
 
-    public bool Press(
-        int pointerId,
-        Point position,
-        ViewportState viewport,
-        Size viewportSize,
-        Size documentSize)
+    public bool Press(int pointerId, Point position)
     {
         Remove(pointerId);
         if (_touchCount < _touches.Length)
@@ -45,7 +43,7 @@ internal sealed class GestureStateMachine
             return false;
         }
 
-        BeginTwoFingerGesture(viewport, viewportSize, documentSize);
+        BeginTwoFingerGesture();
         return true;
     }
 
@@ -64,19 +62,14 @@ internal sealed class GestureStateMachine
 
         var first = _touches[0].Position;
         var second = _touches[1].Position;
-        viewport.ApplyGesture(
-            viewportSize,
-            documentSize,
-            _anchorDocumentPoint,
-            _startCenter,
-            Mid(first, second),
-            _startDistance,
-            Dist(first, second),
-            _startAngle,
-            Angle(first, second),
-            _startViewport,
-            _zoomDeadzone,
-            _panDeadzone);
+        var currentCenter = Mid(first, second);
+        var currentDistance = Dist(first, second);
+        var currentAngle = Angle(first, second);
+
+        ApplyTwoFingerPan(viewport, currentCenter);
+        ApplyPinchZoom(viewport, viewportSize, currentCenter, currentDistance);
+        ApplyTwoFingerRotation(viewport, viewportSize, documentSize, currentCenter, currentAngle);
+
         return true;
     }
 
@@ -86,7 +79,7 @@ internal sealed class GestureStateMachine
         if (_touchCount < 2)
         {
             IsGestureInProgress = false;
-            _startDistance = 0;
+            ResetGestureState();
         }
         else
         {
@@ -94,21 +87,77 @@ internal sealed class GestureStateMachine
         }
     }
 
-    private void BeginTwoFingerGesture(ViewportState viewport, Size viewportSize, Size documentSize)
+    private void BeginTwoFingerGesture()
     {
         var first = _touches[0].Position;
         var second = _touches[1].Position;
         _startDistance = Dist(first, second);
+        _lastDistance = _startDistance;
         _startCenter = Mid(first, second);
+        _lastCenter = _startCenter;
         _startAngle = Angle(first, second);
-        _startViewport = viewport.Capture();
-
-        if (!viewport.TryScreenToDocumentUnclamped(viewportSize, documentSize, _startCenter, out _anchorDocumentPoint))
-        {
-            _anchorDocumentPoint = new Point(documentSize.Width / 2.0, documentSize.Height / 2.0);
-        }
+        _lastAngle = _startAngle;
+        _hasPanStarted = false;
+        _hasZoomStarted = false;
 
         IsGestureInProgress = true;
+    }
+
+    private void ApplyTwoFingerPan(ViewportState viewport, Point currentCenter)
+    {
+        var centerDeltaX = currentCenter.X - _startCenter.X;
+        var centerDeltaY = currentCenter.Y - _startCenter.Y;
+        var centerDrift = Math.Sqrt(centerDeltaX * centerDeltaX + centerDeltaY * centerDeltaY);
+        if (!_hasPanStarted && centerDrift <= _panDeadzone)
+        {
+            _lastCenter = currentCenter;
+            return;
+        }
+
+        _hasPanStarted = true;
+        viewport.PanBy(currentCenter.X - _lastCenter.X, currentCenter.Y - _lastCenter.Y);
+        _lastCenter = currentCenter;
+    }
+
+    private void ApplyPinchZoom(ViewportState viewport, Size viewportSize, Point currentCenter, double currentDistance)
+    {
+        var distanceDelta = Math.Abs(currentDistance - _startDistance);
+        if (!_hasZoomStarted && distanceDelta <= _zoomDeadzone)
+        {
+            _lastDistance = currentDistance;
+            return;
+        }
+
+        _hasZoomStarted = true;
+        if (_lastDistance > 0)
+        {
+            viewport.ZoomAt(viewportSize, currentCenter, currentDistance / _lastDistance);
+        }
+
+        _lastDistance = currentDistance;
+    }
+
+    private void ApplyTwoFingerRotation(
+        ViewportState viewport,
+        Size viewportSize,
+        Size documentSize,
+        Point currentCenter,
+        double currentAngle)
+    {
+        viewport.RotateAt(viewportSize, documentSize, currentCenter, currentAngle - _lastAngle);
+        _lastAngle = currentAngle;
+    }
+
+    private void ResetGestureState()
+    {
+        _startDistance = 0;
+        _lastDistance = 0;
+        _startCenter = default;
+        _lastCenter = default;
+        _startAngle = 0;
+        _lastAngle = 0;
+        _hasPanStarted = false;
+        _hasZoomStarted = false;
     }
 
     private void Update(int pointerId, Point position)

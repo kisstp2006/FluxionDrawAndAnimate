@@ -14,6 +14,17 @@ public static class StrokeTileRasterizer
 {
     public static void Rasterize(byte[] tile, int tileSize, int originX, int originY, StrokePath stroke)
     {
+        RasterizeRange(tile, tileSize, originX, originY, stroke, 0);
+    }
+
+    public static void RasterizeRange(
+        byte[] tile,
+        int tileSize,
+        int originX,
+        int originY,
+        StrokePath stroke,
+        int firstPointIndex)
+    {
         var pointCount = stroke.Points.Count;
         if (pointCount == 0)
         {
@@ -25,8 +36,9 @@ public static class StrokeTileRasterizer
         var shape     = stroke.BrushSettings.Shape;
         var hardness  = stroke.BrushSettings.Hardness;
         var dynamics  = stroke.BrushSettings.Dynamics;
+        var startPoint = Math.Clamp(firstPointIndex, 0, pointCount - 1);
 
-        if (pointCount == 1)
+        if (pointCount == 1 && startPoint == 0)
         {
             var p   = stroke.Points[0];
             var dab = dynamics.Evaluate(p, baseRadius);
@@ -36,8 +48,9 @@ public static class StrokeTileRasterizer
         }
 
         var minSpacing = Math.Max(0.75, baseRadius * 0.4);
+        var startSegment = Math.Max(1, startPoint);
 
-        for (var i = 1; i < pointCount; i++)
+        for (var i = startSegment; i < pointCount; i++)
         {
             var from = stroke.Points[i - 1];
             var to   = stroke.Points[i];

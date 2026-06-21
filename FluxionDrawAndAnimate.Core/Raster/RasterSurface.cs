@@ -21,6 +21,7 @@ public sealed class RasterSurface : IDisposable
 
     public TileGrid Grid { get; }
     public int TileSize => Grid.TileSize;
+    public int TileCount => _tiles.Count;
 
     public byte[] GetOrCreateTile(TileCoordinate coordinate)
     {

@@ -20,6 +20,7 @@ public sealed class TileBufferPool
     }
 
     public int BufferLength => _bufferLength;
+    public int FreeBufferCount => _free.Count;
 
     public byte[] Rent()
     {
@@ -35,5 +36,14 @@ public sealed class TileBufferPool
 
         Array.Clear(buffer);
         _free.Push(buffer);
+    }
+
+    public void TrimFreeBuffers(int maxFreeBuffers)
+    {
+        maxFreeBuffers = Math.Max(0, maxFreeBuffers);
+        while (_free.Count > maxFreeBuffers)
+        {
+            _free.Pop();
+        }
     }
 }

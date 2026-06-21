@@ -1,14 +1,19 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Threading;
 using FluxionDrawAndAnimate.Controls.Canvas;
 using FluxionDrawAndAnimate.Core.Animation;
 using FluxionDrawAndAnimate.Core.Drawing;
 using FluxionDrawAndAnimate.Core.Editing;
 using FluxionDrawAndAnimate.Rendering;
+using FluxionDrawAndAnimate.Services;
 
 namespace FluxionDrawAndAnimate.Controls;
 
@@ -50,6 +55,8 @@ public sealed class DrawingCanvasControl : Control
         AvaloniaProperty.Register<DrawingCanvasControl, int>(nameof(FitToViewTrigger));
     public static readonly StyledProperty<int> ResetViewTriggerProperty =
         AvaloniaProperty.Register<DrawingCanvasControl, int>(nameof(ResetViewTrigger));
+    public static readonly StyledProperty<int> RenderCacheTrimTriggerProperty =
+        AvaloniaProperty.Register<DrawingCanvasControl, int>(nameof(RenderCacheTrimTrigger));
 
     // ── Fields ───────────────────────────────────────────────────────────
 
@@ -57,6 +64,8 @@ public sealed class DrawingCanvasControl : Control
     private readonly ViewportState _viewport = new();
     private readonly CanvasInvalidationScheduler _invalidation = new();
     private readonly CanvasInputController _input;
+    private readonly HashSet<AnimationLayer> _observedLayers = new();
+    private DrawingProject? _observedProject;
 
     // Static brushes / pens
     private static readonly IBrush WorkspaceBrush = new SolidColorBrush(Color.FromRgb(21, 22, 25));
@@ -78,6 +87,7 @@ public sealed class DrawingCanvasControl : Control
     public Action<double>? ScaleChangedCallback { get => GetValue(ScaleChangedCallbackProperty); set => SetValue(ScaleChangedCallbackProperty, value); }
     public int FitToViewTrigger { get => GetValue(FitToViewTriggerProperty); set => SetValue(FitToViewTriggerProperty, value); }
     public int ResetViewTrigger { get => GetValue(ResetViewTriggerProperty); set => SetValue(ResetViewTriggerProperty, value); }
+    public int RenderCacheTrimTrigger { get => GetValue(RenderCacheTrimTriggerProperty); set => SetValue(RenderCacheTrimTriggerProperty, value); }
 
     // ── Static constructor ────────────────────────────────────────────────
 
@@ -92,6 +102,11 @@ public sealed class DrawingCanvasControl : Control
             .AddClassHandler<DrawingCanvasControl>((c, _) => c.FitToView());
         ResetViewTriggerProperty.Changed
             .AddClassHandler<DrawingCanvasControl>((c, _) => c.ResetView());
+        RenderCacheTrimTriggerProperty.Changed
+            .AddClassHandler<DrawingCanvasControl>((c, _) => c.TrimRenderCacheToProjectBudget());
+        ProjectProperty.Changed
+            .AddClassHandler<DrawingCanvasControl>((c, e) =>
+                c.HandleProjectChanged(e.OldValue as DrawingProject, e.NewValue as DrawingProject));
     }
 
     public DrawingCanvasControl()
@@ -116,7 +131,7 @@ public sealed class DrawingCanvasControl : Control
 
     public void ResetView()
     {
-        _viewport.Reset();
+        _viewport.Reset(GetViewportSize());
         NotifyScale();
         InvalidateNow();
     }
@@ -180,6 +195,8 @@ public sealed class DrawingCanvasControl : Control
         var tl = TopLevel.GetTopLevel(this);
         tl?.AddHandler(KeyDownEvent, OnGlobalKeyDown, RoutingStrategies.Tunnel);
         tl?.AddHandler(KeyUpEvent, OnGlobalKeyUp, RoutingStrategies.Tunnel);
+        MemoryPressureService.MemoryPressure += OnMemoryPressure;
+        WatchProject(Project);
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
@@ -188,7 +205,9 @@ public sealed class DrawingCanvasControl : Control
         var tl = TopLevel.GetTopLevel(this);
         tl?.RemoveHandler(KeyDownEvent, OnGlobalKeyDown);
         tl?.RemoveHandler(KeyUpEvent, OnGlobalKeyUp);
-        _rasterCache.Dispose();
+        MemoryPressureService.MemoryPressure -= OnMemoryPressure;
+        UnwatchProject();
+        _rasterCache.Clear();
     }
 
     private void OnGlobalKeyDown(object? sender, KeyEventArgs e)
@@ -247,6 +266,164 @@ public sealed class DrawingCanvasControl : Control
         CursorInfoCallback);
     private Size GetViewportSize() => new(Bounds.Width, Bounds.Height);
     private static Size GetDocumentSize(DrawingProject project) => new(project.Width, project.Height);
+    private void HandleProjectChanged(DrawingProject? oldProject, DrawingProject? newProject)
+    {
+        if (ReferenceEquals(oldProject, newProject))
+        {
+            TrimRenderCacheToProjectBudget();
+            return;
+        }
+
+        UnwatchProject();
+        _rasterCache.Clear();
+        WatchProject(newProject);
+        RequestInvalidate();
+    }
+
+    private void WatchProject(DrawingProject? project)
+    {
+        if (ReferenceEquals(_observedProject, project))
+        {
+            return;
+        }
+
+        _observedProject = project;
+        if (project is null)
+        {
+            return;
+        }
+
+        project.PropertyChanged += OnProjectPropertyChanged;
+        project.Layers.CollectionChanged += OnLayersChanged;
+        foreach (var layer in project.Layers)
+        {
+            WatchLayer(layer);
+        }
+    }
+
+    private void UnwatchProject()
+    {
+        if (_observedProject is null)
+        {
+            return;
+        }
+
+        _observedProject.PropertyChanged -= OnProjectPropertyChanged;
+        _observedProject.Layers.CollectionChanged -= OnLayersChanged;
+        foreach (var layer in _observedLayers)
+        {
+            layer.PropertyChanged -= OnLayerPropertyChanged;
+        }
+
+        _observedLayers.Clear();
+        _observedProject = null;
+    }
+
+    private void OnProjectPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is nameof(DrawingProject.Width)
+            or nameof(DrawingProject.Height)
+            or nameof(DrawingProject.FrameCount))
+        {
+            _rasterCache.Clear();
+            RequestInvalidate();
+        }
+    }
+
+    private void OnLayersChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (e.OldItems is not null)
+        {
+            foreach (AnimationLayer layer in e.OldItems)
+            {
+                UnwatchLayer(layer);
+            }
+        }
+
+        if (e.NewItems is not null)
+        {
+            foreach (AnimationLayer layer in e.NewItems)
+            {
+                WatchLayer(layer);
+            }
+        }
+
+        if (e.Action == NotifyCollectionChangedAction.Reset && _observedProject is not null)
+        {
+            foreach (var layer in _observedLayers)
+            {
+                layer.PropertyChanged -= OnLayerPropertyChanged;
+            }
+
+            _observedLayers.Clear();
+            foreach (var layer in _observedProject.Layers)
+            {
+                WatchLayer(layer);
+            }
+        }
+
+        _rasterCache.ClearCachedFrames();
+        RequestInvalidate();
+    }
+
+    private void WatchLayer(AnimationLayer layer)
+    {
+        if (_observedLayers.Add(layer))
+        {
+            layer.PropertyChanged += OnLayerPropertyChanged;
+        }
+    }
+
+    private void UnwatchLayer(AnimationLayer layer)
+    {
+        if (_observedLayers.Remove(layer))
+        {
+            layer.PropertyChanged -= OnLayerPropertyChanged;
+        }
+    }
+
+    private void OnLayerPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (sender is not AnimationLayer layer)
+        {
+            return;
+        }
+
+        if (e.PropertyName is nameof(AnimationLayer.IsVisible)
+            or nameof(AnimationLayer.Opacity)
+            or nameof(AnimationLayer.BlendMode))
+        {
+            _rasterCache.InvalidateLayerVisual(layer);
+            RequestInvalidate();
+        }
+    }
+
+    private void OnMemoryPressure(object? sender, MemoryPressureEventArgs e)
+    {
+        if (Dispatcher.UIThread.CheckAccess())
+        {
+            HandleMemoryPressure(e.Level);
+        }
+        else
+        {
+            Dispatcher.UIThread.Post(() => HandleMemoryPressure(e.Level));
+        }
+    }
+
+    private void HandleMemoryPressure(MemoryPressureLevel level)
+    {
+        _rasterCache.HandleMemoryPressure(level == MemoryPressureLevel.Critical);
+        RequestInvalidate();
+    }
+
+    private void TrimRenderCacheToProjectBudget()
+    {
+        if (Project is not null)
+        {
+            _rasterCache.TrimToBudget(Project.TileSettings.MemoryBudgetMegabytes);
+        }
+    }
+
     private void RequestInvalidate() => _invalidation.Request(this);
     private void InvalidateNow() => _invalidation.InvalidateNow(this);
 }

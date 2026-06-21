@@ -493,7 +493,11 @@ public partial class MainViewModel : ViewModelBase
         HomePageRegistrar.RegisterDefaults(HomePageRegistry, this);
         StudioToolbarRegistrar.RegisterDefaults(StudioToolbarRegistry, this);
         StudioToolPanelRegistrar.RegisterDefaults(StudioToolPanelRegistry);
-        StudioToolPanelRegistry.SectionsChanged += () => StudioToolSections = StudioToolPanelRegistry.Sections;
+        StudioToolPanelRegistry.SectionsChanged += () =>
+        {
+            StudioToolSections = StudioToolPanelRegistry.Sections;
+            SyncActiveToolDefinitionState(ActiveToolKind);
+        };
         StudioInspectorRegistrar.RegisterDefaults(StudioInspectorRegistry);
         StudioToolSections = StudioToolPanelRegistry.Sections;
         ActivePage = ShellRegistry.FindPage("home");
@@ -511,6 +515,7 @@ public partial class MainViewModel : ViewModelBase
         RecentProjects = new ObservableCollection<ProjectCard>();
         RecentProjects.CollectionChanged += (_, _) => OnPropertyChanged(nameof(FilteredRecentProjects));
         ActiveTool = Tools[0];
+        SyncActiveToolDefinitionState(ActiveToolKind);
         SelectedProjectTemplate = ProjectTemplates[0];
         AvailableFrameRates = new ObservableCollection<int> { 12, 24, 30, 60 };
         SettingsGroups = new ObservableCollection<SettingsGroupViewModel>();
@@ -743,8 +748,7 @@ public partial class MainViewModel : ViewModelBase
 
     partial void OnActiveToolKindChanged(Core.Drawing.ToolKind value)
     {
-        foreach (var tool in StudioToolPanelRegistry.Items)
-            tool.IsActive = tool.ToolKind == value;
+        SyncActiveToolDefinitionState(value);
 
         if (ActiveTool is null || ActiveTool.Kind != value)
         {
@@ -756,6 +760,14 @@ public partial class MainViewModel : ViewModelBase
         OnPropertyChanged(nameof(ActiveToolName));
         OnPropertyChanged(nameof(PressureCurvePoints));
         RefreshLiveStatusBarItems(nameof(ActiveToolName));
+    }
+
+    private void SyncActiveToolDefinitionState(Core.Drawing.ToolKind activeKind)
+    {
+        foreach (var tool in StudioToolPanelRegistry.Items)
+        {
+            tool.IsActive = tool.ToolKind == activeKind;
+        }
     }
 
     partial void OnActiveToolChanged(ToolPreset value)
@@ -866,6 +878,9 @@ public partial class MainViewModel : ViewModelBase
 
     [RelayCommand]
     private void ResetCanvasView() => ResetViewTrigger++;
+
+    [ObservableProperty]
+    private int _renderCacheTrimTrigger;
 
     private Action<double>? _scaleChangedCallback;
     /// <summary>Canvas calls this when the user zooms; VM updates CanvasZoom for the status bar.</summary>
@@ -1458,7 +1473,9 @@ public partial class MainViewModel : ViewModelBase
                     break;
                 case AppSettingKeys.TileMemoryBudget when value is int memoryBudget:
                     Project.TileSettings.MemoryBudgetMegabytes = memoryBudget;
+                    RenderCacheTrimTrigger++;
                     OnPropertyChanged(nameof(Project));
+                    UpdateMemoryEstimate();
                     break;
             }
         }

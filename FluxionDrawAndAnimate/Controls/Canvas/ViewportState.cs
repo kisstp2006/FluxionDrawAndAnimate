@@ -27,18 +27,20 @@ internal sealed class ViewportState
 
         var availableWidth = Math.Max(1, viewportSize.Width - padding);
         var availableHeight = Math.Max(1, viewportSize.Height - padding);
-        Scale = ClampScale(Math.Min(availableWidth / documentSize.Width, availableHeight / documentSize.Height));
+        var targetScale = ClampScale(Math.Min(availableWidth / documentSize.Width, availableHeight / documentSize.Height));
+
         OffsetX = 0;
         OffsetY = 0;
         Rotation = 0;
+        ZoomAt(viewportSize, GetViewportCenter(viewportSize), targetScale / Scale);
     }
 
-    public void Reset()
+    public void Reset(Size viewportSize)
     {
-        Scale = 1.0;
         OffsetX = 0;
         OffsetY = 0;
         Rotation = 0;
+        ZoomAt(viewportSize, GetViewportCenter(viewportSize), 1.0 / Scale);
     }
 
     public void PanBy(double deltaX, double deltaY)
@@ -52,8 +54,13 @@ internal sealed class ViewportState
         Rotation += radians;
     }
 
-    public void ZoomAt(Size viewportSize, Point pivot, double factor)
+    public void ZoomAt(Size viewportSize, Point screenPivot, double factor)
     {
+        if (factor <= 0 || double.IsNaN(factor) || double.IsInfinity(factor))
+        {
+            return;
+        }
+
         var previousScale = Scale;
         var newScale = ClampScale(previousScale * factor);
         if (Math.Abs(newScale - previousScale) < double.Epsilon)
@@ -62,9 +69,26 @@ internal sealed class ViewportState
         }
 
         var ratio = newScale / previousScale;
-        OffsetX = pivot.X - viewportSize.Width / 2 - (pivot.X - viewportSize.Width / 2 - OffsetX) * ratio;
-        OffsetY = pivot.Y - viewportSize.Height / 2 - (pivot.Y - viewportSize.Height / 2 - OffsetY) * ratio;
+        OffsetX = screenPivot.X - viewportSize.Width / 2 - (screenPivot.X - viewportSize.Width / 2 - OffsetX) * ratio;
+        OffsetY = screenPivot.Y - viewportSize.Height / 2 - (screenPivot.Y - viewportSize.Height / 2 - OffsetY) * ratio;
         Scale = newScale;
+    }
+
+    public void RotateAt(Size viewportSize, Size documentSize, Point screenPivot, double radians)
+    {
+        if (Math.Abs(radians) < double.Epsilon)
+        {
+            return;
+        }
+
+        if (!TryScreenToDocumentUnclamped(viewportSize, documentSize, screenPivot, out var anchorDocumentPoint))
+        {
+            RotateBy(radians);
+            return;
+        }
+
+        Rotation += radians;
+        ReanchorDocumentPoint(viewportSize, documentSize, anchorDocumentPoint, screenPivot);
     }
 
     public Matrix BuildMatrix(Size viewportSize, Size documentSize)
@@ -101,36 +125,6 @@ internal sealed class ViewportState
         }
     }
 
-    public ViewportSnapshot Capture() => new(Scale, OffsetX, OffsetY, Rotation);
-
-    public void ApplyGesture(
-        Size viewportSize,
-        Size documentSize,
-        Point anchorDocumentPoint,
-        Point startCenter,
-        Point currentCenter,
-        double startDistance,
-        double currentDistance,
-        double startAngle,
-        double currentAngle,
-        ViewportSnapshot startViewport,
-        double zoomDeadzone,
-        double panDeadzone)
-    {
-        var distanceDelta = Math.Abs(currentDistance - startDistance);
-        Scale = distanceDelta > zoomDeadzone && startDistance > 0
-            ? ClampScale(startViewport.Scale * currentDistance / startDistance)
-            : startViewport.Scale;
-
-        var centerDeltaX = currentCenter.X - startCenter.X;
-        var centerDeltaY = currentCenter.Y - startCenter.Y;
-        var centerDrift = Math.Sqrt(centerDeltaX * centerDeltaX + centerDeltaY * centerDeltaY);
-        var targetCenter = centerDrift > panDeadzone ? currentCenter : startCenter;
-
-        Rotation = startViewport.Rotation + (currentAngle - startAngle);
-        ReanchorDocumentPoint(viewportSize, documentSize, anchorDocumentPoint, targetCenter);
-    }
-
     private void ReanchorDocumentPoint(
         Size viewportSize,
         Size documentSize,
@@ -152,11 +146,8 @@ internal sealed class ViewportState
         new(point.X * matrix.M11 + point.Y * matrix.M21 + matrix.M31,
             point.X * matrix.M12 + point.Y * matrix.M22 + matrix.M32);
 
+    private static Point GetViewportCenter(Size viewportSize) =>
+        new(viewportSize.Width / 2.0, viewportSize.Height / 2.0);
+
     private static double ClampScale(double scale) => Math.Clamp(scale, MinScale, MaxScale);
 }
-
-internal readonly record struct ViewportSnapshot(
-    double Scale,
-    double OffsetX,
-    double OffsetY,
-    double Rotation);

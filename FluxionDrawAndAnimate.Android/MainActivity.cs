@@ -1,4 +1,5 @@
 ﻿using Android.App;
+using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using Avalonia;
@@ -31,5 +32,30 @@ public class MainActivity : AvaloniaMainActivity
         // can inject it into MainViewModel.
         PlatformShell = new AndroidPlatformShell(this);
         PlatformShellProvider.Current = PlatformShell;
+    }
+
+    public override void OnTrimMemory(TrimMemory level)
+    {
+        base.OnTrimMemory(level);
+
+        if (level is TrimMemory.RunningCritical or TrimMemory.Complete)
+        {
+            MemoryPressureService.Report(MemoryPressureLevel.Critical);
+            return;
+        }
+
+        if (level is TrimMemory.RunningLow
+            or TrimMemory.RunningModerate
+            or TrimMemory.Background
+            or TrimMemory.Moderate)
+        {
+            MemoryPressureService.Report(MemoryPressureLevel.Moderate);
+        }
+    }
+
+    public override void OnLowMemory()
+    {
+        base.OnLowMemory();
+        MemoryPressureService.Report(MemoryPressureLevel.Critical);
     }
 }

@@ -68,7 +68,7 @@ internal sealed class CanvasInputController
 
         if (IsResetShortcut(e))
         {
-            _viewport.Reset();
+            _viewport.Reset(_getViewportSize());
             _notifyScale();
             _requestInvalidate();
             e.Handled = true;
@@ -142,8 +142,7 @@ internal sealed class CanvasInputController
 
         if (e.Pointer.Type == PointerType.Touch)
         {
-            if (project is not null &&
-                _gestures.Press(e.Pointer.Id, pos, _viewport, _getViewportSize(), GetDocumentSize(project)))
+            if (project is not null && _gestures.Press(e.Pointer.Id, pos))
             {
                 CancelActiveStroke();
                 e.Pointer.Capture(_target);
@@ -200,7 +199,7 @@ internal sealed class CanvasInputController
             context.ActiveToolKind,
             context.ActiveToolKind == ToolKind.Vector,
             brushSettings);
-        _strokeSession.Begin(frame, context.ActiveFrameIndex, stroke);
+        _strokeSession.Begin(frame, context.ActiveFrameIndex, context.ActiveLayerIndex, stroke);
 
         foreach (var point in _strokeProcessor.AddPoint(paintInfo, context.BrushSize))
         {
@@ -208,7 +207,7 @@ internal sealed class CanvasInputController
         }
 
         frame.Strokes.Add(stroke);
-        _rasterCache.InvalidateStroke(context.ActiveFrameIndex, stroke);
+        _rasterCache.AppendStrokeRange(context.ActiveFrameIndex, context.ActiveLayerIndex, stroke, 0);
 
         e.Pointer.Capture(_target);
         e.Handled = true;
@@ -290,19 +289,20 @@ internal sealed class CanvasInputController
             return;
         }
 
-        if (_strokeSession.TryEnd(out var stroke, out var frame, out var frameIndex))
+        if (_strokeSession.TryEnd(out var stroke, out var frame, out var frameIndex, out var layerIndex))
         {
             var smoothed = _strokeProcessor.BuildSmoothedPath();
+            _rasterCache.InvalidateStroke(frameIndex, layerIndex, stroke);
             stroke.Points.Clear();
             foreach (var point in smoothed)
             {
                 stroke.Points.Add(point);
             }
 
-            _rasterCache.InvalidateStroke(frameIndex, stroke);
+            _rasterCache.InvalidateStroke(frameIndex, layerIndex, stroke);
             _getContext().UndoStack?.Push(new AddStrokeCommand(frame, stroke, changed =>
             {
-                _rasterCache.InvalidateStroke(frameIndex, changed);
+                _rasterCache.InvalidateStroke(frameIndex, layerIndex, changed);
                 _requestInvalidate();
             }));
         }
@@ -346,12 +346,13 @@ internal sealed class CanvasInputController
             return false;
         }
 
+        var firstNewPointIndex = stroke.Points.Count;
         foreach (var point in emitted)
         {
             stroke.Points.Add(point);
         }
 
-        _rasterCache.InvalidateStroke(_strokeSession.FrameIndex, stroke);
+        _rasterCache.AppendStrokeRange(_strokeSession.FrameIndex, _strokeSession.LayerIndex, stroke, firstNewPointIndex);
         return true;
     }
 
@@ -377,10 +378,10 @@ internal sealed class CanvasInputController
 
     private void CancelActiveStroke()
     {
-        if (_strokeSession.TryEnd(out var stroke, out var frame, out var frameIndex))
+        if (_strokeSession.TryEnd(out var stroke, out var frame, out var frameIndex, out var layerIndex))
         {
             frame.Strokes.Remove(stroke);
-            _rasterCache.InvalidateStroke(frameIndex, stroke);
+            _rasterCache.InvalidateStroke(frameIndex, layerIndex, stroke);
             _requestInvalidate();
         }
 

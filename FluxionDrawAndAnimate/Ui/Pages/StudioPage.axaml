@@ -68,7 +68,8 @@
                                                CursorInfoCallback="{Binding CursorInfoCallback}"
                                                ScaleChangedCallback="{Binding ScaleChangedCallback}"
                                                FitToViewTrigger="{Binding FitToViewTrigger}"
-                                               ResetViewTrigger="{Binding ResetViewTrigger}" />
+                                               ResetViewTrigger="{Binding ResetViewTrigger}"
+                                               RenderCacheTrimTrigger="{Binding RenderCacheTrimTrigger}" />
 
                 <!-- Right resize splitter (between canvas and inspector) -->
                 <GridSplitter Grid.Column="3"
@@ -107,7 +108,8 @@
                                                CursorInfoCallback="{Binding CursorInfoCallback}"
                                                ScaleChangedCallback="{Binding ScaleChangedCallback}"
                                                FitToViewTrigger="{Binding FitToViewTrigger}"
-                                               ResetViewTrigger="{Binding ResetViewTrigger}" />
+                                               ResetViewTrigger="{Binding ResetViewTrigger}"
+                                               RenderCacheTrimTrigger="{Binding RenderCacheTrimTrigger}" />
 
                 <!-- Compact horizontal tool strip + undo/redo -->
                 <Border Grid.Row="1"

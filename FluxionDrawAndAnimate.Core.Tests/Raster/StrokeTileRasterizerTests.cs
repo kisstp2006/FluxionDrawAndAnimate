@@ -115,4 +115,19 @@ public class StrokeTileRasterizerTests
         var center = GetPixel(tile, 32, 32);
         Assert.Equal(255, center.a); // hard + full pressure → fully opaque center
     }
+
+    [Fact]
+    public void RasterizeRange_paints_only_from_the_requested_segment()
+    {
+        var tile = NewBlankTile();
+        var stroke = new StrokePath(RgbaColor.FromRgb(0, 0, 255), 4, ToolKind.Ink, false);
+        stroke.Points.Add(new PaintInformation(10, 32, 1, 0, 0, 0, 0));
+        stroke.Points.Add(new PaintInformation(20, 32, 1, 0, 0, 0, 0));
+        stroke.Points.Add(new PaintInformation(50, 32, 1, 0, 0, 0, 0));
+
+        StrokeTileRasterizer.RasterizeRange(tile, TileSize, 0, 0, stroke, firstPointIndex: 2);
+
+        Assert.Equal(0, GetPixel(tile, 10, 32).a);
+        Assert.True(GetPixel(tile, 35, 32).a > 0);
+    }
 }
