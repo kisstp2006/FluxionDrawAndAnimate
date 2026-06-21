@@ -637,7 +637,7 @@ public partial class MainViewModel : ViewModelBase
         ?? "Brush";
 
     /// <summary>B/5: the active preset's brush settings, bound to the canvas.</summary>
-    public BrushSettings? ActiveBrushSettings => ActiveTool?.BrushPreset?.Settings;
+    public BrushSettings? ActiveBrushSettings => ActiveTool?.EffectiveSettings;
     public int DisplayFrame => SelectedFrameIndex + 1;
     public int TotalFrames => Project.FrameCount;
 
@@ -727,6 +727,11 @@ public partial class MainViewModel : ViewModelBase
     {
         foreach (var tool in StudioToolPanelRegistry.Items)
             tool.IsActive = tool.ToolKind == value;
+
+        var matchingPreset = Tools.FirstOrDefault(tool => tool.Kind == value);
+        if (matchingPreset is not null && !ReferenceEquals(ActiveTool, matchingPreset))
+            ActiveTool = matchingPreset;
+
         OnPropertyChanged(nameof(ActiveToolName));
         OnPropertyChanged(nameof(PressureCurvePoints));
         RefreshLiveStatusBarItems(nameof(ActiveToolName));
@@ -734,6 +739,9 @@ public partial class MainViewModel : ViewModelBase
 
     partial void OnActiveToolChanged(ToolPreset value)
     {
+        if (ActiveToolKind != value.Kind)
+            ActiveToolKind = value.Kind;
+
         OnPropertyChanged(nameof(ActiveBrushSettings));
         OnPropertyChanged(nameof(ActiveBrushStabilizer));
         OnPropertyChanged(nameof(ActiveBrushShape));
@@ -773,7 +781,14 @@ public partial class MainViewModel : ViewModelBase
 
 
     [RelayCommand]
-    private void ActivateDrawingTool(Core.Drawing.ToolKind kind) => ActiveToolKind = kind;
+    private void ActivateDrawingTool(Core.Drawing.ToolKind kind)
+    {
+        var matchingPreset = Tools.FirstOrDefault(tool => tool.Kind == kind);
+        if (matchingPreset is not null)
+            ActiveTool = matchingPreset;
+        else
+            ActiveToolKind = kind;
+    }
 
     // ── Canvas viewport ──────────────────────────────────────────────────
 
@@ -784,8 +799,12 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     private void FitCanvas() => FitToViewTrigger++;
 
+    /// <summary>Increment this to trigger ResetView on the bound canvas.</summary>
+    [ObservableProperty]
+    private int _resetViewTrigger;
+
     [RelayCommand]
-    private void ResetCanvasView() => FitToViewTrigger++;   // FitToView covers reset too for now
+    private void ResetCanvasView() => ResetViewTrigger++;
 
     private Action<double>? _scaleChangedCallback;
     /// <summary>Canvas calls this when the user zooms; VM updates CanvasZoom for the status bar.</summary>

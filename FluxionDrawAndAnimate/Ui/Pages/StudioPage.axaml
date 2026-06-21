@@ -67,7 +67,8 @@
                                                UndoStack="{Binding UndoStack}"
                                                CursorInfoCallback="{Binding CursorInfoCallback}"
                                                ScaleChangedCallback="{Binding ScaleChangedCallback}"
-                                               FitToViewTrigger="{Binding FitToViewTrigger}" />
+                                               FitToViewTrigger="{Binding FitToViewTrigger}"
+                                               ResetViewTrigger="{Binding ResetViewTrigger}" />
 
                 <!-- Right resize splitter (between canvas and inspector) -->
                 <GridSplitter Grid.Column="3"
@@ -103,7 +104,10 @@
                                                BrushSettings="{Binding ActiveBrushSettings}"
                                                ShowOnionSkin="{Binding ShowOnionSkin}"
                                                UndoStack="{Binding UndoStack}"
-                                               CursorInfoCallback="{Binding CursorInfoCallback}" />
+                                               CursorInfoCallback="{Binding CursorInfoCallback}"
+                                               ScaleChangedCallback="{Binding ScaleChangedCallback}"
+                                               FitToViewTrigger="{Binding FitToViewTrigger}"
+                                               ResetViewTrigger="{Binding ResetViewTrigger}" />
 
                 <!-- Compact horizontal tool strip + undo/redo -->
                 <Border Grid.Row="1"
